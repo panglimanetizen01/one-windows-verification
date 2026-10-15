@@ -24,21 +24,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 6ab13f9734e653ff9041d6155ac1116f87064681
+          ref: 9ce099390e3fc46e3c2562cca42cfef407f7bee3
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
         working-directory: source
         shell: bash
         if: runner.os != 'Windows'
-        run: test "$(git rev-parse HEAD)" = "6ab13f9734e653ff9041d6155ac1116f87064681"
+        run: test "$(git rev-parse HEAD)" = "9ce099390e3fc46e3c2562cca42cfef407f7bee3"
       - name: Verify canonical target (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '6ab13f9734e653ff9041d6155ac1116f87064681') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne '9ce099390e3fc46e3c2562cca42cfef407f7bee3') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         working-directory: source
         shell: bash
@@ -84,4 +84,4 @@ jobs:
         if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
-# Verification is pinned to the canonical POP3/IMAP integration checkpoint.
+# Verification is pinned to the canonical POP3/IMAP registry-alignment checkpoint.
