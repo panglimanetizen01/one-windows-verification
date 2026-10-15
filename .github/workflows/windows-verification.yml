@@ -85,3 +85,4 @@ jobs:
         run: .\tools\verify_offline.ps1
 
 # Verification is pinned to the canonical FTP data runtime checkpoint.
+# PR trigger is used only to obtain a fresh independent verification run.
