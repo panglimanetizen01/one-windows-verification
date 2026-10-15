@@ -1,4 +1,4 @@
-name: One Windows Verification
+name: One Cross-Platform Verification
 
 on:
   push:
@@ -9,8 +9,13 @@ permissions:
   contents: read
 
 jobs:
-  windows-verification:
-    runs-on: windows-2025
+  verification:
+    name: verify (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2025]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Checkout canonical One source
@@ -21,37 +26,63 @@ jobs:
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
-        shell: pwsh
         working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: |
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "69c4918e6845fdbbd79495b3fa2c59798831bce0"
+      - name: Verify canonical target (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
           if ($actual -ne '69c4918e6845fdbbd79495b3fa2c59798831bce0') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
-        shell: pwsh
         working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: |
+          rustc --version
+          cargo --version
+          python3 --version
+      - name: Toolchain (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
         run: |
           rustc --version
           cargo --version
           python --version
       - name: Contract artifacts
-        shell: pwsh
         working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: python3 tools/check_contract.py
+      - name: Contract artifacts (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
         run: python tools/check_contract.py
       - name: Build
-        shell: pwsh
         working-directory: source
         run: cargo build --workspace --all-targets
       - name: Clippy
-        shell: pwsh
         working-directory: source
         run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Tests
-        shell: pwsh
         working-directory: source
         run: cargo test --workspace --all-targets
       - name: Offline verification
-        shell: pwsh
         working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: bash tools/verify_offline.sh
+      - name: Offline verification (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
 # Verification is pinned to the canonical One commit above.
