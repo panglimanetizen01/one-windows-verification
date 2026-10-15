@@ -20,25 +20,35 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Read canonical target
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout canonical One source
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 86d591c52cf263b38343da51870de309b5a23681
+          ref: ${{ steps.canonical.outputs.ref }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
         working-directory: source
         shell: bash
         if: runner.os != 'Windows'
-        run: test "$(git rev-parse HEAD)" = "86d591c52cf263b38343da51870de309b5a23681"
+        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
       - name: Verify canonical target (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '86d591c52cf263b38343da51870de309b5a23681') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         working-directory: source
         shell: bash
@@ -84,4 +94,4 @@ jobs:
         if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
-# Verification is pinned to the HTTP/2 runtime candidate checkpoint.
+# Verification target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
