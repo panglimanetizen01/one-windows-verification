@@ -53,3 +53,5 @@ jobs:
         shell: pwsh
         working-directory: source
         run: .\tools\verify_offline.ps1
+
+# Verification is pinned to the canonical One commit above.
