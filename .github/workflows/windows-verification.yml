@@ -22,21 +22,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 2ee5e17c9cf6e9183d2a867e803a83ce215205dc
+          ref: c423dd3841d4c1ae933e01322d920bbd2f4ca313
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
         working-directory: source
         shell: bash
         if: runner.os != 'Windows'
-        run: test "$(git rev-parse HEAD)" = "2ee5e17c9cf6e9183d2a867e803a83ce215205dc"
+        run: test "$(git rev-parse HEAD)" = "c423dd3841d4c1ae933e01322d920bbd2f4ca313"
       - name: Verify canonical target (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '2ee5e17c9cf6e9183d2a867e803a83ce215205dc') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne 'c423dd3841d4c1ae933e01322d920bbd2f4ca313') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         working-directory: source
         shell: bash
@@ -82,4 +82,4 @@ jobs:
         if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
-# Verification is pinned to the canonical TFTP/NTP implementation checkpoint.
+# Verification is pinned to the corrected canonical TFTP/NTP implementation checkpoint.
