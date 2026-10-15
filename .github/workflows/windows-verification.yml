@@ -82,7 +82,7 @@ jobs:
       - name: Real network runtime tests
         working-directory: source
         shell: bash
-        run: cargo test -p one-core --features real-network --lib --all-targets
+        run: cargo test -p one-core --features real-network --all-targets
       - name: Offline verification
         working-directory: source
         shell: bash
