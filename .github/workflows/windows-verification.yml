@@ -22,21 +22,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: a6eca7af48b9ef347bc07ca308c4ba229b0b360c
+          ref: adab78c7f0b7a097dd80df9f189d60ff9f8fe4f8
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
         working-directory: source
         shell: bash
         if: runner.os != 'Windows'
-        run: test "$(git rev-parse HEAD)" = "a6eca7af48b9ef347bc07ca308c4ba229b0b360c"
+        run: test "$(git rev-parse HEAD)" = "adab78c7f0b7a097dd80df9f189d60ff9f8fe4f8"
       - name: Verify canonical target (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne 'a6eca7af48b9ef347bc07ca308c4ba229b0b360c') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne 'adab78c7f0b7a097dd80df9f189d60ff9f8fe4f8') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         working-directory: source
         shell: bash
@@ -82,4 +82,4 @@ jobs:
         if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
-# Verification is pinned to the canonical network runtime clippy-fix checkpoint.
+# Verification is pinned to the canonical merged network runtime checkpoint.
