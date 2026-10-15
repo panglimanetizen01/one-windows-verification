@@ -17,14 +17,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: b3f39b5c79d78a584d5403aaedd1807dd3c2d93c
+          ref: 69c4918e6845fdbbd79495b3fa2c59798831bce0
           path: source
       - name: Verify canonical target
         shell: pwsh
         working-directory: source
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne 'b3f39b5c79d78a584d5403aaedd1807dd3c2d93c') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne '69c4918e6845fdbbd79495b3fa2c59798831bce0') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         shell: pwsh
         working-directory: source
