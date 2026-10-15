@@ -85,3 +85,4 @@ jobs:
         run: .\tools\verify_offline.ps1
 
 # Verification is pinned to the POP3/IMAP implementation checkpoint.
+# The canonical source is always read-only from this mirror.
