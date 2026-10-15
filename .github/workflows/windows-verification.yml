@@ -1,0 +1,36 @@
+name: One Windows Verification
+
+on:
+  push:
+    branches: [ verification ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-verification:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        shell: pwsh
+        run: |
+          rustc --version
+          cargo --version
+          python --version
+      - name: Contract artifacts
+        shell: pwsh
+        run: python tools/check_contract.py
+      - name: Build
+        shell: pwsh
+        run: cargo build --workspace --all-targets
+      - name: Clippy
+        shell: pwsh
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Tests
+        shell: pwsh
+        run: cargo test --workspace --all-targets
+      - name: Offline verification
+        shell: pwsh
+        run: .\tools\verify_offline.ps1
