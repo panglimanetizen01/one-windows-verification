@@ -13,24 +13,42 @@ jobs:
     runs-on: windows-2025
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout canonical One source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: b3f39b5c79d78a584d5403aaedd1807dd3c2d93c
+          path: source
+      - name: Verify canonical target
+        shell: pwsh
+        working-directory: source
+        run: |
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne 'b3f39b5c79d78a584d5403aaedd1807dd3c2d93c') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         shell: pwsh
+        working-directory: source
         run: |
           rustc --version
           cargo --version
           python --version
       - name: Contract artifacts
         shell: pwsh
+        working-directory: source
         run: python tools/check_contract.py
       - name: Build
         shell: pwsh
+        working-directory: source
         run: cargo build --workspace --all-targets
       - name: Clippy
         shell: pwsh
+        working-directory: source
         run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Tests
         shell: pwsh
+        working-directory: source
         run: cargo test --workspace --all-targets
       - name: Offline verification
         shell: pwsh
+        working-directory: source
         run: .\tools\verify_offline.ps1
