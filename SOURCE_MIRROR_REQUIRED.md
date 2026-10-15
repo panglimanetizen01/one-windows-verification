@@ -1,0 +1,1 @@
+The verification source must be an exact mirror of canonical `panglimanetizen01/one` at commit `b3f39b5c79d78a584d5403aaedd1807dd3c2d93c`. This repository must not be used as a substitute semantic implementation.
