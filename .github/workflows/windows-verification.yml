@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: f4675547b68eaed89c7a6a059be61e2d96d4c0cb
+          ref: 78ffe88d5c287bd8e896cfc9817143d4d6fd15c0
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
@@ -31,14 +31,14 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           actual="$(git rev-parse HEAD)"
-          test "$actual" = "f4675547b68eaed89c7a6a059be61e2d96d4c0cb"
+          test "$actual" = "78ffe88d5c287bd8e896cfc9817143d4d6fd15c0"
       - name: Verify canonical target (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne 'f4675547b68eaed89c7a6a059be61e2d96d4c0cb') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne '78ffe88d5c287bd8e896cfc9817143d4d6fd15c0') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         working-directory: source
         shell: bash
@@ -85,4 +85,4 @@ jobs:
         if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
-# Verification is pinned to the final canonical documentation lineage.
+# Verification is pinned to the current canonical One Network foundation checkpoint.
