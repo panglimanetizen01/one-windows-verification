@@ -22,39 +22,31 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 903035e3041f64291bc8f1ecee70a767f6844d90
+          ref: 58ad895a96ccfed4fe75a542bdf6e2d0cff666b0
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
         working-directory: source
         shell: bash
         if: runner.os != 'Windows'
-        run: |
-          actual="$(git rev-parse HEAD)"
-          test "$actual" = "903035e3041f64291bc8f1ecee70a767f6844d90"
+        run: test "$(git rev-parse HEAD)" = "58ad895a96ccfed4fe75a542bdf6e2d0cff666b0"
       - name: Verify canonical target (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '903035e3041f64291bc8f1ecee70a767f6844d90') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne '58ad895a96ccfed4fe75a542bdf6e2d0cff666b0') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         working-directory: source
         shell: bash
         if: runner.os != 'Windows'
-        run: |
-          rustc --version
-          cargo --version
-          python3 --version
+        run: rustc --version && cargo --version && python3 --version
       - name: Toolchain (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
-        run: |
-          rustc --version
-          cargo --version
-          python --version
+        run: rustc --version; cargo --version; python --version
       - name: Contract artifacts
         working-directory: source
         shell: bash
@@ -65,36 +57,12 @@ jobs:
         shell: pwsh
         if: runner.os == 'Windows'
         run: python tools/check_contract.py
-      - name: Build with diagnostic capture
+      - name: Build
         working-directory: source
-        shell: bash
-        run: |
-          set +e
-          cargo build --workspace --all-targets > build.log 2>&1
-          status=$?
-          cat build.log
-          exit $status
-      - name: Upload build diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-diagnostics-${{ matrix.os }}
-          path: source/build.log
-      - name: Clippy with diagnostic capture
+        run: cargo build --workspace --all-targets
+      - name: Clippy
         working-directory: source
-        shell: bash
-        run: |
-          set +e
-          cargo clippy --workspace --all-targets -- -D warnings > clippy.log 2>&1
-          status=$?
-          cat clippy.log
-          exit $status
-      - name: Upload clippy diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: clippy-diagnostics-${{ matrix.os }}
-          path: source/clippy.log
+        run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Tests
         working-directory: source
         run: cargo test --workspace --all-targets
@@ -113,4 +81,4 @@ jobs:
         if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
-# Verification is pinned to the canonical One Network runtime checkpoint.
+# Verification is pinned to the canonical network-protocol registry checkpoint.
