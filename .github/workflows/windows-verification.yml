@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 012e5111168f36ab55a67abfd8bf74b56d14e713
+          ref: b8ac1d20a4ae6bd0464b9a86fb78396e8fb66056
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
@@ -31,14 +31,14 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           actual="$(git rev-parse HEAD)"
-          test "$actual" = "012e5111168f36ab55a67abfd8bf74b56d14e713"
+          test "$actual" = "b8ac1d20a4ae6bd0464b9a86fb78396e8fb66056"
       - name: Verify canonical target (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '012e5111168f36ab55a67abfd8bf74b56d14e713') { throw "canonical commit mismatch: $actual" }
+          if ($actual -ne 'b8ac1d20a4ae6bd0464b9a86fb78396e8fb66056') { throw "canonical commit mismatch: $actual" }
       - name: Toolchain
         working-directory: source
         shell: bash
