@@ -18,6 +18,7 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: 69c4918e6845fdbbd79495b3fa2c59798831bce0
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Verify canonical target
         shell: pwsh
