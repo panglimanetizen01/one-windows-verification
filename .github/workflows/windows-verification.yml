@@ -2,7 +2,7 @@ name: One Cross-Platform Verification
 
 on:
   push:
-    branches: [ verification ]
+    branches: [ verification, verify/p0-dba4fad-20261016 ]
   pull_request:
     branches: [ verification ]
   workflow_dispatch:
