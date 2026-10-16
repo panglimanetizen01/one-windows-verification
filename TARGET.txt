@@ -1,2 +1,2 @@
 canonical=panglimanetizen01/one
-commit=dba4fad49854952e256ae41744f57f93e39167a8
+commit=1a302f9dd710936f62d57f60e8408ac9ff02fa07
