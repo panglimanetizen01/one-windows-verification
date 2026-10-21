@@ -72,6 +72,9 @@ jobs:
       - name: Build
         working-directory: source
         run: cargo build --workspace --all-targets
+      - name: AST contract regression tests
+        working-directory: source
+        run: cargo test -p one-core ast_contract_tests
       - name: Clippy
         working-directory: source
         shell: bash
