@@ -51,6 +51,8 @@ jobs:
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Install cross-compilers (Ubuntu)
         if: runner.os != 'Windows'
         shell: bash
