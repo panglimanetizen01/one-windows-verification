@@ -57,6 +57,9 @@ jobs:
       - name: Source-level checked integer remainder integration tests
         working-directory: source
         run: cargo test -p one-core --test stdlib_builtins checked_integer_remainder_runs_through_the_canonical_pipeline
+      - name: Source-level case conversion and numeric integration tests
+        working-directory: source
+        run: cargo test -p one-core --test stdlib_builtins case_conversion_and_numeric_builtins_execute_through_the_canonical_pipeline
       - name: Standard-library lint
         working-directory: source
         run: cargo clippy -p one-core --all-targets -- -D warnings
