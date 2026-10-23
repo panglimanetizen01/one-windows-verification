@@ -87,7 +87,7 @@ jobs:
       - name: Install base tools
         run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git python3 build-essential pkg-config clang mingw-w64 openjdk-17-jdk
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git unzip python3 build-essential pkg-config clang mingw-w64 openjdk-17-jdk
       - uses: actions/checkout@v4
       - name: Read canonical target
         id: canonical
