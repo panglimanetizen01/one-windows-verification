@@ -1,0 +1,155 @@
+name: One Cross-Platform Verification
+
+on:
+  push:
+    branches: [ verification ]
+  pull_request:
+    branches: [ verification ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: one-cross-platform-v2-${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  verification:
+    name: verify (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read canonical target
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
+      - name: Checkout canonical One source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.canonical.outputs.ref }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify canonical target
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - name: Verify canonical target (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: |
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Windows cross-compiler
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
+      - name: Install Linux cross-compilers and Android NDK
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          sudo apt-get install -y --no-install-recommends clang gcc-mingw-w64-x86-64
+          set +o pipefail
+          yes | sdkmanager --licenses
+          set -o pipefail
+          sdkmanager --install "ndk;27.2.12479018"
+          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
+          cat > "$RUNNER_TEMP/one-windows-compiler" <<'WRAPPER'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          args=()
+          for arg in "$@"; do
+            if [[ "$arg" != "--target=x86_64-w64-windows-gnu" ]]; then args+=("$arg"); fi
+          done
+          exec x86_64-w64-mingw32-gcc "${args[@]}"
+          WRAPPER
+          chmod +x "$RUNNER_TEMP/one-windows-compiler"
+          echo "ONE_WINDOWS_CLANG=$RUNNER_TEMP/one-windows-compiler" >> "$GITHUB_ENV"
+      - name: Install Android NDK (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          sdkmanager --install "ndk;27.2.12479018"
+          if ($LASTEXITCODE -ne 0) { throw "Android NDK installation failed" }
+          $clang = Join-Path $env:ANDROID_HOME "ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe"
+          "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
+      - name: Configure available compiler overrides (Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          command -v clang
+          command -v x86_64-w64-mingw32-gcc
+      - name: Configure available compiler overrides (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
+      - name: Toolchain
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: rustc --version && cargo --version && python3 --version
+      - name: Toolchain (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: rustc --version; cargo --version; python --version
+      - name: Contract artifacts
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: python3 tools/check_contract.py
+      - name: Contract artifacts (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: python tools/check_contract.py
+      - name: Build
+        working-directory: source
+        run: cargo build --workspace --all-targets
+      - name: AST contract regression tests
+        working-directory: source
+        run: cargo test -p one-core ast_contract_tests
+      - name: Clippy
+        working-directory: source
+        shell: bash
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Tests
+        working-directory: source
+        run: cargo test --workspace --all-targets
+      - name: Real network runtime tests
+        working-directory: source
+        shell: bash
+        run: cargo test -p one-core --features real-network --all-targets
+      - name: Offline verification
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: bash tools/verify_offline.sh
+      - name: Offline verification (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: .\tools\verify_offline.ps1
+
+# Exact source target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
