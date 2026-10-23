@@ -1,0 +1,95 @@
+name: ONE Android AArch64 Native Runtime Verification
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/android-native-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-aarch64-runtime:
+    name: Android AArch64 ELF build and execute
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@v4
+
+      - name: Read canonical source SHA
+        id: target
+        shell: bash
+        run: echo "sha=$(tr -d '\r\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout canonical ONE source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+
+      - name: Verify exact source SHA
+        working-directory: source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: source
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK, emulator, and ARM64 system image
+        shell: bash
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0" "emulator" "system-images;android-35;google_apis;arm64-v8a" "ndk;27.2.12479018"
+          clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          test -x "$clang"
+          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
+          echo "ONE_ANDROID_ADB=$ANDROID_HOME/platform-tools/adb" >> "$GITHUB_ENV"
+
+      - name: Create Android ARM64 emulator
+        shell: bash
+        run: |
+          echo "no" | avdmanager create avd --force -n one-android-arm64 -k "system-images;android-35;google_apis;arm64-v8a" --device pixel_2
+
+      - name: Boot Android ARM64 emulator
+        shell: bash
+        run: |
+          nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel off > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
+          adb wait-for-device
+          booted=""
+          for attempt in $(seq 1 60); do
+            booted="$(adb shell getprop sys.boot_completed | tr -d '\r')"
+            if [ "$booted" = "1" ]; then break; fi
+            sleep 5
+          done
+          test "$booted" = "1"
+          abi="$(adb shell getprop ro.product.cpu.abi | tr -d '\r')"
+          echo "Android emulator ABI: $abi"
+          test "$abi" = "arm64-v8a"
+          adb shell id
+
+      - name: Run Android ELF build-and-execute regression
+        working-directory: source
+        shell: bash
+        run: cargo test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
+
+      - name: Upload emulator diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-android-emulator-diagnostics
+          path: |
+            ${{ runner.temp }}/one-android-emulator.log
+            ${{ runner.temp }}/android-sdk
+          if-no-files-found: ignore
