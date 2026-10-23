@@ -70,7 +70,17 @@ jobs:
           set -o pipefail
           sdkmanager --install "ndk;27.2.12479018"
           echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
-          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
+          cat > "$RUNNER_TEMP/one-windows-compiler" <<'WRAPPER'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          args=()
+          for arg in "$@"; do
+            if [[ "$arg" != "--target=x86_64-w64-windows-gnu" ]]; then args+=("$arg"); fi
+          done
+          exec x86_64-w64-mingw32-gcc "${args[@]}"
+          WRAPPER
+          chmod +x "$RUNNER_TEMP/one-windows-compiler"
+          echo "ONE_WINDOWS_CLANG=$RUNNER_TEMP/one-windows-compiler" >> "$GITHUB_ENV"
       - name: Install Android NDK (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
