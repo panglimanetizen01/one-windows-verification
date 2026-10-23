@@ -59,6 +59,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang mingw-w64
+          set +o pipefail
+          yes | sdkmanager --licenses
+          set -o pipefail
           sdkmanager --install "ndk;27.2.12479018"
           echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
           echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
