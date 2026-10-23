@@ -51,6 +51,9 @@ jobs:
       - name: Source-level UTC formatter integration tests
         working-directory: source
         run: cargo test -p one-core --test stdlib_builtins unix_timestamp_formatter_runs_through_the_canonical_pipeline
+      - name: Source-level text prefix and suffix integration tests
+        working-directory: source
+        run: cargo test -p one-core --test stdlib_builtins text_prefix_and_suffix_builtins_execute_through_the_canonical_pipeline
       - name: Standard-library lint
         working-directory: source
         run: cargo clippy -p one-core --all-targets -- -D warnings
