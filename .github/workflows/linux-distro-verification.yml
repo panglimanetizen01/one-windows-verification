@@ -43,33 +43,6 @@ jobs:
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-      - uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools
-      - name: Install native target toolchains
-        shell: bash
-        run: |
-          sudo apt-get install -y --no-install-recommends gcc-mingw-w64-x86-64
-          set +o pipefail
-          yes | sdkmanager --licenses
-          set -o pipefail
-          sdkmanager --install "ndk;27.2.12479018"
-          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
-          cat > "$RUNNER_TEMP/one-windows-compiler" <<'WRAPPER'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          args=()
-          for arg in "$@"; do
-            if [[ "$arg" != "--target=x86_64-w64-windows-gnu" ]]; then args+=("$arg"); fi
-          done
-          exec x86_64-w64-mingw32-gcc "${args[@]}"
-          WRAPPER
-          chmod +x "$RUNNER_TEMP/one-windows-compiler"
-          echo "ONE_WINDOWS_CLANG=$RUNNER_TEMP/one-windows-compiler" >> "$GITHUB_ENV"
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
@@ -101,7 +74,7 @@ jobs:
       - name: Install base tools
         run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git unzip python3 build-essential pkg-config clang gcc-mingw-w64-x86-64 openjdk-17-jdk
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git python3 build-essential pkg-config
       - uses: actions/checkout@v4
       - name: Read canonical target
         id: canonical
@@ -122,30 +95,6 @@ jobs:
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
-      - name: Configure Java 17
-        run: echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> "$GITHUB_ENV"
-      - uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools
-      - name: Install Android NDK
-        shell: bash
-        run: |
-          set +o pipefail
-          yes | sdkmanager --licenses
-          set -o pipefail
-          sdkmanager --install "ndk;27.2.12479018"
-          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
-          cat > "$RUNNER_TEMP/one-windows-compiler" <<'WRAPPER'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          args=()
-          for arg in "$@"; do
-            if [[ "$arg" != "--target=x86_64-w64-windows-gnu" ]]; then args+=("$arg"); fi
-          done
-          exec x86_64-w64-mingw32-gcc "${args[@]}"
-          WRAPPER
-          chmod +x "$RUNNER_TEMP/one-windows-compiler"
-          echo "ONE_WINDOWS_CLANG=$RUNNER_TEMP/one-windows-compiler" >> "$GITHUB_ENV"
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
