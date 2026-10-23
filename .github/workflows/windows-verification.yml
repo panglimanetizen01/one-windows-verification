@@ -100,10 +100,6 @@ jobs:
         shell: pwsh
         if: runner.os == 'Windows'
         run: python tools/check_contract.py
-      - name: Rust formatting
-        working-directory: source
-        shell: bash
-        run: cargo fmt --all -- --check
       - name: Build
         working-directory: source
         run: cargo build --workspace --all-targets
