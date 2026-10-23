@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: one-linux-distro-${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   ubuntu:
     name: Ubuntu ${{ matrix.version }}
