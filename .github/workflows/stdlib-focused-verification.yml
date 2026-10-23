@@ -48,6 +48,9 @@ jobs:
       - name: UTC formatter unit and calendar-boundary tests
         working-directory: source
         run: cargo test -p one-core --lib unix_seconds_format_as_valid_bounded_gregorian_utc_timestamps
+      - name: JSON serializer byte-budget boundary tests
+        working-directory: source
+        run: cargo test -p one-core --lib json_serializer_enforces_the_utf8_output_byte_limit
       - name: Source-level UTC formatter integration tests
         working-directory: source
         run: cargo test -p one-core --test stdlib_builtins unix_timestamp_formatter_runs_through_the_canonical_pipeline
