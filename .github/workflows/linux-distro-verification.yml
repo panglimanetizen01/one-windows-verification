@@ -1,0 +1,118 @@
+name: ONE Linux Distro Verification
+
+on:
+  push:
+    branches: [ verification ]
+  pull_request:
+    branches: [ verification ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: one-linux-distro-v2-${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  ubuntu:
+    name: Ubuntu ${{ matrix.version }}
+    runs-on: ubuntu-${{ matrix.version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["24.04"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read canonical target
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.canonical.outputs.ref }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify exact source SHA
+        working-directory: source
+        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Contract checks
+        working-directory: source
+        run: python3 tools/check_contract.py
+      - name: Build
+        working-directory: source
+        run: cargo build --workspace --all-targets
+      - name: Clippy
+        working-directory: source
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Workspace tests (native distro; target-toolchain cases covered separately)
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --workspace --all-targets -- --skip windows_x86_64_target_mempertahankan_build_native --skip android_target_explicit_mempertahankan_build_native --skip windows_x86_64_dapat_membangun_artifact_native
+      - name: Real network tests
+        working-directory: source
+        run: cargo test -p one-core --features real-network --all-targets
+
+  debian:
+    name: Debian 12 container
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:12
+    steps:
+      - name: Install base tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git python3 build-essential pkg-config
+      - uses: actions/checkout@v4
+      - name: Read canonical target
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.canonical.outputs.ref }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify exact source SHA
+        working-directory: source
+        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Contract checks
+        working-directory: source
+        run: python3 tools/check_contract.py
+      - name: Build
+        working-directory: source
+        run: cargo build --workspace --all-targets
+      - name: Clippy
+        working-directory: source
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Workspace tests
+        working-directory: source
+        run: cargo test --workspace --all-targets
+      - name: Real network tests
+        working-directory: source
+        run: cargo test -p one-core --features real-network --all-targets
