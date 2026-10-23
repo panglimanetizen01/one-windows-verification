@@ -1,4 +1,5 @@
 name: ONE Linux Distro Verification
+# Keep this workflow in sync with the default-branch definition so runs use the latest matrix contract.
 
 on:
   push:
