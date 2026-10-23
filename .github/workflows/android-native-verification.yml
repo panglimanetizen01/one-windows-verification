@@ -30,6 +30,7 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
       - name: Verify exact source SHA
