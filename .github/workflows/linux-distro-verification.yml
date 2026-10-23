@@ -90,7 +90,7 @@ jobs:
           path: source
       - name: Verify exact source SHA
         working-directory: source
-        run: test "$(git -C source rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
