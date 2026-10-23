@@ -43,8 +43,6 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - name: Configure Java 17
-        run: echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> "$GITHUB_ENV"
       - uses: android-actions/setup-android@v3
         with:
           packages: platform-tools
@@ -110,6 +108,8 @@ jobs:
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - name: Configure Java 17
+        run: echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> "$GITHUB_ENV"
       - uses: android-actions/setup-android@v3
         with:
           packages: platform-tools
