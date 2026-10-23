@@ -1,0 +1,56 @@
+name: ONE Focused Standard Library Verification
+
+on:
+  push:
+    branches: [ verification ]
+    paths:
+      - "CANONICAL_COMMIT.txt"
+      - ".github/workflows/stdlib-focused-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: one-stdlib-focused-v2-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  stdlib:
+    name: UTC formatter and stdlib regressions (canonical source SHA)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read canonical source SHA
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.canonical.outputs.ref }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify exact source SHA
+        working-directory: source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: source
+      - name: UTC formatter unit and calendar-boundary tests
+        working-directory: source
+        run: cargo test -p one-core --lib unix_seconds_format_as_valid_bounded_gregorian_utc_timestamps
+      - name: Source-level UTC formatter integration tests
+        working-directory: source
+        run: cargo test -p one-core --test stdlib_builtins unix_timestamp_formatter_runs_through_the_canonical_pipeline
+      - name: Standard-library lint
+        working-directory: source
+        run: cargo clippy -p one-core --all-targets -- -D warnings
