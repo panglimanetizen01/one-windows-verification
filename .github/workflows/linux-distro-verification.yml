@@ -36,19 +36,6 @@ jobs:
           ref: ${{ steps.canonical.outputs.ref }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
-      - uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools
-      - name: Install native target toolchains
-        shell: bash
-        run: |
-          sudo apt-get install -y mingw-w64
-          set +o pipefail
-          yes | sdkmanager --licenses
-          set -o pipefail
-          sdkmanager --install "ndk;27.2.12479018"
-          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
-          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
@@ -58,6 +45,7 @@ jobs:
       - name: Install native target toolchains
         shell: bash
         run: |
+          sudo apt-get install -y mingw-w64
           set +o pipefail
           yes | sdkmanager --licenses
           set -o pipefail
@@ -116,6 +104,18 @@ jobs:
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Android NDK
+        shell: bash
+        run: |
+          set +o pipefail
+          yes | sdkmanager --licenses
+          set -o pipefail
+          sdkmanager --install "ndk;27.2.12479018"
+          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
+          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
