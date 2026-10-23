@@ -79,7 +79,7 @@ jobs:
       - name: Install base tools
         run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git python3 build-essential pkg-config
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git python3 build-essential pkg-config clang
       - uses: actions/checkout@v4
       - name: Read canonical target
         id: canonical
