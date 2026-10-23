@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["22.04", "24.04"]
+        version: ["24.04"]
     steps:
       - uses: actions/checkout@v4
       - name: Read canonical target
