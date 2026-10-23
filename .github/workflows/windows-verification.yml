@@ -64,7 +64,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          sudo apt-get install -y clang mingw-w64
+          sudo apt-get install -y --no-install-recommends clang gcc-mingw-w64-x86-64
           set +o pipefail
           yes | sdkmanager --licenses
           set -o pipefail
