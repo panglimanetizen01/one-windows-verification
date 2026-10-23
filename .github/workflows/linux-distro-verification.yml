@@ -118,6 +118,7 @@ jobs:
         run: |
           set -euo pipefail
           cargo test --workspace --all-targets -- --skip windows_x86_64_target_mempertahankan_build_native --skip android_target_explicit_mempertahankan_build_native --skip windows_x86_64_dapat_membangun_artifact_native
-      - name: Real network tests
+      - name: Real network tests (native distro; target-toolchain case covered separately)
         working-directory: source
-        run: cargo test -p one-core --features real-network --all-targets
+        shell: bash
+        run: cargo test -p one-core --features real-network --all-targets -- --skip windows_x86_64_dapat_membangun_artifact_native
