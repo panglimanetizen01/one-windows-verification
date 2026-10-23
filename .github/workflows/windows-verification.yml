@@ -49,6 +49,10 @@ jobs:
         run: |
           $actual = (git rev-parse HEAD).Trim()
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Install Windows cross-compiler
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
@@ -56,18 +60,36 @@ jobs:
           msystem: MINGW64
           update: true
           install: mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
+      - name: Install Linux cross-compilers and Android NDK
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          sudo apt-get install -y clang mingw-w64
+          set +o pipefail
+          yes | sdkmanager --licenses
+          set -o pipefail
+          sdkmanager --install "ndk;27.2.12479018"
+          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
+          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
+      - name: Install Android NDK (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          set +e
+          sdkmanager --install "ndk;27.2.12479018"
+          if ($LASTEXITCODE -ne 0) { throw "Android NDK installation failed" }
+          $clang = Join-Path $env:ANDROID_HOME "ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe"
+          "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
       - name: Configure available compiler overrides (Linux)
         if: runner.os != 'Windows'
         shell: bash
         run: |
           command -v clang
-          echo "ONE_ANDROID_CLANG=clang" >> "$GITHUB_ENV"
-          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
+          command -v x86_64-w64-mingw32-gcc
       - name: Configure available compiler overrides (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          "ONE_ANDROID_CLANG=clang" >> $env:GITHUB_ENV
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
       - name: Toolchain
         working-directory: source
