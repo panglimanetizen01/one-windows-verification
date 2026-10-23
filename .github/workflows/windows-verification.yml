@@ -75,7 +75,6 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          set +e
           sdkmanager --install "ndk;27.2.12479018"
           if ($LASTEXITCODE -ne 0) { throw "Android NDK installation failed" }
           $clang = Join-Path $env:ANDROID_HOME "ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe"
