@@ -49,36 +49,25 @@ jobs:
         run: |
           $actual = (git rev-parse HEAD).Trim()
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools
-      - name: Install cross-compilers (Ubuntu)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang mingw-w64
-          set +o pipefail
-          yes | sdkmanager --licenses
-          set -o pipefail
-          sdkmanager --install "ndk;27.2.12479018"
-          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
-          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
-      - name: Install cross-compilers (Windows)
+      - name: Install Windows cross-compiler
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
           install: mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
-      - name: Install Android NDK (Windows)
+      - name: Configure available compiler overrides (Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          command -v clang
+          echo "ONE_ANDROID_CLANG=clang" >> "$GITHUB_ENV"
+          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
+      - name: Configure available compiler overrides (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          sdkmanager --install "ndk;27.2.12479018"
-          $clang = Join-Path $env:ANDROID_HOME "ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe"
-          "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
+          "ONE_ANDROID_CLANG=clang" >> $env:GITHUB_ENV
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
       - name: Toolchain
         working-directory: source
@@ -128,4 +117,4 @@ jobs:
         if: runner.os == 'Windows'
         run: .\tools\verify_offline.ps1
 
-# Verification target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
+# Exact source target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
