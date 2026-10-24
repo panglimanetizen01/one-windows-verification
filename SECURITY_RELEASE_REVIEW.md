@@ -1,7 +1,7 @@
 # ONE v0.1 — Focused Security Release Review
 
 **Reviewed code SHA:** `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`  
-**Current candidate SHA:** `9d5d319b88cbee17b18554cfe7641ec1008ba62a` (ledger/checkpoint arithmetic reconciliation; code under review unchanged)  
+**Current candidate SHA:** `2ead9dba45db4ce4105deaa81720aacc8fcadd6c` (latest commit adds 49 lines of standard-library test coverage only; no production source files changed in that commit)  
 **Review date:** 2026-10-24  
 **Status:** Findings documented; security acceptance remains OPEN  
 **Normative context:** [SECURITY.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/SECURITY.md), [effect/capability contract](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/spec/one-v0.1-effect-capability.md), [Definition of Done](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md)
@@ -52,3 +52,16 @@ This is a focused source review, not a claim of a complete sandbox or a third-pa
 The current candidate source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a` passed the independent cross-platform suite [40086990528](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528), Ubuntu/Debian suite [40086990470](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990470), and focused stdlib/SQLite/provenance suite [40086990463](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990463). These runs provide fresh executable evidence for existing security regression tests; they do not resolve SEC-01 through SEC-04. Android [40086990457](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990457) remains in emulator boot and has no runtime acceptance yet. Canonical CI remains infrastructure-failed with zero steps; see index for exact run links.
 
 Security acceptance remains **OPEN**. This review does not waive the residual risks or mark E4 verified.
+
+
+## 2026-10-24 — security review carried to current candidate
+
+GitHub commit inspection confirms current candidate `2ead9dba45db4ce4105deaa81720aacc8fcadd6c` changes only `crates/one-core/tests/stdlib_builtins.rs` (+49 lines; no production source files changed in this commit). The previously identified security findings therefore remain applicable; this is not a new independent security audit of all code.
+
+Current exact-SHA regression evidence:
+- Focused stdlib / SQLite / package-signature suite [40088230099](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230099): **PASS**.
+- Ubuntu 24.04 + Debian 12 build/Clippy/workspace/network suite [40088230098](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230098): **PASS**.
+- Ubuntu/Windows full workspace suite [40088230116](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116): still running at last check.
+- Android AArch64 ELF runtime [40088230097](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230097): still running at emulator boot; not accepted as runtime evidence.
+
+**Security release acceptance remains NOT PASSED.** SEC-01 through SEC-05 remain open pending threat-model disposition, root/mount and parent-component race boundaries, platform fallback scope, runtime-wide quotas, and canonical CI infrastructure resolution/documented limitation.
