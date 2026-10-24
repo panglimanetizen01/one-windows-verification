@@ -1,4 +1,4 @@
-name: ONE Android AArch64 Native Runtime Verification (x86 software guest TCG)
+name: ONE Android AArch64 Native Runtime Verification (native ARM64 runner)
 
 on:
   push:
@@ -90,12 +90,14 @@ jobs:
 
       - name: Build and execute ELF AArch64 on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          ANDROID_I_WANT_MY_TCG: yes
         with:
           api-level: 35
           target: google_apis
           arch: arm64-v8a
           profile: pixel_2
-          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader -accel auto
+          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader -accel off
           disable-animations: true
           emulator-boot-timeout: 900
           script: |
