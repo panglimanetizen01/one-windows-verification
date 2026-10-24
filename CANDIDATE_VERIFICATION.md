@@ -2,25 +2,27 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `82e249879131323d015a1c93aea4fd986db1b271`  
+**Current source SHA:** `db40fe3be3fb17ff6d1656ecda135cc3d01a0750`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the 82e candidate is undergoing a fresh exact-SHA matrix after ledger/Definition-of-Done reconciliation.
+**Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the db40 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
-## Latest candidate rerun after ledger reconciliation
+## Latest candidate rerun — E1 boundary contracts
 
-Source SHA `82e249879131323d015a1c93aea4fd986db1b271` is the current candidate. These runs were triggered after the ledger and Definition-of-Done evidence were reconciled; pending/running results are not accepted as PASS:
+Current canonical source SHA `db40fe3be3fb17ff6d1656ecda135cc3d01a0750` adds three regression tests for invalid text conversion/replacement/splitting inputs, strict UTC parser forms and full year-range boundaries, checked numeric overflow, and invalid collection inputs. Fresh exact-SHA verification was triggered by pinning this source; no result is accepted until each job completes:
 
-| Gate | Run | Current status |
-|---|---|---|
-| Fixed-weight ledger gate | [40094130574](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40094130574) | FAIL — correctly fails closed: it found the previous index SHA and the required E1/E2/E3/E4/E6 evidence, Android runtime, artifact integrity, canonical release evidence, and other matrix jobs unresolved at evaluation time. A rerun is required after this index update. |
-| Linux distro | [40094130551](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40094130551) | IN PROGRESS at last check |
-| Cross-platform Ubuntu + Windows | [40094130603](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40094130603) | IN PROGRESS at last check |
-| Artifact integrity | [40094130559](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40094130559) | IN PROGRESS at last check |
-| Cargo lockfile bootstrap | [40094130586](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40094130586) | PASS |
-| Focused stdlib/database | [40094130647](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40094130647) | IN PROGRESS at last check |
-| Android AArch64 runtime | [40094130632](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40094130632) | PENDING at last check; ELF execution not proven |
+| Gate | Result |
+|---|---|
+| Cross-platform Ubuntu + Windows | Awaiting fresh run for `db40fe3be3fb17ff6d1656ecda135cc3d01a0750` |
+| Linux distro | Awaiting fresh run |
+| Focused stdlib/database | Awaiting fresh run; includes the new E1 tests through the workspace test suite only if configured to run that integration target |
+| Cargo lockfile | Awaiting fresh run |
+| Candidate artifact integrity | Awaiting fresh run |
+| Android AArch64 ELF runtime | Awaiting fresh run; execution remains unproven |
+| Fixed-weight ledger gate | NOT PASSED until current-SHA evidence is complete; E1/E2/E3/E4/E6 acceptance is not yet recorded |
+
+The previous `82e249879131323d015a1c93aea4fd986db1b271` candidate's cross-platform, Linux distro, focused, and lockfile runs passed, but those results are historical after the E1 test commit and do not certify this source SHA.
 
 ## Current exact-SHA verification
 
