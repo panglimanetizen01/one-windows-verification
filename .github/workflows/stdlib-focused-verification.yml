@@ -87,6 +87,9 @@ jobs:
       - name: SQLite read-only missing-file regression
         working-directory: source
         run: cargo --locked test -p one-core --test database_vertical_slice sqlite_read_query_does_not_create_missing_database_file
+      - name: SQLite NOFOLLOW final-symlink regression
+        working-directory: source
+        run: cargo --locked test -p one-core --lib sqlite_read_only_open_rejects_symlink_even_if_precheck_races
       - name: Built package signing and trusted-publisher verification
         working-directory: source
         run: cargo --locked test -p one-cli --test cli package_signature_cli_authenticates_trusted_publisher_and_detects_tampering -- --exact
