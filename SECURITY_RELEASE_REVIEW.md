@@ -1,6 +1,7 @@
 # ONE v0.1 — Focused Security Release Review
 
-**Review target SHA:** `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`  
+**Reviewed code SHA:** `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`  
+**Current candidate SHA:** `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8` (Definition of Done wording correction only; code under review unchanged)  
 **Review date:** 2026-10-24  
 **Status:** Findings documented; security acceptance remains OPEN  
 **Normative context:** [SECURITY.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/SECURITY.md), [effect/capability contract](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/spec/one-v0.1-effect-capability.md), [Definition of Done](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md)
@@ -39,7 +40,7 @@ This is a focused source review, not a claim of a complete sandbox or a third-pa
 - Focused SQLite/stdlib/provenance regression and Clippy: [40083996493](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083996493) — PASS on the reviewed source SHA.
 - Cross-platform Ubuntu/Windows verification: [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) — **PASS** on the reviewed source SHA; both jobs passed and produced inspected bundles.
 - Ubuntu/Debian distribution verification: [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) — **PASS** on the reviewed source SHA.
-- Android AArch64 ELF runtime: [40084506602](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084506602) — queued for the AVD-home fix on Ubuntu x86_64 with explicit software TCG; not yet accepted.
+- Android AArch64 ELF runtime: [40084595188](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595188) — queued for the AVD-home fix on Ubuntu x86_64 with explicit software TCG; not yet accepted.
 
 ## Decision
 
