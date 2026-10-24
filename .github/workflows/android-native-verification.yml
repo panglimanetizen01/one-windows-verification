@@ -18,7 +18,7 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: Checkout verification harness
@@ -74,6 +74,8 @@ jobs:
           profile: pixel_2
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
+          disable-linux-hw-accel: true
+          emulator-boot-timeout: 900
           script: |
             set -euo pipefail
             cd source
