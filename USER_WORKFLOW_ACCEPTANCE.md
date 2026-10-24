@@ -1,7 +1,7 @@
 # ONE v0.1 — User Workflow Acceptance Review
 
-**Reviewed documentation/code baseline:** source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`  
-**Current source candidate:** `9d5d319b88cbee17b18554cfe7641ec1008ba62a` (ledger/checkpoint arithmetic reconciliation; exact-SHA executable rerun now complete for cross-platform, focused, distro and lockfile workflows)  
+**Reviewed documentation/code baseline:** source SHA `e8156e7d6c0a0f999f24ad00bf670e46f21dc128` (reconciled ledger/DoD candidate)  
+**Current source candidate:** `e8156e7d6c0a0f999f24ad00bf670e46f21dc128` (E5 verified-point reconciliation; exact-SHA cross-platform, focused, distro, lockfile and artifact-integrity workflows passed; Android runtime and overall E1–E6 gate remain open)  
 **Review status:** Manual review complete; exact-SHA cross-platform, focused, distro, lockfile and CLI/docs acceptance passes; final E5 credit pending whole-milestone gate reconciliation  
 **Evidence:** [candidate verification index](https://github.com/panglimanetizen01/one-windows-verification/blob/verification/CANDIDATE_VERIFICATION.md), [cross-platform run 40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236), [focused run 40084595238](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595238), [distro run 40084595259](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595259)
 
@@ -24,9 +24,9 @@
 
 ## Test evidence and limits
 
-At the reviewed baseline SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`, the cross-platform workflow passed CLI smoke tests, contract and user-doc consistency checks, workspace tests, real-network tests, offline verification, and release-bundle generation on Ubuntu and Windows Server 2025. Focused stdlib/SQLite/provenance tests and Ubuntu/Debian distro tests also passed on that SHA.
+At the current candidate SHA `e8156e7d6c0a0f999f24ad00bf670e46f21dc128`, the cross-platform workflow passed CLI smoke tests, contract and user-doc consistency checks, workspace tests, real-network tests, offline verification, and release-bundle generation on Ubuntu and Windows Server 2025. Focused stdlib/SQLite/provenance tests, Ubuntu/Debian distro tests, lockfile bootstrap and artifact integrity also passed on this candidate.
 
-The current source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a` has now passed the cross-platform, focused, distro, and lockfile mirror workflows: [cross-platform 40086990528](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528), [focused 40086990463](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990463), [distro 40086990470](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990470), and [lockfile 40086990479](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990479). Android remains open; these passes do not close E1, E2, E3, E4 or E6.
+The current source SHA `e8156e7d6c0a0f999f24ad00bf670e46f21dc128` has passed the cross-platform, focused, distro, lockfile, and artifact-integrity mirror workflows listed above. Android runtime remains open; these passes do not close E1, E2, E3, E4 or E6.
 
 ## Decision
 
