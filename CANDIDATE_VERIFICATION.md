@@ -2,18 +2,32 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `15e6ac358742b89076f21e079e16aa6ca5a2124a`  
+**Current source SHA:** `a75362fcb9dd7514c1253f661443252122053aa9`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The exact-SHA matrix for `15e6ac358742b89076f21e079e16aa6ca5a2124a` is in progress; E1/E2 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
 
-## Current canonical source revision — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
+## Current canonical source revision — `a75362fcb9dd7514c1253f661443252122053aa9`
 
-The canonical source SHA is pinned in `CANONICAL_COMMIT.txt`. Every workflow must assert this exact source SHA; verifier-repository commits are not source commits.
+This candidate adds the default-parser mapping regression test `mapping_builtins_work_in_default_parser_after_json_construction`. The test creates a mapping via the JSON built-in, then exercises `nilai pemetaan`, `atur pemetaan`, and deterministic JSON output without enabling the experimental mapping grammar. All results below are tied to this exact source SHA.
 
-| Gate | Run | Current exact-SHA result |
+| Gate | Run | Current exact-SHA status |
+|---|---|---|
+| Focused Standard Library/database + package signature | [40106909849](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909849) | In progress; exact SHA checkout verified, test suite has not completed |
+| Cargo lockfile bootstrap | [40106909806](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909806) | In progress |
+| Linux distro conformance | [40106909776](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909776) | In progress |
+| Cross-platform Ubuntu + Windows Server 2025 | [40106909764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909764) | Queued |
+| Candidate artifact integrity | [40106909785](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909785) | In progress |
+| Android AArch64 ELF execution | [40106909801](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909801) | Queued |
+| Fixed-weight ledger gate | [40106909775](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909775) | In progress; this gate is fail-closed and cannot award E1/E2 full credit from scoped test passes |
+
+## Previous exact-SHA candidate — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
+
+The canonical source SHA for this historical matrix was pinned in `CANONICAL_COMMIT.txt`. These results remain valid only for this exact source SHA; verifier-repository commits are not source commits.
+
+| Gate | Run | Previous exact-SHA result |
 |---|---|---|
 | Focused Standard Library/database + source-bound package signature | [40105784848](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784848) | **PASS** — all 26 focused steps succeeded, including E1 boundary regressions, SQLite resource/symlink tests, and CLI package-signature/trusted-publisher/tampering test |
 | Cargo lockfile bootstrap | [40105784758](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784758) | **PASS** — deterministic lockfile generation succeeded |
