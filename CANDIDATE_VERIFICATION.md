@@ -12,7 +12,7 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 
 | Gate | Evidence | Result |
 |---|---|---|
-| Cross-platform Ubuntu + Windows Server 2025 | [Run 40085406746](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406746) | Running on current SHA; do not count until both jobs pass |
+| Cross-platform Ubuntu + Windows Server 2025 | [Run 40085406746](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406746) | Ubuntu job PASS; Windows Server 2025 real-network tests still running; do not count whole matrix yet |
 | Linux distro conformance | [Run 40085406859](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406859) | **PASS** on exact source SHA `f46b95ebdd0e26c5ba17f6acb953538f32401aeb`; Ubuntu 24.04 and Debian 12 passed |
 | Focused stdlib / SQLite / provenance | [Run 40085406818](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406818) | **PASS** on exact source SHA `f46b95ebdd0e26c5ba17f6acb953538f32401aeb`; UTC/JSON/SQLite/provenance, Clippy, and final-symlink NOFOLLOW regression passed |
 | Deterministic Cargo lockfile bootstrap | [Run 40085406783](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406783) | **PASS** on exact source SHA; deterministic Cargo lockfile generated with SHA-256 `284f1186517314c88ac31412c86f09e6418114376e56cd4bb2ae5fd676495c90` |
