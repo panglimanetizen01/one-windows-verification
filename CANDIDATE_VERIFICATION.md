@@ -21,7 +21,7 @@ This candidate contains documentation-only E2 ledger/checkpoint updates based on
 | Cross-platform Ubuntu + Windows Server 2025 | [40108646717](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646717) | **PASS** — Ubuntu and Windows Server 2025 jobs completed successfully |
 | Candidate artifact integrity | [40108646691](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646691) | **PASS** — exact-SHA Linux/Windows bundles discovered; archive digests, embedded manifests, metadata, executable formats validated |
 | Android AArch64 ELF execution | [40108646751](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646751) | **IN PROGRESS** — API 35 arm64 emulator boot has not yet produced an ELF execution result |
-| Fixed-weight ledger gate | [40109106340](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40109106340) | **NOT PASSED** — DoD has 9 unchecked items; E1/E2/E3/E4/E6 full-row acceptance is missing; Android runtime was pending and canonical protected-release evidence is inaccessible with current token permissions |
+| Fixed-weight ledger gate | [40109744699](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40109744699) | **NOT PASSED** — latest gate confirmed 9 unchecked DoD items, E1/E2/E3/E4/E6 full-row acceptance missing, Android runtime still in progress, and canonical protected-release evidence inaccessible with current token permissions |
 
 ## Previous exact-SHA candidate — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
 
