@@ -5,6 +5,7 @@ on:
     branches: [verification]
     paths:
       - ".github/workflows/emit-cargo-lock.yml"
+      - "CANONICAL_COMMIT.txt"
 
 permissions:
   contents: read
