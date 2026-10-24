@@ -130,6 +130,52 @@ jobs:
       - name: Build
         working-directory: source
         run: cargo --locked build --workspace --all-targets
+      - name: Release-mode build
+        working-directory: source
+        run: cargo --locked build --release --workspace --all-targets
+      - name: Package release candidate bundle (Linux)
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p release-bundle
+          cp target/release/one release-bundle/one
+          {
+            printf 'source_sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'target=%s\n' "$(rustc -vV | awk -F': ' '/^host:/{print $2}')"
+            printf 'rustc=%s\n' "$(rustc --version)"
+            printf 'cargo=%s\n' "$(cargo --version)"
+            printf 'cli_version=%s\n' "$(./target/release/one version)"
+          } > release-bundle/BUILD-METADATA.txt
+          (cd release-bundle && sha256sum one > SHA256SUMS)
+      - name: Package release candidate bundle (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -ItemType Directory -Force release-bundle | Out-Null
+          Copy-Item target/release/one.exe release-bundle/one.exe
+          $sourceSha = (git rev-parse HEAD).Trim()
+          $target = (rustc -vV | Select-String '^host:').ToString().Split(':', 2)[1].Trim()
+          $rustcVersion = (rustc --version).Trim()
+          $cargoVersion = (cargo --version).Trim()
+          $cliVersion = (& .\target\release\one.exe version | Out-String).Trim()
+          @(
+            "source_sha=$sourceSha"
+            "target=$target"
+            "rustc=$rustcVersion"
+            "cargo=$cargoVersion"
+            "cli_version=$cliVersion"
+          ) | Set-Content release-bundle/BUILD-METADATA.txt
+          $hash = (Get-FileHash release-bundle/one.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  one.exe" | Set-Content release-bundle/SHA256SUMS
+      - name: Upload release candidate bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-release-candidate-${{ runner.os }}-${{ steps.canonical.outputs.ref }}
+          path: source/release-bundle/*
+          if-no-files-found: error
+          retention-days: 14
       - name: AST contract regression tests
         working-directory: source
         run: cargo --locked test -p one-core ast_contract_tests
