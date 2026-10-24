@@ -62,8 +62,9 @@ jobs:
         run: |
           set -euo pipefail
           license_log="$(mktemp)"
+          yes_log="$(mktemp)"
           set +e
-          yes | sdkmanager --licenses >"$license_log" 2>&1
+          yes 2>"$yes_log" | sdkmanager --licenses >"$license_log" 2>&1
           statuses=("${PIPESTATUS[@]}")
           set -e
           license_status="${statuses[1]}"
@@ -73,7 +74,12 @@ jobs:
             exit "$license_status"
           fi
           if (( yes_status != 0 && yes_status != 141 )); then
-            exit "$yes_status"
+            # macOS reports EPIPE from yes as status 1 rather than 141. Accept
+            # that exact case only when sdkmanager confirms license completion.
+            if ! (( yes_status == 1 )) || ! grep -Fq "Broken pipe" "$yes_log" || ! grep -Fq "All SDK package licenses accepted" "$license_log"; then
+              cat "$yes_log" >&2
+              exit "$yes_status"
+            fi
           fi
           sdkmanager --install "ndk;27.2.12479018"
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -type f -path '*/bin/clang' -print -quit)"
