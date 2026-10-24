@@ -106,7 +106,7 @@ The Linux candidate ZIP from artifact `12557347980` was downloaded and its embed
 The canonical source pin was refreshed from the stale prior target to the current PR head **`2ead9dba45db4ce4105deaa81720aacc8fcadd6c`**. The pin update commit is `5560edbb625e740f3c2c1a67bfedafda225ea104`; that is the verification-mirror commit, not the ONE source SHA.
 
 Fresh workflows were triggered against the pinned source:
-- Cross-platform Ubuntu + Windows Server 2025: [40088230116](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116) — running at last check (Ubuntu release-mode build; Windows build).
+- Cross-platform Ubuntu + Windows Server 2025: [40088230116](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116) — Ubuntu job **PASS**; Windows Release-mode build still running.
 - Ubuntu 24.04 + Debian 12: [40088230098](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230098) — **both jobs PASS**.
 - Focused standard-library / SQLite / package-signature regressions: [40088230099](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230099) — **PASS**.
 - Cargo lockfile bootstrap: [40088230148](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230148) — **PASS**.
@@ -115,3 +115,7 @@ Fresh workflows were triggered against the pinned source:
 All previous workflow results tied to source SHAs other than `2ead9dba45db4ce4105deaa81720aacc8fcadd6c` are historical and do not satisfy final-SHA acceptance. The artifact-inspection workflow still has hard-coded artifact IDs and source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a`; it must be refreshed after the new cross-platform run publishes candidate artifacts. Until then, no artifact-integrity claim is made for the new candidate.
 
 Fixed-weight score remains implementation **91/100 provisional** by row arithmetic, verified **60/100**, release gate **NOT PASSED**. Open acceptance includes the full E1 API scope, protected release-environment signing/trust-store exercise (E2), actual Android AArch64 ELF execution (E3), complete security/threat review and runtime-wide bounds (E4), final exact-SHA doc/tooling acceptance (E5), and the final forensic reconciliation (E6).
+
+### Candidate Linux bundle published for source `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`
+
+Cross-platform run [40088230116](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116) has uploaded Linux candidate artifact [12557424853](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116/artifacts/12557424853), ZIP digest from GitHub artifact metadata `sha256:1a9b889b980b309fb3807471399c5556b83631145d148a8e9cefb2afe135bd09`, size 1,738,835 bytes. Its artifact name embeds the exact source SHA. The Windows candidate bundle has not yet appeared at last check, so paired Linux/Windows artifact-integrity acceptance remains open.
