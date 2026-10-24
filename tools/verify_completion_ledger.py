@@ -72,15 +72,14 @@ REQUIRED_MIRROR_WORKFLOWS = {
 
 
 def github_json(url: str, token: str) -> dict:
-    request = urllib.request.Request(
-        url,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {token}",
-            "X-GitHub-Api-Version": "2022-11-28",
-            "User-Agent": "one-ledger-gate",
-        },
-    )
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "one-ledger-gate",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(request, timeout=20) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -147,7 +146,18 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
     )
     try:
         release_runs = github_json(release_url, source_token).get("workflow_runs", [])
-    except (OSError, ValueError, urllib.error.HTTPError) as exc:
+    except urllib.error.HTTPError as exc:
+        # The canonical repository is public. If a read-only source token lacks
+        # Actions permission (403), retry the public read without credentials.
+        # This only improves evidence visibility; it never turns missing release
+        # evidence into a pass.
+        if exc.code != 403:
+            return errors + [f"cannot query canonical release workflow evidence: {exc}"]
+        try:
+            release_runs = github_json(release_url, "").get("workflow_runs", [])
+        except (OSError, ValueError, urllib.error.HTTPError) as fallback_exc:
+            return errors + [f"cannot query canonical release workflow evidence (token and public fallback): {fallback_exc}"]
+    except (OSError, ValueError) as exc:
         return errors + [f"cannot query canonical release workflow evidence: {exc}"]
 
     matching_release = [
