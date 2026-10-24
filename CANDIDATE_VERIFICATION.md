@@ -2,11 +2,28 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `54f3de667e05075805fcc5cd5dc621b653075667`  
+**Current source SHA:** `25b9b2385281c01280b46589c3bf9346bfdc2ea4`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the 7777 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
+
+## Latest exact-SHA matrix — 2026-10-24 14:22 UTC
+
+**Canonical source SHA:** `25b9b2385281c01280b46589c3bf9346bfdc2ea4` (branch `milestone/100-ecosystem-20261023`; PR #80 remains open/draft/unmerged). All runs below checked out this exact source SHA; the verifier repository's own head SHA is not the canonical source SHA.
+
+| Gate | Run | Exact-SHA result |
+|---|---|---|
+| Focused Standard Library/database | [40102204980](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40102204980) | PASS — focused E1 regression target and `cargo --locked clippy -p one-core --all-targets -- -D warnings` succeeded |
+| Linux distro conformance | [40102204891](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40102204891) | PASS — Ubuntu 24.04 and Debian 12; contract checker, workspace build/tests and Clippy passed |
+| Cargo lockfile bootstrap | [40102204901](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40102204901) | PASS — deterministic lockfile bootstrap on the exact source SHA |
+| Cross-platform Ubuntu + Windows Server 2025 | [40102204904](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40102204904) | PASS — both jobs succeeded, workspace tests and offline checks passed |
+| Candidate artifact integrity | [40102204878](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40102204878) | PASS — exact-SHA Linux/Windows bundles downloaded; archive digests, embedded checksums, build metadata and ELF64/PE32+ headers validated |
+| Android AArch64 ELF execution | [40103088590](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103088590) | IN PROGRESS — switched verifier workflow from API 35 to smaller API 30 arm64 image after the previous emulator boot stalled. No ELF execution result yet |
+| Fixed-weight ledger gate | [40102204973](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40102204973) | NOT PASSED — evaluated before the current-SHA matrix finished; evidence index was stale, 9 DoD items unchecked, E1/E2/E3/E4/E6 not accepted, and canonical protected-release workflow evidence returned 404/403 due token access |
+
+The focused and cross-platform test matrix verifies the documented source-level built-ins (text, collections, integer arithmetic, mappings, JSON, UTC) on the pinned source SHA. It does **not** by itself award full E1 credit while the ledger's broader reusable-standard-library requirement remains marked incomplete. Android is not accepted until the workflow demonstrates actual AArch64 ELF execution and output. The canonical repository's own hosted CI still has the separately documented runner-infrastructure failure; independent mirror evidence is not relabelled as canonical CI.
+
 
 ## Final candidate after ledger/DoD reconciliation
 
