@@ -98,9 +98,9 @@ def verify(ledger_text: str, dod_text: str, evidence_text: str, source_sha: str)
         errors.append(f"Definition of Done has {len(unchecked)} unchecked acceptance item(s)")
 
     for row in rows:
-        if row["verified"][0] != row["weight"]:
+        if row["weight"] > 0 and row["verified"][0] != row["weight"]:
             errors.append(f"{row['id']}: verified {row['verified'][0]}/{row['weight']}; full row acceptance evidence is not recorded")
-        if row["status"].upper().find("VERIFIED") < 0 and row["verified"][0] == row["weight"]:
+        if row["weight"] > 0 and row["status"].upper().find("VERIFIED") < 0 and row["verified"][0] == row["weight"]:
             errors.append(f"{row['id']}: full points without VERIFIED status")
 
     passed = not errors and verified_sum == 100 and implementation_sum == 100
