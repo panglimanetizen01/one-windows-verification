@@ -1,4 +1,4 @@
-name: ONE Android AArch64 Native Runtime Verification
+name: ONE Android AArch64 Native Runtime Verification (ARM64 Linux)
 
 on:
   push:
@@ -18,7 +18,7 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
     steps:
       - name: Checkout verification harness
@@ -41,6 +41,12 @@ jobs:
         working-directory: source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
+
+      - name: Assert native ARM64 Linux host
+        shell: bash
+        run: |
+          uname -a
+          test "$(uname -m)" = "aarch64"
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
