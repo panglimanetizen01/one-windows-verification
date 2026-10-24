@@ -16,6 +16,8 @@ This file is the evidence index for the candidate. The workflows check out the e
 | Full cross-platform verification (Ubuntu and Windows 2025) | [40081549604](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604) | **PASS** on the candidate SHA; Ubuntu and Windows jobs green |
 | Android AArch64 native ELF runtime execution | [40081481013](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081481013) | Running; do not count yet |
 
+**Release bundle evidence:** the passing cross-platform run produced non-expired Linux and Windows release-candidate artifacts named `one-release-candidate-Linux-1a48989f213cd000a1eb3143b97549415b733241` and `one-release-candidate-Windows-1a48989f213cd000a1eb3143b97549415b733241`; see the [run artifacts](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604).
+
 ## Android runner diagnosis and remediation
 
 The prior Android attempt [40080133616](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40080133616) failed before the native test ran: the Android emulator process exited with `HVF error: HV_UNSUPPORTED` / `failed to initialize HVF`, and ADB never saw `emulator-5554`. The verification workflow now adds `-accel off` so QEMU uses software emulation instead of the unsupported HVF path. This change is an infrastructure remediation, not proof that Android runtime acceptance passed; only the actual ELF build, AArch64 header checks, ADB push, and successful execution output can close that gate.
