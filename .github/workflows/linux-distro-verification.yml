@@ -76,6 +76,12 @@ jobs:
     runs-on: ubuntu-24.04
     container:
       image: debian:12
+    env:
+      # GitHub mounts /github/home for the host runner UID; this job executes as
+      # root inside Debian, so keep Git/Rust toolchain state in root's writable home.
+      HOME: /root
+      CARGO_HOME: /root/.cargo
+      RUSTUP_HOME: /root/.rustup
     steps:
       - name: Install base tools
         run: |
