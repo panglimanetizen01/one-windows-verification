@@ -4,6 +4,7 @@ on:
   push:
     branches: [verification]
     paths:
+      - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/candidate-artifact-inspection.yml'
   workflow_dispatch:
 
@@ -15,30 +16,101 @@ jobs:
   inspect-candidate-bundles:
     name: Inspect exact-SHA Linux and Windows candidate bundles
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 55
     env:
       GH_TOKEN: ${{ github.token }}
-      SOURCE_SHA: e8156e7d6c0a0f999f24ad00bf670e46f21dc128
     steps:
-      - name: Download artifact archives through GitHub API
+      - name: Checkout verification harness and read source pin
+        uses: actions/checkout@v4
+      - name: Discover exact-SHA candidate bundles and verify archive digests
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p downloads/linux downloads/windows extracted/linux extracted/windows
-          curl --fail --location --silent --show-error \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12558798925/zip \
-            --output downloads/linux/candidate.zip
-          curl --fail --location --silent --show-error \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12559475545/zip \
-            --output downloads/windows/candidate.zip
-          echo "a34bd413eac30558415c8059c4e6c4ddfdc585dd620a9bfe07b3edfb83403b98  downloads/linux/candidate.zip" | sha256sum --check
-          echo "1ad31e463d2df5f64f8d2b9d85b7361a1777d18989b2e029958012baa0353e55  downloads/windows/candidate.zip" | sha256sum --check
-          unzip -q downloads/linux/candidate.zip -d extracted/linux
-          unzip -q downloads/windows/candidate.zip -d extracted/windows
+          export SOURCE_SHA="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$SOURCE_SHA" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "Invalid canonical source SHA: $SOURCE_SHA" >&2
+            exit 1
+          fi
+          echo "SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          export SOURCE_SHA
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, sys, time, urllib.error, urllib.parse, urllib.request
+
+          owner_repo = "panglimanetizen01/one-windows-verification"
+          token = os.environ["GH_TOKEN"]
+          source_sha = os.environ["SOURCE_SHA"]
+          root = pathlib.Path("downloads")
+          root.mkdir(exist_ok=True)
+
+          def api(url):
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {token}",
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "one-candidate-artifact-integrity",
+              })
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  return json.loads(response.read().decode("utf-8"))
+
+          def pin_for(mirror_sha):
+              url = f"https://api.github.com/repos/{owner_repo}/contents/CANONICAL_COMMIT.txt?ref={mirror_sha}"
+              payload = api(url)
+              import base64
+              return base64.b64decode(payload["content"]).decode("utf-8").strip()
+
+          deadline = time.monotonic() + 45 * 60
+          selected = None
+          while time.monotonic() < deadline:
+              runs = api(f"https://api.github.com/repos/{owner_repo}/actions/runs?branch=verification&per_page=100")["workflow_runs"]
+              matching = []
+              for run in runs:
+                  if run.get("name") != "One Cross-Platform Verification":
+                      continue
+                  if run.get("status") != "completed" or run.get("conclusion") != "success":
+                      continue
+                  try:
+                      if pin_for(run["head_sha"]) == source_sha:
+                          matching.append(run)
+                  except (OSError, ValueError, KeyError, urllib.error.HTTPError) as exc:
+                      print(f"Could not resolve pin for {run.get('head_sha')}: {exc}", file=sys.stderr)
+              if matching:
+                  selected = sorted(matching, key=lambda r: r.get("created_at", ""), reverse=True)[0]
+                  break
+              print(f"Waiting for successful cross-platform bundles for source SHA {source_sha}...")
+              time.sleep(30)
+          if selected is None:
+              raise SystemExit(f"No successful cross-platform run produced candidate bundles for exact source SHA {source_sha} within 45 minutes")
+
+          print(f"Selected cross-platform run {selected['id']} at mirror SHA {selected['head_sha']} for source SHA {source_sha}")
+          artifacts = api(f"https://api.github.com/repos/{owner_repo}/actions/runs/{selected['id']}/artifacts?per_page=100")["artifacts"]
+          for platform in ("Linux", "Windows"):
+              prefix = f"one-release-candidate-{platform}-{source_sha}"
+              found = [a for a in artifacts if a.get("name", "").startswith(prefix) and not a.get("expired")]
+              if len(found) != 1:
+                  raise SystemExit(f"Expected one unexpired {platform} artifact named {prefix}*, found {len(found)}")
+              artifact = found[0]
+              expected_digest = artifact.get("digest", "")
+              if not expected_digest.startswith("sha256:"):
+                  raise SystemExit(f"GitHub artifact metadata has no SHA-256 digest for {artifact['name']}: {expected_digest}")
+              url = f"https://api.github.com/repos/{owner_repo}/actions/artifacts/{artifact['id']}/zip"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {token}",
+                  "Accept": "application/vnd.github+json",
+                  "User-Agent": "one-candidate-artifact-integrity",
+              })
+              with urllib.request.urlopen(req, timeout=120) as response:
+                  data = response.read()
+              actual_digest = "sha256:" + hashlib.sha256(data).hexdigest()
+              if actual_digest != expected_digest:
+                  raise SystemExit(f"{platform} archive digest mismatch: downloaded {actual_digest}, GitHub metadata {expected_digest}")
+              output = root / f"{platform.lower()}-candidate.zip"
+              output.write_bytes(data)
+              print(f"{platform}: artifact_id={artifact['id']} name={artifact['name']}")
+              print(f"{platform}: archive_digest={actual_digest} size={len(data)} bytes")
+          PY
+          mkdir -p extracted/linux extracted/windows
+          unzip -q downloads/linux-candidate.zip -d extracted/linux
+          unzip -q downloads/windows-candidate.zip -d extracted/windows
           find extracted -maxdepth 3 -type f -print | sort
 
       - name: Verify embedded manifests, metadata, and executable formats
@@ -48,10 +120,11 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
+          import os
           import struct
 
           root = Path("extracted")
-          source_sha = "e8156e7d6c0a0f999f24ad00bf670e46f21dc128"
+          source_sha = os.environ["SOURCE_SHA"]
 
           def one_file(folder: Path, name: str) -> Path:
               found = list(folder.rglob(name))
@@ -72,7 +145,7 @@ jobs:
               if missing:
                   raise SystemExit(f"{expected_platform} missing metadata fields: {missing}")
               if metadata["source_sha"] != source_sha:
-                  raise SystemExit(f"{expected_platform} source SHA mismatch: {metadata['source_sha']}")
+                  raise SystemExit(f"{expected_platform} source SHA mismatch: {metadata['source_sha']} != {source_sha}")
               if not metadata["target"].startswith("x86_64-"):
                   raise SystemExit(f"{expected_platform} unexpected target triple: {metadata['target']}")
               if expected_platform == "linux" and "linux" not in metadata["target"]:
