@@ -94,7 +94,7 @@ jobs:
           uname -a
           "$ANDROID_HOME/emulator/emulator" -version
           avdmanager list avd
-          nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -gpu host > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
+          nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -accel off -gpu swiftshader_indirect > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
           if ! timeout 180s adb wait-for-device; then
             cat "$RUNNER_TEMP/one-android-emulator.log" || true
             exit 1
