@@ -101,7 +101,7 @@ jobs:
           sdkmanager --install "emulator" "platform-tools" "system-images;android-30;google_apis;arm64-v8a"
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           mkdir -p "$ANDROID_AVD_HOME"
-          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name one-api30-arm64 --package "system-images;android-30;google_apis;arm64-v8a"
+          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name one-api30-arm64 --package "system-images;android-30;google_apis;arm64-v8a" --device pixel_2
           test -f "$ANDROID_AVD_HOME/one-api35-arm64.ini"
           emulator_bin="$ANDROID_HOME/emulator/emulator"
           test -x "$emulator_bin"
