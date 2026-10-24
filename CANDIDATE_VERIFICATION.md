@@ -16,12 +16,12 @@ This candidate adds the default-parser mapping regression test `mapping_builtins
 | Gate | Run | Current exact-SHA status |
 |---|---|---|
 | Focused Standard Library/database + package signature | [40107005038](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107005038) | **PASS** — 27 steps passed, including the new default-parser mapping API regression, E1 boundary regressions, SQLite resource/symlink tests, and package signature verification |
-| Cargo lockfile bootstrap | [40106909806](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909806) | In progress |
-| Linux distro conformance | [40106909776](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909776) | In progress |
-| Cross-platform Ubuntu + Windows Server 2025 | [40106909764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909764) | Queued |
-| Candidate artifact integrity | [40106909785](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909785) | In progress |
-| Android AArch64 ELF execution | [40106909801](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909801) | Queued |
-| Fixed-weight ledger gate | [40106909775](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909775) | In progress; this gate is fail-closed and cannot award E1/E2 full credit from scoped test passes |
+| Cargo lockfile bootstrap | [40106909806](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909806) | **PASS** — deterministic lockfile generation succeeded |
+| Linux distro conformance | [40106909776](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909776) | **PASS** — Ubuntu 24.04 and Debian 12 workspace/build/test/Clippy/contract/network checks passed |
+| Cross-platform Ubuntu + Windows Server 2025 | [40106909764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909764) | **PASS** — both OS jobs completed successfully, including workspace tests, Clippy, network and offline checks |
+| Candidate artifact integrity | [40106909785](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909785) | **PASS** — exact-SHA Linux/Windows bundle digests, manifests, metadata and executable formats passed |
+| Android AArch64 ELF execution | [40107514339](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107514339) | **PENDING** — workflow now targets required Android API 35 arm64-v8a; no ELF execution result yet |
+| Fixed-weight ledger gate | [40107526055](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107526055) | **NOT PASSED** — E1/E2/E3/E4/E6 remain unaccepted, nine Definition of Done items remain unchecked, Android API 35 run is pending, and protected release evidence cannot be queried with current repository permissions |
 
 ## Previous exact-SHA candidate — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
 
