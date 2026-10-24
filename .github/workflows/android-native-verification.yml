@@ -90,7 +90,6 @@ jobs:
 
       - name: Build and execute ELF AArch64 on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
-        env:
         with:
           api-level: 35
           target: google_apis
