@@ -12,7 +12,7 @@ This file is the evidence index for the candidate. The workflows check out the e
 | Gate | Run | Current evidence |
 |---|---|---|
 | Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40081565281](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081565281) | **PASS** on the candidate SHA |
-| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40081562357](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081562357) | Running; do not count yet |
+| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40081562357](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081562357) | **PASS** on the candidate SHA; both distro jobs green |
 | Full cross-platform verification (Ubuntu and Windows 2025) | [40081549604](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604) | Running; do not count yet |
 | Android AArch64 native ELF runtime execution | [40081481013](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081481013) | Running; do not count yet |
 
