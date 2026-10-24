@@ -1,5 +1,5 @@
-name: ONE Android AArch64 Native Runtime Verification (macOS TCG workaround)
-# Android AArch64 guest on macOS ARM64, with the emulator's injected HVF flag filtered to force software TCG.
+name: ONE Android AArch64 Native Runtime Verification (macOS HVF capability probe)
+# Probe native macOS Hypervisor.Framework on the hosted ARM64 runner; fail with retained diagnostics if nested virtualization is unavailable.
 # Require actual AArch64 ELF execution on the pinned canonical source SHA.
 
 on:
@@ -20,7 +20,7 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    # macOS ARM64 supports the Android AArch64 system image; a QEMU wrapper below strips unsupported nested-HVF activation.
+    # Native Apple Silicon host: test whether this hosted VM actually exposes Hypervisor.Framework to the Android emulator.
     runs-on: macos-15
     timeout-minutes: 60
     steps:
@@ -125,15 +125,11 @@ jobs:
           fi
           if (( tee_status != 0 )); then exit "$tee_status"; fi
 
-      - name: Test QEMU TCG wrapper argument normalization
-        shell: bash
-        run: bash .github/scripts/test-qemu-tcg-wrapper.sh
-
       - name: Boot Android AArch64 emulator with observable diagnostics
         timeout-minutes: 35
         shell: bash
         env:
-          ANDROID_I_WANT_MY_TCG: yes
+          ONE_ANDROID_ALLOW_HVF: yes
         run: |
           set -euo pipefail
           echo "Host architecture: $(uname -m)"
@@ -153,15 +149,10 @@ jobs:
           test -f "$ANDROID_AVD_HOME/one-api35-arm64.ini"
           emulator_bin="$ANDROID_HOME/emulator/emulator"
           test -x "$emulator_bin"
-          # The hosted macOS runner reports HVF as available, but nested HVF fails at QEMU startup.
-          # Android Emulator injects -enable-hvf even with -accel off; filter that QEMU argument so TCG is used.
-          qemu_bin="$ANDROID_HOME/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless"
-          test -x "$qemu_bin"
-          mv "$qemu_bin" "$qemu_bin.real"
-          cp "$GITHUB_WORKSPACE/.github/scripts/qemu-tcg-wrapper.sh" "$qemu_bin"
-          chmod +x "$qemu_bin"
           log="$RUNNER_TEMP/one-android-emulator.log"
-          "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 3072 -cores 4 -gpu off -feature -HVF -accel off -verbose >"$log" 2>&1 &
+          # Do not force TCG or disable HVF here: Android's AArch64 guest requires VM acceleration.
+          # This is a direct capability probe for nested Hypervisor.Framework on the hosted runner.
+          "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 3072 -cores 4 -gpu swiftshader_indirect -verbose >"$log" 2>&1 &
           emulator_pid=$!
           echo "Emulator PID: $emulator_pid"
           echo "Emulator log: $log"
@@ -197,7 +188,6 @@ jobs:
         shell: bash
         working-directory: source
         env:
-          ANDROID_I_WANT_MY_TCG: yes
           ONE_ANDROID_ADB: ${{ env.ONE_ANDROID_ADB }}
         run: |
           set -euo pipefail
