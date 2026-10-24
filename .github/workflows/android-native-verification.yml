@@ -90,7 +90,29 @@ jobs:
           test -x "$clang"
           echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
 
+      - name: Install Android API 35 emulator image with bounded diagnostics
+        timeout-minutes: 20
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Host architecture: $(uname -m)"
+          echo "Host kernel: $(uname -a)"
+          log="$RUNNER_TEMP/one-android-sdkmanager.log"
+          set +e
+          timeout 18m sdkmanager --verbose --install "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a" 2>&1 | tee "$log"
+          statuses=( "${PIPESTATUS[@]}" )
+          set -e
+          sdk_status="${statuses[0]}"
+          tee_status="${statuses[1]}"
+          if (( sdk_status != 0 )); then
+            echo "sdkmanager failed or exceeded its 18-minute limit (exit $sdk_status)." >&2
+            tail -n 240 "$log" >&2 || true
+            exit "$sdk_status"
+          fi
+          if (( tee_status != 0 )); then exit "$tee_status"; fi
+
       - name: Boot Android AArch64 emulator with observable diagnostics
+        timeout-minutes: 35
         shell: bash
         env:
           ANDROID_I_WANT_MY_TCG: yes
@@ -98,7 +120,6 @@ jobs:
           set -euo pipefail
           echo "Host architecture: $(uname -m)"
           echo "Host kernel: $(uname -a)"
-          sdkmanager --install "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a"
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           mkdir -p "$ANDROID_AVD_HOME"
           avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
