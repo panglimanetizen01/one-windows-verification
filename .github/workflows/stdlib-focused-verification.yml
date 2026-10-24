@@ -1,4 +1,5 @@
 name: ONE Focused Standard Library and Database Verification
+# Re-run focused runtime acceptance against the canonical source SHA in CANONICAL_COMMIT.txt.
 
 on:
   push:
