@@ -82,7 +82,7 @@ jobs:
             fi
           fi
           sdkmanager --install "ndk;27.2.12479018"
-          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -type f -path '*/bin/clang' -print -quit)"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/clang' -print -quit)"
           test -n "$clang"
           test -x "$clang"
           echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
