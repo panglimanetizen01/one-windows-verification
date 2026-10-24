@@ -27,7 +27,7 @@ jobs:
       - name: Read canonical source SHA
         id: target
         shell: bash
-        run: echo "sha=$(tr -d '\\r\\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
+        run: echo "sha=$(tr -d '\r\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Checkout canonical ONE source
         uses: actions/checkout@v4
@@ -80,5 +80,5 @@ jobs:
             export ONE_ANDROID_CLANG="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
             export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
             adb devices
-            test "$(adb shell getprop ro.product.cpu.abi | tr -d '\\r')" = "arm64-v8a"
+            test "$(adb shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
             cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
