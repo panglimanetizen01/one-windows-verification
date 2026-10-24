@@ -13,7 +13,7 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 
 **Current canonical source SHA:** `a4a146ae22c6629fe606185481055b667321d203`. This commit updates only the E1 audit checkpoint and fixed-weight ledger evidence note; it does not change runtime code or tests. The successful runs in the historical matrix below are tied to parent SHA `25b9b2385281c01280b46589c3bf9346bfdc2ea4` and must not be treated as exact-SHA acceptance for the current revision.
 
-Fresh exact-SHA runs have been triggered by pinning this SHA. Until each finishes, current-source status is **PENDING / NOT ACCEPTED** for focused stdlib/database, Linux distro, Ubuntu+Windows cross-platform, lockfile bootstrap, candidate artifact integrity, and Android AArch64 runtime. The fixed-weight ledger gate must be rerun after the matrix completes. The global ledger remains 91/100 implementation and 64/100 verified; E1 is still marked partial because its broader stated scope is not fully accepted. Canonical hosted CI infrastructure failures and the protected release-token permission issue remain separate open items. Do not merge PR #80 or publish a release.
+Exact-SHA verification for the current source SHA `a4a146ae22c6629fe606185481055b667321d203` has now completed successfully for the focused, Linux, cross-platform, lockfile and artifact gates. Only Android runtime is still in progress. The fixed-weight ledger gate must be rerun after Android completes, but the global ledger is expected to remain NOT PASSED until the broader E1 scope, E2/E3/E4/E6, nine DoD items and canonical protected-release evidence are accepted. Do not merge PR #80 or publish a release.
 
 ## Historical exact-SHA matrix — source `25b9b2385281c01280b46589c3bf9346bfdc2ea4` (2026-10-24 14:22 UTC)
 
@@ -30,6 +30,19 @@ Fresh exact-SHA runs have been triggered by pinning this SHA. Until each finishe
 | Fixed-weight ledger gate | [40102204973](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40102204973) | NOT PASSED — evaluated before the current-SHA matrix finished; evidence index was stale, 9 DoD items unchecked, E1/E2/E3/E4/E6 not accepted, and canonical protected-release workflow evidence returned 404/403 due token access |
 
 The focused and cross-platform test matrix verifies the documented source-level built-ins (text, collections, integer arithmetic, mappings, JSON, UTC) on the pinned source SHA. It does **not** by itself award full E1 credit while the ledger's broader reusable-standard-library requirement remains marked incomplete. Android is not accepted until the workflow demonstrates actual AArch64 ELF execution and output. The canonical repository's own hosted CI still has the separately documented runner-infrastructure failure; independent mirror evidence is not relabelled as canonical CI.
+
+### Current exact-SHA results — `a4a146ae22c6629fe606185481055b667321d203`
+
+| Gate | Run | Result |
+|---|---|---|
+| Focused Standard Library/database | [40103543035](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103543035) | PASS — 30 workflow steps completed; focused stdlib/database regressions and core Clippy succeeded |
+| Linux distro conformance | [40103543045](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103543045) | PASS — Ubuntu 24.04 and Debian 12; workspace tests, Clippy and contract checks passed |
+| Cargo lockfile bootstrap | [40103542984](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103542984) | PASS |
+| Cross-platform Ubuntu + Windows Server 2025 | [40103543039](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103543039) | PASS — both jobs succeeded; Ubuntu 22 steps, Windows 21 steps |
+| Candidate artifact integrity | [40103542987](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103542987) | PASS — exact source SHA, ZIP digests, embedded manifests, metadata, ELF64 and PE32+ formats validated |
+| Android AArch64 ELF execution | [40103542978](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103542978) | IN PROGRESS at API 30 arm64 emulator boot; no ELF execution result yet |
+| Fixed-weight ledger gate | [40103542993](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40103542993) | FAILED before the matrix completed; stale evidence and pending jobs caused a fail-closed result. Rerun after Android completes; other E1/E2/E4/E6, DoD and canonical release-token gaps still prevent global release acceptance |
+
 
 
 ## Final candidate after ledger/DoD reconciliation
