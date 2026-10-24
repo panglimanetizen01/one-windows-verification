@@ -2,18 +2,28 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `a4a146ae22c6629fe606185481055b667321d203`  
+**Current source SHA:** `15e6ac358742b89076f21e079e16aa6ca5a2124a`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the 7777 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
+**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The exact-SHA matrix for `15e6ac358742b89076f21e079e16aa6ca5a2124a` is in progress; E1/E2 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
 
-## New canonical source revision — documentation checkpoint refresh
+## Current canonical source revision — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
 
-**Current canonical source SHA:** `a4a146ae22c6629fe606185481055b667321d203`. This commit updates only the E1 audit checkpoint and fixed-weight ledger evidence note; it does not change runtime code or tests. The successful runs in the historical matrix below are tied to parent SHA `25b9b2385281c01280b46589c3bf9346bfdc2ea4` and must not be treated as exact-SHA acceptance for the current revision.
+The canonical source SHA is pinned in `CANONICAL_COMMIT.txt`. Every workflow must assert this exact source SHA; verifier-repository commits are not source commits.
 
-Exact-SHA verification for the current source SHA `a4a146ae22c6629fe606185481055b667321d203` has now completed successfully for the focused, Linux, cross-platform, lockfile and artifact gates. Only Android runtime is still in progress. The fixed-weight ledger gate must be rerun after Android completes, but the global ledger is expected to remain NOT PASSED until the broader E1 scope, E2/E3/E4/E6, nine DoD items and canonical protected-release evidence are accepted. Do not merge PR #80 or publish a release.
+| Gate | Run | Current exact-SHA result |
+|---|---|---|
+| Focused Standard Library/database + source-bound package signature | [40105784848](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784848) | **PASS** — all 26 focused steps succeeded, including E1 boundary regressions, SQLite resource/symlink tests, and CLI package-signature/trusted-publisher/tampering test |
+| Cargo lockfile bootstrap | [40105784758](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784758) | **PASS** — deterministic lockfile generation succeeded |
+| Linux distro conformance | [40105784831](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784831) | **PASS** — Ubuntu 24.04 and Debian 12 jobs completed successfully, including contract checks, workspace build/tests, Clippy, and real-network tests |
+| Cross-platform Ubuntu + Windows Server 2025 | [40105784872](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784872) | Ubuntu **PASS**; Windows still running workspace tests/network checks at last inspection |
+| Candidate artifact integrity | [40105784844](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784844) | In progress; waiting for exact-SHA Linux/Windows candidate bundles |
+| Android AArch64 ELF execution | [40105784785](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784785) | In progress at API 30 arm64 emulator boot; no ELF execution result yet |
+| Fixed-weight ledger gate | [40105784763](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40105784763) | **NOT PASSED** — gate evaluated before matrix completion; index was stale, nine DoD items unchecked, E1/E2/E3/E4/E6 unaccepted, and canonical release-workflow evidence could not be queried because the mirror token lacks Actions:read on the private canonical repository |
+
+The focused pass proves only the API/resource-bound tests listed in its executed steps; it does not award the complete E1 row while the broader reusable-standard-library scope remains incomplete. The synthetic-key CLI test verifies signing, trusted-publisher matching, package tampering detection, and source-tree mismatch rejection, but does not prove that the protected `one-release` environment or its secrets are configured. Do not convert these scoped passes into full E1/E2 credit. Rerun the fixed-weight gate after all matrix jobs finish; the gate must remain fail-closed for unaccepted requirements.
 
 ## Historical exact-SHA matrix — source `25b9b2385281c01280b46589c3bf9346bfdc2ea4` (2026-10-24 14:22 UTC)
 
