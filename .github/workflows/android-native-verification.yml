@@ -61,11 +61,12 @@ jobs:
           packages: platform-tools
 
       - name: Install Android NDK
+        timeout-minutes: 22
         shell: bash
         run: |
           set -euo pipefail
-          license_log="$(mktemp)"
-          yes_log="$(mktemp)"
+          license_log="$RUNNER_TEMP/one-android-license.log"
+          yes_log="$RUNNER_TEMP/one-android-license-yes.log"
           set +e
           yes 2>"$yes_log" | sdkmanager --licenses >"$license_log" 2>&1
           statuses=("${PIPESTATUS[@]}")
@@ -74,6 +75,7 @@ jobs:
           yes_status="${statuses[0]}"
           cat "$license_log"
           if (( license_status != 0 )); then
+            cat "$yes_log" >&2 || true
             exit "$license_status"
           fi
           if (( yes_status != 0 && yes_status != 141 )); then
@@ -84,7 +86,19 @@ jobs:
               exit "$yes_status"
             fi
           fi
-          sdkmanager --install "ndk;27.2.12479018"
+          ndk_log="$RUNNER_TEMP/one-android-ndk-install.log"
+          set +e
+          python3 -c 'import subprocess,sys; subprocess.run(sys.argv[1:], timeout=1080, check=True)' sdkmanager --verbose --install "ndk;27.2.12479018" 2>&1 | tee "$ndk_log"
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          ndk_status="${statuses[0]}"
+          tee_status="${statuses[1]}"
+          if (( ndk_status != 0 )); then
+            echo "Android NDK installation failed or exceeded its 18-minute limit (exit $ndk_status)." >&2
+            tail -n 240 "$ndk_log" >&2 || true
+            exit "$ndk_status"
+          fi
+          if (( tee_status != 0 )); then exit "$tee_status"; fi
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/clang' -print -quit)"
           test -n "$clang"
           test -x "$clang"
