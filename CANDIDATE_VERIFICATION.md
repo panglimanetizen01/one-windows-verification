@@ -37,13 +37,13 @@ On the prior candidate SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`, both cros
 
 ## Canonical CI infrastructure
 
-The canonical repo's current-SHA runs failed before executing any steps:
+The canonical repo's current-candidate runs on source SHA `f46b95ebdd0e26c5ba17f6acb953538f32401aeb` again failed before executing any steps:
 
-- [One CI 40084579487](https://github.com/panglimanetizen01/one/actions/runs/40084579487)
-- [Linux distro 40084579475](https://github.com/panglimanetizen01/one/actions/runs/40084579475)
-- [Focused stdlib 40084579490](https://github.com/panglimanetizen01/one/actions/runs/40084579490)
+- [One CI 40085390363](https://github.com/panglimanetizen01/one/actions/runs/40085390363)
+- [Linux distro 40085390311](https://github.com/panglimanetizen01/one/actions/runs/40085390311)
+- [Focused stdlib 40085390350](https://github.com/panglimanetizen01/one/actions/runs/40085390350)
 
-Their jobs have empty `steps: []`; they provide no source build/test evidence. Independent mirror workflows provide executable exact-SHA evidence, but the canonical runner/infrastructure issue remains an open release limitation.
+Every job has empty `steps: []`; they provide no source build/test evidence. Independent mirror workflows provide executable exact-SHA evidence, but the canonical runner/infrastructure issue remains an open release limitation.
 
 ## Android investigation history
 
