@@ -20,7 +20,7 @@ This candidate adds the default-parser mapping regression test `mapping_builtins
 | Linux distro conformance | [40106909776](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909776) | **PASS** — Ubuntu 24.04 and Debian 12 workspace/build/test/Clippy/contract/network checks passed |
 | Cross-platform Ubuntu + Windows Server 2025 | [40106909764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909764) | **PASS** — both OS jobs completed successfully, including workspace tests, Clippy, network and offline checks |
 | Candidate artifact integrity | [40106909785](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909785) | **PASS** — exact-SHA Linux/Windows bundle digests, manifests, metadata and executable formats passed |
-| Android AArch64 ELF execution | [40107514339](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107514339) | **PENDING** — workflow now targets required Android API 35 arm64-v8a; no ELF execution result yet |
+| Android AArch64 ELF execution | [40107885276](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107885276) | **PENDING** — workflow targets Android API 35 arm64-v8a using the minimal system image; no ELF execution result yet |
 | Fixed-weight ledger gate | [40107526055](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107526055) | **NOT PASSED** — E1/E2/E3/E4/E6 remain unaccepted, nine Definition of Done items remain unchecked, Android API 35 run is pending, and protected release evidence cannot be queried with current repository permissions |
 
 ## Previous exact-SHA candidate — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
