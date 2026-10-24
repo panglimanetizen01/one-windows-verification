@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: one-android-runtime-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
@@ -67,18 +71,27 @@ jobs:
           echo "no" | avdmanager create avd --force -n one-android-arm64 -k "system-images;android-35;google_apis;arm64-v8a" --device pixel_2
 
       - name: Boot Android ARM64 emulator
+        timeout-minutes: 10
         shell: bash
         run: |
+          set -euo pipefail
           nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel off > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
-          adb wait-for-device
+          if ! timeout 180s adb wait-for-device; then
+            cat "$RUNNER_TEMP/one-android-emulator.log" || true
+            exit 1
+          fi
           booted=""
           for attempt in $(seq 1 60); do
-            booted="$(adb shell getprop sys.boot_completed | tr -d '\r')"
+            booted="$(timeout 10s adb shell getprop sys.boot_completed | tr -d '\r' || true)"
             if [ "$booted" = "1" ]; then break; fi
             sleep 5
           done
-          test "$booted" = "1"
-          abi="$(adb shell getprop ro.product.cpu.abi | tr -d '\r')"
+          if [ "$booted" != "1" ]; then
+            cat "$RUNNER_TEMP/one-android-emulator.log" || true
+            timeout 10s adb logcat -d -t 300 || true
+            exit 1
+          fi
+          abi="$(timeout 10s adb shell getprop ro.product.cpu.abi | tr -d '\r')"
           echo "Android emulator ABI: $abi"
           test "$abi" = "arm64-v8a"
           adb shell id
