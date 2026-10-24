@@ -122,3 +122,12 @@ Cross-platform run [40088230116](https://github.com/panglimanetizen01/one-window
 
 - Windows candidate artifact [12558350265](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116/artifacts/12558350265): ZIP digest from GitHub artifact metadata `sha256:0686d79036c5ce4f4f95bf861c3e82ce8bd9813dbf5dcbe748053ed9c749ee9e`, size 1,488,730 bytes.
 - Linux candidate artifact [12557424853](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116/artifacts/12557424853): ZIP digest `sha256:1a9b889b980b309fb3807471399c5556b83631145d148a8e9cefb2afe135bd09`, size 1,738,835 bytes.
+
+
+### Candidate artifact integrity PASS — source `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`
+
+Independent inspection [40088506284](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088506284) passed against both exact-SHA bundles. The job downloaded artifacts by ID, compared archive digests with GitHub artifact metadata, checked embedded `SHA256SUMS`, source/build metadata, Rust/Cargo/CLI versions, and executable headers.
+- Linux artifact [12557424853](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116/artifacts/12557424853): ZIP SHA-256 `1a9b889b980b309fb3807471399c5556b83631145d148a8e9cefb2afe135bd09`; binary SHA-256 `36aaf109b3689e61d879f2bc2f9ebe685976f703035eb06c08935a8a7c7b2c79`; ELF64 little-endian EM_X86_64; target `x86_64-unknown-linux-gnu`.
+- Windows artifact [12558350265](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116/artifacts/12558350265): ZIP SHA-256 `0686d79036c5ce4f4f95bf861c3e82ce8bd9813dbf5dcbe748053ed9c749ee9e`; binary SHA-256 `0abae22d28b34ffe266090679786132323dd7508f0f38b8a79c8229aa6cff279`; PE32+ x86-64; target `x86_64-pc-windows-msvc`.
+- Both metadata files pin source SHA `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`, Rust/Cargo 1.99.0 and CLI `one 0.1.0`.
+- This is artifact-integrity evidence, not signed package provenance or final release authorization; E2 remains open.
