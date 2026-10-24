@@ -33,7 +33,7 @@ def parse_ledger(text: str) -> tuple[list[dict], dict | None, list[str]]:
                 errors.append(f"ledger line {line_no}: malformed weighted row")
                 continue
             row_id = cells[0]
-            weight_match = re.search(r"\b(\d+)\b", cells[1].replace("**", ""))
+            weight_match = re.search(r"\*\*(\d+)\*\*", cells[1])
             impl = fraction(cells[3])
             verified = fraction(cells[4])
             if not weight_match or not impl or not verified:
@@ -47,7 +47,7 @@ def parse_ledger(text: str) -> tuple[list[dict], dict | None, list[str]]:
                 "status": cells[5],
                 "line": line_no,
             })
-        elif re.match(r"^\|\s*\*\*TOTAL\*\*\s*\|", line):
+        elif re.search(r"\*\*TOTAL\*\*", line):
             cells = [part.strip() for part in line.strip().strip("|").split("|")]
             if len(cells) >= 5:
                 total = {"implementation": fraction(cells[3]), "verified": fraction(cells[4]), "line": line_no}
