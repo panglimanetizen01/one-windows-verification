@@ -76,6 +76,7 @@ jobs:
           disable-animations: true
           script: |
             set -euo pipefail
+            cd source
             export ONE_ANDROID_CLANG="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
             export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
             adb devices
