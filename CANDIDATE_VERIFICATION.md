@@ -4,7 +4,7 @@
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
 **Current source SHA:** `dca9a22c242905b97275161d9fdda933b986ec0d`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `dca9a22c242905b97275161d9fdda933b986ec0d` has passing focused (including package signature/trusted-publisher tests), lockfile, Linux distro, cross-platform Ubuntu/Windows, and artifact-integrity gates. Android API 35 is still booting with no ELF execution result. The fixed-weight gate is NOT PASSED; E1/E2/E3/E4/E6 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
+**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `dca9a22c242905b97275161d9fdda933b986ec0d` has passing focused (including package signature/trusted-publisher tests), lockfile, Linux distro, cross-platform Ubuntu/Windows, artifact-integrity, and a new end-to-end package provenance lab using a disposable synthetic trust key. The end-to-end lab independently verifies the retained package/checksum and rejects untrusted publisher, modified artifact, and modified signed metadata. Android API 35 is still booting with no ELF execution result. The fixed-weight gate is NOT PASSED; E1/E2/E3/E4/E6 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
@@ -16,12 +16,22 @@ This candidate contains documentation-only E2 ledger/checkpoint updates based on
 | Gate | Run | Current exact-SHA status |
 |---|---|---|
 | Focused Standard Library/database + package provenance + package/lock regression | [40110118430](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40110118430) | **PASS** — exact-SHA checkout; UTC/database regressions, CLI signature/trust/tamper, full `package_provenance::tests`, deterministic artifact bytes, module-lock generation and stale-lock rejection, and unsupported-dependency fail-closed tests all passed |
+| Package provenance end-to-end lab (synthetic fixture key only) | [40110376210](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40110376210) | **PASS** — built from exact source SHA; produced `.onepkg` + V2 sidecar + `SHA256SUMS`; trusted-store signature/source verification passed; untrusted publisher, altered artifact and altered signed metadata were rejected. Artifact ID `12565962511`, GitHub archive digest `sha256:7965d335824bed1bdb1463f214e5e89b2f6e251f73967a989a993ff43d4cbb59`. **Not** a production protected release; fixture key only. |
 | Cargo lockfile bootstrap | [40108646762](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646762) | **PASS** — deterministic lockfile bootstrap on exact canonical SHA |
 | Linux distro conformance | [40108646764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646764) | **PASS** — Ubuntu 24.04 and Debian 12 jobs passed |
 | Cross-platform Ubuntu + Windows Server 2025 | [40108646717](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646717) | **PASS** — Ubuntu and Windows Server 2025 jobs completed successfully |
 | Candidate artifact integrity | [40108646691](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646691) | **PASS** — exact-SHA Linux/Windows bundles discovered; archive digests, embedded manifests, metadata, executable formats validated |
 | Android AArch64 ELF execution | [40108646751](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646751) | **IN PROGRESS** — API 35 arm64 emulator boot has not yet produced an ELF execution result |
 | Fixed-weight ledger gate | [40109744699](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40109744699) | **NOT PASSED** — latest gate confirmed 9 unchecked DoD items, E1/E2/E3/E4/E6 full-row acceptance missing, Android runtime still in progress, and canonical protected-release evidence inaccessible with current token permissions |
+
+### Retained package inspection — exact source SHA `dca9a22c242905b97275161d9fdda933b986ec0d`
+
+- E2E lab run: [40110376210](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40110376210) — **PASS**.
+- Retained artifact: [GitHub Actions artifact `one-provenance-lab-dca9a22c242905b97275161d9fdda933b986ec0d`](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40110376210/artifacts/12565962511); artifact ID `12565962511`; archive digest `sha256:7965d335824bed1bdb1463f214e5e89b2f6e251f73967a989a993ff43d4cbb59`.
+- Package SHA-256: `fb1f5d28e8f95ba89332739c69f2602115c24701ab091334659366864fc126f5`.
+- Provenance sidecar SHA-256: `6004148f252f84463e295be1d6a3beb1c8f32dc5d6a078945ad8d94bb83b9e21`.
+- Sidecar records source revision `dca9a22c242905b97275161d9fdda933b986ec0d`, source-tree digest `7d71a70c10d87d1c8ebe25b564462070232cfba33a9b477b3843b65529349cc3`, artifact format `OneHumanCorePackageV1`, and dependency model `empty-v0.1`. Downloaded artifact ZIP was independently inspected; `sha256sum --check SHA256SUMS` passed for both retained files.
+- Trust key is the documented disposable fixture key `lab-fixture-publisher`, not a production publisher identity or protected environment secret. This pass demonstrates the package/signature/verifier path and negative cases, but **does not** satisfy the production protected `one-release` requirement. E2 remains unaccepted.
 
 ## Previous exact-SHA candidate — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
 
