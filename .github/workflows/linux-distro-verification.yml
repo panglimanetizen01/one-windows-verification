@@ -4,8 +4,14 @@ name: ONE Linux Distro Verification
 on:
   push:
     branches: [ verification ]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/linux-distro-verification.yml'
   pull_request:
     branches: [ verification ]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/linux-distro-verification.yml'
   workflow_dispatch:
 
 permissions:
