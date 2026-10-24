@@ -156,7 +156,7 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
         try:
             release_runs = github_json(release_url, "").get("workflow_runs", [])
         except (OSError, ValueError, urllib.error.HTTPError) as fallback_exc:
-            return errors + [f"cannot query canonical release workflow evidence (token and public fallback): {fallback_exc}"]
+            return errors + [f"cannot query canonical release workflow evidence: CANONICAL_READ_TOKEN must have Actions: read access to the private canonical repository; unauthenticated fallback is unavailable ({fallback_exc})"]
     except (OSError, ValueError) as exc:
         return errors + [f"cannot query canonical release workflow evidence: {exc}"]
 
