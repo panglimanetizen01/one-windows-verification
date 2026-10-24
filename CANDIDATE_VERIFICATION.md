@@ -16,7 +16,7 @@ This file is the evidence index for the candidate. The workflows check out the e
 | Full cross-platform verification (Ubuntu and Windows 2025) | [40081549604](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604) | **PASS** on the candidate SHA; Ubuntu and Windows jobs green |
 | Android AArch64 native ELF runtime execution | [40081481013](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081481013) | Running; do not count yet |
 
-**Release bundle evidence:** the passing cross-platform run produced non-expired Linux and Windows release-candidate artifacts named `one-release-candidate-Linux-1a48989f213cd000a1eb3143b97549415b733241` and `one-release-candidate-Windows-1a48989f213cd000a1eb3143b97549415b733241`; see the [run artifacts](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604).
+**Release bundle evidence:** the passing cross-platform run produced non-expired artifacts: [Linux bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12556010150), SHA-256 `5a5a63fef110959c5880a020f0933084e691814e6a92f403f35bea3d396f1f80`; [Windows bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12555024750), SHA-256 `c43d5811ac872af8a07c1f453e5f87ff7adc138d2a445b267e2655f9ab35f197`. Both artifacts are named with source SHA `1a48989f213cd000a1eb3143b97549415b733241`.
 
 ## Android runner diagnosis and remediation
 
