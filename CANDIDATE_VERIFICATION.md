@@ -14,8 +14,8 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 |---|---|---|
 | Cross-platform Ubuntu + Windows Server 2025 | [Run 40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236) | **PASS** — both jobs assert SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; workspace tests, Clippy, real-network tests, offline verification, and bundle generation passed |
 | Linux distro conformance | [Run 40085406859](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406859) | Queued/running on current SHA; do not count yet |
-| Focused stdlib / SQLite / provenance | [Run 40085406818](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406818) | Queued/running on current SHA; do not count yet |
-| Deterministic Cargo lockfile bootstrap | [Run 40085406783](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406783) | Queued/running on current SHA; do not count yet |
+| Focused stdlib / SQLite / provenance | [Run 40085406818](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406818) | **PASS** on exact source SHA `f46b95ebdd0e26c5ba17f6acb953538f32401aeb`; UTC/JSON/SQLite/provenance, Clippy, and final-symlink NOFOLLOW regression passed |
+| Deterministic Cargo lockfile bootstrap | [Run 40085406783](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406783) | **PASS** on exact source SHA; deterministic Cargo lockfile generated with SHA-256 `284f1186517314c88ac31412c86f09e6418114376e56cd4bb2ae5fd676495c90` |
 | Android AArch64 native ELF runtime | [Run 40085406752](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406752) | Queued on current SHA; macOS ARM64, QEMU wrapper strips injected `-enable-hvf`; do not count until ELF executes |
 
 ## Current candidate bundles
