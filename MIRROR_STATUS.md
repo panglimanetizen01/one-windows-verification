@@ -1,5 +1,11 @@
-Status: exact source selector aligned to the current ONE branch checkpoint; actual mirror workflow result remains unconfirmed.
+Status: exact source selector aligned to the current ONE branch checkpoint; mirror execution still requires independent confirmation.
 Canonical repository: panglimanetizen01/one
-Canonical commit: f3bd89aac5ece83a175f5771cec94b3e374b332e
+Canonical branch: milestone/100-ecosystem-20261023
+Canonical commit: dab0a03e5d364150fd8a28a2c657af02bc19ee74
 
-Canonical Actions jobs on the preceding source SHA failed before executing steps (runner_id 0, empty step arrays). This is runner provisioning evidence, not a source test result. The independent mirror workflow must successfully check out this exact private source SHA using CANONICAL_READ_TOKEN and pass Linux/Windows build, contract, Clippy, workspace, real-network, and offline checks before the snapshot is considered verified. A selector update alone is not a pass.
+The selector CANONICAL_COMMIT.txt points to this exact SHA. Canonical Actions runs on this SHA:
+- One CI: https://github.com/panglimanetizen01/one/actions/runs/40062436612
+- Linux distribution conformance: https://github.com/panglimanetizen01/one/actions/runs/40062436625
+- Standard-library focused verification: https://github.com/panglimanetizen01/one/actions/runs/40062436613
+
+All three failed again on attempt 2 before recording any steps (jobs report empty step arrays; no usable test logs). This does not establish source tests as passing or failing. A selector update alone is not verification. The independent mirror must successfully fetch the private source via CANONICAL_READ_TOKEN and produce inspectable exact-SHA logs for Linux/Windows build, contract, Clippy, workspace, real-network, and offline checks before this snapshot is considered verified.
