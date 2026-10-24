@@ -30,6 +30,17 @@ The prior Android attempt [40080133616](https://github.com/panglimanetizen01/one
 
 The canonical repository's candidate runs [40077268116](https://github.com/panglimanetizen01/one/actions/runs/40077268116), [40077268118](https://github.com/panglimanetizen01/one/actions/runs/40077268118), and [40077268122](https://github.com/panglimanetizen01/one/actions/runs/40077268122) have jobs reporting `runner_id: 0` and empty `steps: []`. These runs produced no source build/test evidence. They are neither a source-code failure diagnosis nor a passing result. Independent mirror runs are being used as exact-SHA evidence; the canonical runner issue remains documented separately.
 
+## Remaining fixed-ledger acceptance scope
+
+The canonical fixed-weight [completion ledger](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md) currently records **90/100 implementation, 60/100 verified**. Do not change the weights or infer full row credit from a partial pass.
+
+- **E1 — standard library (10 points):** only credit the full row after every scope-defined reusable API contract is implemented and covered by executable tests; focused regressions pass, but ledger acceptance has not been awarded.
+- **E2 — packaging/provenance (8 points):** deterministic package and trusted-publisher tests pass; protected `one-release` environment dispatch and exact-source signed release acceptance still need direct evidence.
+- **E3 — compatibility/platforms (8 points):** current Linux/Windows matrix and Ubuntu/Debian distro matrix pass; Android AArch64 runtime is still pending the emulator result.
+- **E4 — security/recovery (6 points):** bounded I/O, SQLite limits, and symlink/reparse protections have tests; path-scoped capability root confinement and the full threat review remain open.
+- **E5 — docs/tooling (4 points):** user-doc consistency/tests and CLI smoke workflows pass; final reviewed user-workflow acceptance still needs to be reconciled in the ledger.
+- **E6 — forensic audit (4 points):** not complete until E1–E5 are accepted, all evidence references agree on the final source SHA, and all mandatory release gates pass.
+
 ## Release gate rules
 
 - Do not credit tests run against a different source SHA.
