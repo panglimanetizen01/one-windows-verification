@@ -121,12 +121,12 @@ jobs:
         working-directory: source
         shell: bash
         if: runner.os != 'Windows'
-        run: python3 tools/check_contract.py
+        run: python3 tools/check_contract.py && python3 tools/check_user_docs.py && python3 tools/check_user_docs_test.py
       - name: Contract artifacts (Windows)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
-        run: python tools/check_contract.py
+        run: python tools/check_contract.py; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python tools/check_user_docs.py; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python tools/check_user_docs_test.py
       - name: Build
         working-directory: source
         run: cargo --locked build --workspace --all-targets
