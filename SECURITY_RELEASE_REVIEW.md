@@ -1,7 +1,7 @@
 # ONE v0.1 — Focused Security Release Review
 
 **Reviewed code SHA:** `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`  
-**Current candidate SHA:** `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8` (Definition of Done wording correction only; code under review unchanged)  
+**Current candidate SHA:** `f46b95ebdd0e26c5ba17f6acb953538f32401aeb` (documentation and ledger reconciliation; code under review unchanged)  
 **Review date:** 2026-10-24  
 **Status:** Findings documented; security acceptance remains OPEN  
 **Normative context:** [SECURITY.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/SECURITY.md), [effect/capability contract](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/spec/one-v0.1-effect-capability.md), [Definition of Done](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md)
@@ -37,10 +37,10 @@ This is a focused source review, not a claim of a complete sandbox or a third-pa
 
 ## Verification evidence
 
-- Focused SQLite/stdlib/provenance regression and Clippy: [40083996493](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083996493) — PASS on the reviewed source SHA.
+- Focused SQLite/stdlib/provenance regression and Clippy: [40084595238](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595238) — PASS on prior code SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; final-candidate rerun is pending.
 - Cross-platform Ubuntu/Windows verification: [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) — **PASS** on the reviewed source SHA; both jobs passed and produced inspected bundles.
 - Ubuntu/Debian distribution verification: [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) — **PASS** on the reviewed source SHA.
-- Android AArch64 ELF runtime: [40084822122](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084822122) — running on macOS ARM64 with a QEMU wrapper that strips the injected `-enable-hvf`; not yet accepted.
+- Android AArch64 ELF runtime: [40085406752](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406752) — queued on current candidate with a QEMU wrapper that strips injected `-enable-hvf`; not yet accepted.
 
 ## Decision
 
