@@ -34,6 +34,8 @@ Android attempt [40081481013](https://github.com/panglimanetizen01/one-windows-v
 
 The canonical repository's candidate runs [40077268116](https://github.com/panglimanetizen01/one/actions/runs/40077268116), [40077268118](https://github.com/panglimanetizen01/one/actions/runs/40077268118), and [40077268122](https://github.com/panglimanetizen01/one/actions/runs/40077268122) have jobs reporting `runner_id: 0` and empty `steps: []`. These runs produced no source build/test evidence. They are neither a source-code failure diagnosis nor a passing result. Independent mirror runs are being used as exact-SHA evidence; the canonical runner issue remains documented separately.
 
+**Focused security review:** [SECURITY_RELEASE_REVIEW.md](https://github.com/panglimanetizen01/one-windows-verification/blob/verification/SECURITY_RELEASE_REVIEW.md) records the inspected boundaries and residual risks against source SHA `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`. It explicitly keeps E4 open for SQLite parent-component races, root/mount confinement, fallback platforms, and runtime-wide quotas; the review is not a claim of complete sandboxing.
+
 ## Final gate checklist
 
 The canonical PR now includes [DEFINITION_OF_DONE.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md), which defines exact-SHA evidence rules and the fixed-weight E1–E6 release acceptance criteria. Candidate SHA is now `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; previously passing cross-platform, distro, and focused runs were on the prior SHA and must not be counted as final-SHA acceptance until rerun.
