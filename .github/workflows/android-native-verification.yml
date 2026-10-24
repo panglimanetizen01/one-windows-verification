@@ -1,4 +1,4 @@
-name: ONE Android AArch64 Native Runtime Verification (ARM64 Linux)
+name: ONE Android AArch64 Native Runtime Verification (software ARM64 guest)
 
 on:
   push:
@@ -18,7 +18,7 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Checkout verification harness
@@ -41,12 +41,6 @@ jobs:
         working-directory: source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
-
-      - name: Assert native ARM64 Linux host
-        shell: bash
-        run: |
-          uname -a
-          test "$(uname -m)" = "aarch64"
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -100,7 +94,7 @@ jobs:
           target: google_apis
           arch: arm64-v8a
           profile: pixel_2
-          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect
+          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect -accel off
           disable-animations: true
           emulator-boot-timeout: 900
           script: |
