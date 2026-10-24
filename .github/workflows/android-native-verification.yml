@@ -40,7 +40,8 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-
+        with:
+          toolchain: 1.99.0
       - name: Cache Rust build
         uses: Swatinem/rust-cache@v2
         with:
@@ -85,7 +86,7 @@ jobs:
       - name: Run Android ELF build-and-execute regression
         working-directory: source
         shell: bash
-        run: cargo test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
+        run: cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
 
       - name: Upload emulator diagnostics on failure
         if: failure()
