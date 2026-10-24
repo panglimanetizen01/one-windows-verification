@@ -1,0 +1,124 @@
+name: ONE Candidate Artifact Integrity Verification
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/candidate-artifact-inspection.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  inspect-candidate-bundles:
+    name: Inspect exact-SHA Linux and Windows candidate bundles
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_SHA: 9d5d319b88cbee17b18554cfe7641ec1008ba62a
+    steps:
+      - name: Download artifact archives through GitHub API
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p downloads/linux downloads/windows extracted/linux extracted/windows
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12557347980/zip \
+            --output downloads/linux/candidate.zip
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12557247338/zip \
+            --output downloads/windows/candidate.zip
+          echo "33cc3445cbccc3780bb776a6d9b2ec846d1687e8d45a8526adf27aa120cf237f  downloads/linux/candidate.zip" | sha256sum --check
+          echo "564f7105d3f12face750d68431699d3f2491c28ff526c75e7951d766f21d8c0a  downloads/windows/candidate.zip" | sha256sum --check
+          unzip -q downloads/linux/candidate.zip -d extracted/linux
+          unzip -q downloads/windows/candidate.zip -d extracted/windows
+          find extracted -maxdepth 3 -type f -print | sort
+
+      - name: Verify embedded manifests, metadata, and executable formats
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import struct
+
+          root = Path("extracted")
+          source_sha = "9d5d319b88cbee17b18554cfe7641ec1008ba62a"
+
+          def one_file(folder: Path, name: str) -> Path:
+              found = list(folder.rglob(name))
+              if len(found) != 1:
+                  raise SystemExit(f"expected exactly one {name} under {folder}, found {len(found)}")
+              return found[0]
+
+          def check_common(folder: Path, binary_name: str, expected_platform: str) -> Path:
+              metadata_path = one_file(folder, "BUILD-METADATA.txt")
+              sums_path = one_file(folder, "SHA256SUMS")
+              metadata = {}
+              for line in metadata_path.read_text(encoding="utf-8").splitlines():
+                  if "=" in line:
+                      key, value = line.split("=", 1)
+                      metadata[key] = value
+              required = ("source_sha", "target", "rustc", "cargo", "cli_version")
+              missing = [key for key in required if not metadata.get(key, "").strip()]
+              if missing:
+                  raise SystemExit(f"{expected_platform} missing metadata fields: {missing}")
+              if metadata["source_sha"] != source_sha:
+                  raise SystemExit(f"{expected_platform} source SHA mismatch: {metadata['source_sha']}")
+              if not metadata["target"].startswith("x86_64-"):
+                  raise SystemExit(f"{expected_platform} unexpected target triple: {metadata['target']}")
+              if expected_platform == "linux" and "linux" not in metadata["target"]:
+                  raise SystemExit(f"Linux target triple mismatch: {metadata['target']}")
+              if expected_platform == "windows" and "windows" not in metadata["target"]:
+                  raise SystemExit(f"Windows target triple mismatch: {metadata['target']}")
+              if "1.99.0" not in metadata["rustc"] or "1.99.0" not in metadata["cargo"]:
+                  raise SystemExit(f"{expected_platform} unexpected Rust/Cargo versions: {metadata['rustc']} / {metadata['cargo']}")
+              if "0.1.0" not in metadata["cli_version"]:
+                  raise SystemExit(f"{expected_platform} unexpected CLI version: {metadata['cli_version']}")
+              manifest = sums_path.read_text(encoding="utf-8").splitlines()
+              if len(manifest) != 1:
+                  raise SystemExit(f"{expected_platform} expected one binary checksum entry, got {len(manifest)}")
+              expected_hash, listed_name = manifest[0].split(maxsplit=1)
+              listed_name = listed_name.lstrip("* ")
+              binary_path = one_file(folder, binary_name)
+              if listed_name != binary_name:
+                  raise SystemExit(f"{expected_platform} manifest names {listed_name}, expected {binary_name}")
+              actual_hash = hashlib.sha256(binary_path.read_bytes()).hexdigest()
+              if actual_hash != expected_hash:
+                  raise SystemExit(f"{expected_platform} embedded SHA256SUMS mismatch: {actual_hash} != {expected_hash}")
+              print(f"{expected_platform}: source_sha={metadata['source_sha']}")
+              print(f"{expected_platform}: target={metadata['target']}")
+              print(f"{expected_platform}: rustc={metadata['rustc']}; cargo={metadata['cargo']}")
+              print(f"{expected_platform}: cli_version={metadata['cli_version']}")
+              print(f"{expected_platform}: {binary_name} sha256={actual_hash}")
+              return binary_path
+
+          linux_binary = check_common(root / "linux", "one", "linux")
+          linux_bytes = linux_binary.read_bytes()
+          if len(linux_bytes) < 20 or linux_bytes[:4] != b"\x7fELF":
+              raise SystemExit("Linux binary does not have an ELF header")
+          if linux_bytes[4] != 2 or linux_bytes[5] != 1:
+              raise SystemExit("Linux binary is not ELF64 little-endian")
+          if struct.unpack_from("<H", linux_bytes, 18)[0] != 62:
+              raise SystemExit("Linux binary e_machine is not EM_X86_64")
+          print("linux: ELF64 little-endian EM_X86_64 PASS")
+
+          windows_binary = check_common(root / "windows", "one.exe", "windows")
+          windows_bytes = windows_binary.read_bytes()
+          if len(windows_bytes) < 64 or windows_bytes[:2] != b"MZ":
+              raise SystemExit("Windows binary does not have an MZ/PE header")
+          pe_offset = struct.unpack_from("<I", windows_bytes, 0x3C)[0]
+          if pe_offset + 6 > len(windows_bytes) or windows_bytes[pe_offset:pe_offset+4] != b"PE\x00\x00":
+              raise SystemExit("Windows binary has an invalid PE signature")
+          if struct.unpack_from("<H", windows_bytes, pe_offset + 4)[0] != 0x8664:
+              raise SystemExit("Windows binary is not PE32+ x86-64")
+          print("windows: PE32+ x86-64 PASS")
+          PY
