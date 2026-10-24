@@ -98,11 +98,20 @@ jobs:
           set -euo pipefail
           echo "Host architecture: $(uname -m)"
           echo "Host kernel: $(uname -a)"
-          sdkmanager --install "emulator" "platform-tools" "system-images;android-30;google_apis;arm64-v8a"
+          sdkmanager --install "emulator" "platform-tools" "system-images;android-35;google_apis;arm64-v8a"
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           mkdir -p "$ANDROID_AVD_HOME"
-          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name one-api30-arm64 --package "system-images;android-30;google_apis;arm64-v8a" --device pixel_2
-          test -f "$ANDROID_AVD_HOME/one-api30-arm64.ini"
+          avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
+          device_list="$("$avdmanager" list device)"
+          printf '%s\n' "$device_list"
+          device_id="$(printf '%s\n' "$device_list" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
+          if [ -z "$device_id" ]; then
+            device_id="$(printf '%s\n' "$device_list" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | head -n 1)"
+          fi
+          test -n "$device_id"
+          echo "Selected installed AVD device profile: $device_id"
+          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64 --package "system-images;android-35;google_apis;arm64-v8a" --device "$device_id"
+          test -f "$ANDROID_AVD_HOME/one-api35-arm64.ini"
           emulator_bin="$ANDROID_HOME/emulator/emulator"
           test -x "$emulator_bin"
           # The hosted macOS runner reports HVF as available, but nested HVF fails at QEMU startup.
@@ -126,7 +135,7 @@ jobs:
           WRAPPER
           chmod +x "$qemu_bin"
           log="$RUNNER_TEMP/one-android-emulator.log"
-          "$emulator_bin" -avd one-api30-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 3072 -cores 4 -gpu off -feature -HVF -accel off -verbose >"$log" 2>&1 &
+          "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 3072 -cores 4 -gpu off -feature -HVF -accel off -verbose >"$log" 2>&1 &
           emulator_pid=$!
           echo "Emulator PID: $emulator_pid"
           echo "Emulator log: $log"
