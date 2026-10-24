@@ -18,7 +18,7 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout verification harness
@@ -63,7 +63,10 @@ jobs:
           set -euo pipefail
           yes | sdkmanager --licenses || true
           sdkmanager --install "ndk;27.2.12479018"
-          test -x "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -type f -path '*/bin/clang' -print -quit)"
+          test -n "$clang"
+          test -x "$clang"
+          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
 
       - name: Build and execute ELF AArch64 on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -72,14 +75,12 @@ jobs:
           target: google_apis
           arch: arm64-v8a
           profile: pixel_2
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          disable-linux-hw-accel: true
           emulator-boot-timeout: 900
           script: |
             set -euo pipefail
             cd source
-            export ONE_ANDROID_CLANG="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
             export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
             adb devices
             test "$(adb shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
