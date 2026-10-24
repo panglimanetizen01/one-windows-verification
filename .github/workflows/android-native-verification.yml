@@ -61,7 +61,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          set +e
           yes | sdkmanager --licenses
+          license_status=$?
+          set -e
+          if [ "$license_status" -ne 0 ] && [ "$license_status" -ne 141 ]; then
+            exit "$license_status"
+          fi
           sdkmanager --install "ndk;27.2.12479018"
           test -x "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
 
