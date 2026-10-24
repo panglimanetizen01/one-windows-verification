@@ -4,24 +4,24 @@
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
 **Current source SHA:** `dca9a22c242905b97275161d9fdda933b986ec0d`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `dca9a22c242905b97275161d9fdda933b986ec0d` has passing focused, lockfile, Linux distro, cross-platform, and artifact-integrity gates; Android API 35 and the fixed-weight release gate remain open; E1/E2 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
+**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `dca9a22c242905b97275161d9fdda933b986ec0d` has passing focused (including package signature/trusted-publisher tests), lockfile, Linux distro, cross-platform Ubuntu/Windows, and artifact-integrity gates. Android API 35 is still booting with no ELF execution result. The fixed-weight gate is NOT PASSED; E1/E2/E3/E4/E6 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
 
 ## Current canonical source revision — `dca9a22c242905b97275161d9fdda933b986ec0d`
 
-This candidate contains documentation-only E2 ledger/checkpoint updates based on the preceding tested code snapshot. The source code is unchanged from the prior candidate, but the canonical commit SHA advanced; exact-SHA verification must therefore be rerun against this new commit before treating any result as current acceptance evidence.
+This candidate contains documentation-only E2 ledger/checkpoint updates based on the preceding tested code snapshot. Exact-SHA verification has now been rerun against this canonical SHA; all completed matrix jobs below explicitly pin this SHA. Android runtime remains in progress.
 
 | Gate | Run | Current exact-SHA status |
 |---|---|---|
-| Focused Standard Library/database + package signature | pending | Pending exact-SHA rerun; prior-SHA run [40107005038](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107005038) is historical evidence only |
-| Cargo lockfile bootstrap | pending | Pending exact-SHA rerun; prior-SHA run [40106909806](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909806) is historical evidence only |
-| Linux distro conformance | pending | Pending exact-SHA rerun; prior-SHA run [40106909776](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909776) is historical evidence only |
-| Cross-platform Ubuntu + Windows Server 2025 | pending | Pending exact-SHA rerun; prior-SHA run [40106909764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909764) is historical evidence only |
-| Candidate artifact integrity | pending | Pending exact-SHA rerun; prior-SHA run [40106909785](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909785) is historical evidence only |
-| Android AArch64 ELF execution | pending | Pending exact-SHA rerun; previous candidate run [40107885276](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107885276) did not establish acceptance |
-| Fixed-weight ledger gate | pending | Must rerun after current exact-SHA matrix settles; previous gate was not passed |
+| Focused Standard Library/database + package signature | [40108646700](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646700) | **PASS** — exact-SHA checkout; UTC/database regressions and built package signing/trusted-publisher verification passed |
+| Cargo lockfile bootstrap | [40108646762](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646762) | **PASS** — deterministic lockfile bootstrap on exact canonical SHA |
+| Linux distro conformance | [40108646764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646764) | **PASS** — Ubuntu 24.04 and Debian 12 jobs passed |
+| Cross-platform Ubuntu + Windows Server 2025 | [40108646717](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646717) | **PASS** — Ubuntu and Windows Server 2025 jobs completed successfully |
+| Candidate artifact integrity | [40108646691](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646691) | **PASS** — exact-SHA Linux/Windows bundles discovered; archive digests, embedded manifests, metadata, executable formats validated |
+| Android AArch64 ELF execution | [40108646751](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646751) | **IN PROGRESS** — API 35 arm64 emulator boot has not yet produced an ELF execution result |
+| Fixed-weight ledger gate | [40108651511](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108651511) | **NOT PASSED** — gate ran before Android/artifact/cross-platform completion; DoD has 9 unchecked items, E1/E2/E3/E4/E6 full-row acceptance missing, and canonical release evidence inaccessible with current token permissions |
 
 ## Previous exact-SHA candidate — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
 
@@ -295,3 +295,11 @@ The verifier now retries a public unauthenticated read after HTTP 403, but the c
 - Prior code SHA `a75362fcb9dd7514c1253f661443252122053aa9`: focused package-signature/trusted-publisher tests and lockfile bootstrap passed in [40107005038](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107005038) and [40106909806](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909806). These are historical for the new documentation commit `dca9a22c242905b97275161d9fdda933b986ec0d`.
 - Current candidate `dca9a22c242905b97275161d9fdda933b986ec0d` changes only ledger/checkpoint documentation. The exact-SHA matrix is pending and will be rerun.
 - E2 stays **0/8 verified / NOT ACCEPTED** until a real protected `one-release` run proves environment protection, securely configured signing seed, independently provisioned trusted publisher store, successful V2 source-bound signature verification, and retained artifacts. Synthetic fixture keys do not satisfy this criterion.
+
+
+## Prompt 2/4 — E2 evidence checkpoint (2026-10-24)
+
+- Canonical source SHA pinned for this matrix: `dca9a22c242905b97275161d9fdda933b986ec0d`. Completed exact-SHA runs: focused package signature/trusted-publisher tests [40108646700](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646700) PASS; lockfile bootstrap [40108646762](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646762) PASS; Ubuntu 24.04 + Debian 12 [40108646764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646764) PASS; Ubuntu + Windows Server 2025 [40108646717](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646717) PASS; artifact integrity [40108646691](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646691) PASS.
+- Android AArch64 run [40108646751](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646751) is still in progress at emulator boot; no native ELF execution result yet.
+- The fixed-weight gate [40108651511](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108651511) is **NOT PASSED**. It reports 9 unchecked DoD items, full-row acceptance absent for E1/E2/E3/E4/E6, Android pending at evaluation time, and inability to query canonical release evidence due to the missing Actions:read permission for the canonical repository.
+- E2 remains **0/8 verified / NOT ACCEPTED**. Focused tests verify cryptographic signing and rejection of tampering/untrusted keys with synthetic fixture keys, not a real independently authenticated publisher key. The protected `one-release` workflow has not run; environment protection and secret/trust-store configuration are unverified. No release was published.
