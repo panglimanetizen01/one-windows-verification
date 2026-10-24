@@ -1,5 +1,5 @@
 name: One Cross-Platform Verification
-# Exact-SHA milestone acceptance; canonical source is pinned in CANONICAL_COMMIT.txt
+# Exact-SHA revalidation for the current milestone candidate; do not credit stale SHA results.
 
 on:
   push:
