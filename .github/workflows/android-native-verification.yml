@@ -1,4 +1,5 @@
 name: ONE Android AArch64 Native Runtime Verification (Apple Silicon ARM64 host)
+# Require actual AArch64 ELF execution on the pinned canonical source SHA.
 
 on:
   push:
