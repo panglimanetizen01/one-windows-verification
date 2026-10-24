@@ -2,13 +2,20 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `25b9b2385281c01280b46589c3bf9346bfdc2ea4`  
+**Current source SHA:** `a4a146ae22c6629fe606185481055b667321d203`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the 7777 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
-## Latest exact-SHA matrix — 2026-10-24 14:22 UTC
+
+## New canonical source revision — documentation checkpoint refresh
+
+**Current canonical source SHA:** `a4a146ae22c6629fe606185481055b667321d203`. This commit updates only the E1 audit checkpoint and fixed-weight ledger evidence note; it does not change runtime code or tests. The successful runs in the historical matrix below are tied to parent SHA `25b9b2385281c01280b46589c3bf9346bfdc2ea4` and must not be treated as exact-SHA acceptance for the current revision.
+
+Fresh exact-SHA runs have been triggered by pinning this SHA. Until each finishes, current-source status is **PENDING / NOT ACCEPTED** for focused stdlib/database, Linux distro, Ubuntu+Windows cross-platform, lockfile bootstrap, candidate artifact integrity, and Android AArch64 runtime. The fixed-weight ledger gate must be rerun after the matrix completes. The global ledger remains 91/100 implementation and 64/100 verified; E1 is still marked partial because its broader stated scope is not fully accepted. Canonical hosted CI infrastructure failures and the protected release-token permission issue remain separate open items. Do not merge PR #80 or publish a release.
+
+## Historical exact-SHA matrix — source `25b9b2385281c01280b46589c3bf9346bfdc2ea4` (2026-10-24 14:22 UTC)
 
 **Canonical source SHA:** `25b9b2385281c01280b46589c3bf9346bfdc2ea4` (branch `milestone/100-ecosystem-20261023`; PR #80 remains open/draft/unmerged). All runs below checked out this exact source SHA; the verifier repository's own head SHA is not the canonical source SHA.
 
