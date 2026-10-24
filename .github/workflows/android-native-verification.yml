@@ -102,7 +102,7 @@ jobs:
           emulator_bin="$ANDROID_HOME/emulator/emulator"
           test -x "$emulator_bin"
           log="$RUNNER_TEMP/one-android-emulator.log"
-          "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect -accel off -verbose >"$log" 2>&1 &
+          "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect -feature -HVF -accel off -verbose >"$log" 2>&1 &
           emulator_pid=$!
           echo "Emulator PID: $emulator_pid"
           echo "Emulator log: $log"
