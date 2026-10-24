@@ -156,3 +156,60 @@ jobs:
         run: .\tools\verify_offline.ps1
 
 # Exact source target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
+
+  android-aarch64-runtime:
+    name: verify Android AArch64 ELF execution
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read canonical source SHA
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact canonical source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.canonical.outputs.ref }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify exact source SHA
+        shell: bash
+        working-directory: source
+        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Android NDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses
+          sdkmanager --install "ndk;27.2.12479018"
+          test -x "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+      - name: Build and execute AArch64 ELF on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: arm64-v8a
+          profile: pixel_2
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            cd source
+            test "$(git rev-parse HEAD)" = "$(tr -d '\r\n[:space:]' ../CANONICAL_COMMIT.txt)"
+            export ONE_ANDROID_CLANG="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+            export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
+            adb devices
+            cargo test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
