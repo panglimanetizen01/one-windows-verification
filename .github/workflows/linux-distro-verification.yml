@@ -46,6 +46,8 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
       - uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: 1.99.0
+        with:
           components: clippy
       - uses: actions/setup-python@v5
         with:
@@ -55,20 +57,20 @@ jobs:
         run: python3 tools/check_contract.py
       - name: Build
         working-directory: source
-        run: cargo build --workspace --all-targets
+        run: cargo --locked build --workspace --all-targets
       - name: Clippy
         working-directory: source
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo --locked clippy --workspace --all-targets -- -D warnings
       - name: Workspace tests (native distro; target-toolchain cases covered separately)
         working-directory: source
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --workspace --all-targets -- --skip windows_x86_64_target_mempertahankan_build_native --skip android_target_explicit_mempertahankan_build_native --skip windows_x86_64_dapat_membangun_artifact_native
+          cargo --locked test --workspace --all-targets -- --skip windows_x86_64_target_mempertahankan_build_native --skip android_target_explicit_mempertahankan_build_native --skip windows_x86_64_dapat_membangun_artifact_native
       - name: Real network tests (native distro; target-toolchain case covered separately)
         working-directory: source
         shell: bash
-        run: cargo test -p one-core --features real-network --all-targets -- --skip windows_x86_64_dapat_membangun_artifact_native
+        run: cargo --locked test -p one-core --features real-network --all-targets -- --skip windows_x86_64_dapat_membangun_artifact_native
 
   debian:
     name: Debian 12 container
@@ -102,23 +104,25 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
       - uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: 1.99.0
+        with:
           components: clippy
       - name: Contract checks
         working-directory: source
         run: python3 tools/check_contract.py
       - name: Build
         working-directory: source
-        run: cargo build --workspace --all-targets
+        run: cargo --locked build --workspace --all-targets
       - name: Clippy
         working-directory: source
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo --locked clippy --workspace --all-targets -- -D warnings
       - name: Workspace tests (native distro; target-toolchain cases covered separately)
         working-directory: source
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --workspace --all-targets -- --skip windows_x86_64_target_mempertahankan_build_native --skip android_target_explicit_mempertahankan_build_native --skip windows_x86_64_dapat_membangun_artifact_native
+          cargo --locked test --workspace --all-targets -- --skip windows_x86_64_target_mempertahankan_build_native --skip android_target_explicit_mempertahankan_build_native --skip windows_x86_64_dapat_membangun_artifact_native
       - name: Real network tests (native distro; target-toolchain case covered separately)
         working-directory: source
         shell: bash
-        run: cargo test -p one-core --features real-network --all-targets -- --skip windows_x86_64_dapat_membangun_artifact_native
+        run: cargo --locked test -p one-core --features real-network --all-targets -- --skip windows_x86_64_dapat_membangun_artifact_native
