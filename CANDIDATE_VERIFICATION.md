@@ -151,12 +151,12 @@ Exact-SHA matrix triggered by verification pin commit [`07f2f4dcd3689b2903f6e5f1
 
 | Required workflow | Run | State |
 |---|---|---|
-| Cross-platform Ubuntu + Windows Server 2025 | [40092009937](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092009937) | In progress; not accepted until completed successfully |
+| Cross-platform Ubuntu + Windows Server 2025 | [40092009937](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092009937) | PASS; Ubuntu and Windows Server 2025 jobs both completed successfully, including build, tests, Clippy, CLI/docs checks, and candidate bundle generation |
 | Linux distro conformance | [40092009933](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092009933) | PASS; Ubuntu 24.04 and Debian 12 completed successfully |
 | Focused standard library / SQLite / provenance | [40092009976](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092009976) | PASS; subset only, not full E1 acceptance |
 | Cargo lockfile bootstrap | [40092009942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092009942) | PASS |
 | Android AArch64 native ELF runtime | [40092009961](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092009961) | In progress at API 30 emulator boot; no ELF execution evidence yet |
-| Candidate artifact integrity | Not yet run for this source SHA | Pending fresh candidate bundle generation and integrity inspection |
+| Candidate artifact integrity | [40092478797](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092478797) | PASS; workflow dynamically selected exact-SHA bundles, matched ZIP SHA-256 against GitHub artifact metadata, and verified embedded checksums, source/build metadata, ELF64 x86-64 and PE32+ x86-64 |
 | Fixed-weight ledger gate | [40092009911](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092009911) | NOT PASSED: matrix was still running when evaluated; canonical release evidence API returned HTTP 403; E1–E4 and E6 are not fully verified |
 
 The prior bundle integrity and manual Linux bundle execution evidence refer to older source SHAs and are historical only. They do not satisfy current-source artifact integrity or Android execution. The canonical repository's hosted CI has repeatedly failed before executable steps (`runner_id: 0`, `steps: []`); independent verification does not relabel those canonical CI runs as PASS.
