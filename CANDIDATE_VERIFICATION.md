@@ -99,3 +99,19 @@ Independent workflow [40087385932](https://github.com/panglimanetizen01/one-wind
 ## Supplemental Linux bundle execution — manual, not hosted CI
 
 The Linux candidate ZIP from artifact `12557347980` was downloaded and its embedded `SHA256SUMS` checked in the current ChatGPT execution container. The binary's `BUILD-METADATA.txt` pins source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a`. Manual smoke commands executed successfully: `one version` reported `one 0.1.0`; `one help` displayed the documented CLI commands; `one buat` created a temporary project; `one periksa`, `one jalankan`, `one bangun`, `one test` (1 fixture), and `one package` all succeeded on the generated example. The temporary project was removed after the test. This is supplemental direct artifact execution, **not GitHub-hosted CI**, and does not replace the required Windows/Android or release-provenance gates.
+
+
+## 2026-10-24 — exact-SHA matrix refresh for PR #80 HEAD
+
+The canonical source pin was refreshed from the stale prior target to the current PR head **`2ead9dba45db4ce4105deaa81720aacc8fcadd6c`**. The pin update commit is `5560edbb625e740f3c2c1a67bfedafda225ea104`; that is the verification-mirror commit, not the ONE source SHA.
+
+Fresh workflows were triggered against the pinned source:
+- Cross-platform Ubuntu + Windows Server 2025: [40088230116](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116) — running at last check (Ubuntu build; Windows toolchain setup).
+- Ubuntu 24.04 + Debian 12: [40088230098](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230098) — Ubuntu PASS; Debian real-network tests running.
+- Focused standard-library / SQLite / package-signature regressions: [40088230099](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230099) — PASS.
+- Cargo lockfile bootstrap: [40088230148](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230148) — PASS.
+- Android AArch64 ELF build-and-execute: [40088230097](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230097) — running during Android NDK installation; **not yet runtime evidence**.
+
+All previous workflow results tied to source SHAs other than `2ead9dba45db4ce4105deaa81720aacc8fcadd6c` are historical and do not satisfy final-SHA acceptance. The artifact-inspection workflow still has hard-coded artifact IDs and source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a`; it must be refreshed after the new cross-platform run publishes candidate artifacts. Until then, no artifact-integrity claim is made for the new candidate.
+
+Fixed-weight score remains implementation **91/100 provisional** by row arithmetic, verified **60/100**, release gate **NOT PASSED**. Open acceptance includes the full E1 API scope, protected release-environment signing/trust-store exercise (E2), actual Android AArch64 ELF execution (E3), complete security/threat review and runtime-wide bounds (E4), final exact-SHA doc/tooling acceptance (E5), and the final forensic reconciliation (E6).
