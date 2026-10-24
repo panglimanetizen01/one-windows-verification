@@ -95,7 +95,7 @@ jobs:
         run: cargo --locked test -p one-cli --test cli package_signature_cli_authenticates_trusted_publisher_and_detects_tampering -- --exact
       - name: V2 provenance unit tests (source binding, trust store, tampering, malformed inputs)
         working-directory: source
-        run: cargo --locked test -p one-cli --lib package_provenance::tests
+        run: cargo --locked test -p one-cli --bin one package_provenance::tests
       - name: E1 text Unicode, empty-value, and integer-boundary regressions
         working-directory: source
         run: cargo --locked test -p one-core --test stdlib_builtins text_builtins_cover_empty_values_unicode_scalars_and_i64_boundaries
