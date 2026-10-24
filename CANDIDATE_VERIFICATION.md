@@ -15,13 +15,13 @@ This candidate contains documentation-only E2 ledger/checkpoint updates based on
 
 | Gate | Run | Current exact-SHA status |
 |---|---|---|
-| Focused Standard Library/database + package signature | [40108646700](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646700) | **PASS** — exact-SHA checkout; UTC/database regressions and built package signing/trusted-publisher verification passed |
+| Focused Standard Library/database + package provenance | [40109668168](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40109668168) | **PASS** — exact-SHA checkout; UTC/database regressions, CLI signature/trust/tamper test, and `package_provenance::tests` all passed |
 | Cargo lockfile bootstrap | [40108646762](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646762) | **PASS** — deterministic lockfile bootstrap on exact canonical SHA |
 | Linux distro conformance | [40108646764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646764) | **PASS** — Ubuntu 24.04 and Debian 12 jobs passed |
 | Cross-platform Ubuntu + Windows Server 2025 | [40108646717](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646717) | **PASS** — Ubuntu and Windows Server 2025 jobs completed successfully |
 | Candidate artifact integrity | [40108646691](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646691) | **PASS** — exact-SHA Linux/Windows bundles discovered; archive digests, embedded manifests, metadata, executable formats validated |
 | Android AArch64 ELF execution | [40108646751](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646751) | **IN PROGRESS** — API 35 arm64 emulator boot has not yet produced an ELF execution result |
-| Fixed-weight ledger gate | [40108651511](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108651511) | **NOT PASSED** — gate ran before Android/artifact/cross-platform completion; DoD has 9 unchecked items, E1/E2/E3/E4/E6 full-row acceptance missing, and canonical release evidence inaccessible with current token permissions |
+| Fixed-weight ledger gate | [40109106340](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40109106340) | **NOT PASSED** — DoD has 9 unchecked items; E1/E2/E3/E4/E6 full-row acceptance is missing; Android runtime was pending and canonical protected-release evidence is inaccessible with current token permissions |
 
 ## Previous exact-SHA candidate — `15e6ac358742b89076f21e079e16aa6ca5a2124a`
 
