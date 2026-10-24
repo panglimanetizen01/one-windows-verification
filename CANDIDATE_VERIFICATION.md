@@ -15,7 +15,7 @@ This candidate contains documentation-only E2 ledger/checkpoint updates based on
 
 | Gate | Run | Current exact-SHA status |
 |---|---|---|
-| Focused Standard Library/database + package provenance | [40109668168](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40109668168) | **PASS** — exact-SHA checkout; UTC/database regressions, CLI signature/trust/tamper test, and `package_provenance::tests` all passed |
+| Focused Standard Library/database + package provenance + package/lock regression | [40110118430](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40110118430) | **PASS** — exact-SHA checkout; UTC/database regressions, CLI signature/trust/tamper, full `package_provenance::tests`, deterministic artifact bytes, module-lock generation and stale-lock rejection, and unsupported-dependency fail-closed tests all passed |
 | Cargo lockfile bootstrap | [40108646762](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646762) | **PASS** — deterministic lockfile bootstrap on exact canonical SHA |
 | Linux distro conformance | [40108646764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646764) | **PASS** — Ubuntu 24.04 and Debian 12 jobs passed |
 | Cross-platform Ubuntu + Windows Server 2025 | [40108646717](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646717) | **PASS** — Ubuntu and Windows Server 2025 jobs completed successfully |
