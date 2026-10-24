@@ -2,9 +2,9 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`  
+**Current source SHA:** `f46b95ebdd0e26c5ba17f6acb953538f32401aeb`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — ledger records 90/100 implementation, 60/100 verified.
+**Release gate:** **NOT PASSED** — ledger records 91/100 implementation, 60/100 verified.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
@@ -13,14 +13,14 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 | Gate | Evidence | Result |
 |---|---|---|
 | Cross-platform Ubuntu + Windows Server 2025 | [Run 40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236) | **PASS** — both jobs assert SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; workspace tests, Clippy, real-network tests, offline verification, and bundle generation passed |
-| Linux distro conformance | [Run 40084595259](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595259) | **PASS** — Ubuntu 24.04 and Debian 12; both logs assert exact SHA |
-| Focused stdlib / SQLite / provenance | [Run 40084595238](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595238) | **PASS** — UTC/JSON bounds, SQLite limits, `SQLITE_OPEN_NOFOLLOW` final-symlink regression, trusted-publisher signature/tampering, Clippy |
-| Deterministic Cargo lockfile bootstrap | [Run 40084595303](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595303) | **PASS** — exact source SHA asserted; Cargo lockfile SHA-256 `284f1186517314c88ac31412c86f09e6418114376e56cd4bb2ae5fd676495c90` |
-| Android AArch64 native ELF runtime | [Run 40084822122](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084822122) | **IN PROGRESS** — macOS ARM64, QEMU wrapper filters injected `-enable-hvf` to force TCG; do not count until the ELF executes and prints `ONE_NATIVE_BACKEND_OK` |
+| Linux distro conformance | [Run 40085406859](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406859) | Queued/running on current SHA; do not count yet |
+| Focused stdlib / SQLite / provenance | [Run 40085406818](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406818) | Queued/running on current SHA; do not count yet |
+| Deterministic Cargo lockfile bootstrap | [Run 40085406783](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406783) | Queued/running on current SHA; do not count yet |
+| Android AArch64 native ELF runtime | [Run 40085406752](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406752) | Queued on current SHA; macOS ARM64, QEMU wrapper strips injected `-enable-hvf`; do not count until ELF executes |
 
 ## Current candidate bundles
 
-Both bundles below were produced by passing run [40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236), downloaded, and independently inspected. Embedded checksums pass.
+The following bundles are **historical**, produced on prior source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8` by run [40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236). They were downloaded and inspected; embedded checksums pass, but they are not current-candidate acceptance.
 
 - **Linux:** [artifact 12556841440](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236/artifacts/12556841440)  
   ZIP SHA-256: `e7266614dc9a5feb5e3673a63c409542b16d86c6d36fbea6a17be498b6fa3797`  
@@ -29,11 +29,11 @@ Both bundles below were produced by passing run [40084595236](https://github.com
   ZIP SHA-256: `7bd88e7197ae6d7a12fd946e6c2cb226c2be9c216379342fa229425ad4c60c95`  
   Binary: PE32+ console executable, x86-64. Embedded binary SHA-256: `0d4245cc51336f393a902370b1cb5095dd9169ea87132820cefa3a366024468f`.
 
-Both `BUILD-METADATA.txt` files pin source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`, target triple, Rust/Cargo 1.99.0, and CLI `one 0.1.0`. These are **unsigned candidate bundles**, not a signed final release.
+Both `BUILD-METADATA.txt` files pin source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`, target triple, Rust/Cargo 1.99.0, and CLI `one 0.1.0`. The current candidate `f46b95ebdd0e26c5ba17f6acb953538f32401aeb` requires fresh bundles. All bundles are unsigned candidates, not a signed final release.
 
 ## Standard-library evidence
 
-On the current SHA, both cross-platform logs assert the exact commit and report the stdlib integration suite passing (18 tests) and `one-core` library tests passing (228 tests). The focused exact-SHA workflow also passes the selected UTC/JSON/SQLite/provenance regressions and the new SQLite final-symlink test. This verifies the implemented API subset; it does **not** establish every broader E1 standard-library acceptance requirement.
+On the prior candidate SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`, both cross-platform logs asserted the exact commit and reported the stdlib integration suite passing (18 tests) and `one-core` library tests passing (228 tests). Focused tests also passed UTC/JSON/SQLite/provenance regressions and the SQLite final-symlink test. These are historical for the new candidate `f46b95ebdd0e26c5ba17f6acb953538f32401aeb`; its exact-SHA reruns are pending. This verifies only the implemented API subset, not every broader E1 requirement.
 
 ## Canonical CI infrastructure
 
