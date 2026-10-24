@@ -42,48 +42,50 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: source
       - name: UTC formatter unit and calendar-boundary tests
         working-directory: source
-        run: cargo test -p one-core --lib unix_seconds_format_as_valid_bounded_gregorian_utc_timestamps
+        run: cargo --locked test -p one-core --lib unix_seconds_format_as_valid_bounded_gregorian_utc_timestamps
       - name: JSON serializer byte-budget boundary tests
         working-directory: source
-        run: cargo test -p one-core --lib json_serializer_enforces_the_utf8_output_byte_limit
+        run: cargo --locked test -p one-core --lib json_serializer_enforces_the_utf8_output_byte_limit
       - name: Source-level UTC formatter integration tests
         working-directory: source
-        run: cargo test -p one-core --test stdlib_builtins unix_timestamp_formatter_runs_through_the_canonical_pipeline
+        run: cargo --locked test -p one-core --test stdlib_builtins unix_timestamp_formatter_runs_through_the_canonical_pipeline
       - name: Source-level text prefix and suffix integration tests
         working-directory: source
-        run: cargo test -p one-core --test stdlib_builtins text_prefix_and_suffix_builtins_execute_through_the_canonical_pipeline
+        run: cargo --locked test -p one-core --test stdlib_builtins text_prefix_and_suffix_builtins_execute_through_the_canonical_pipeline
       - name: Source-level checked integer remainder integration tests
         working-directory: source
-        run: cargo test -p one-core --test stdlib_builtins checked_integer_remainder_runs_through_the_canonical_pipeline
+        run: cargo --locked test -p one-core --test stdlib_builtins checked_integer_remainder_runs_through_the_canonical_pipeline
       - name: Source-level case conversion and numeric integration tests
         working-directory: source
-        run: cargo test -p one-core --test stdlib_builtins case_conversion_and_numeric_builtins_execute_through_the_canonical_pipeline
+        run: cargo --locked test -p one-core --test stdlib_builtins case_conversion_and_numeric_builtins_execute_through_the_canonical_pipeline
       - name: UTC parser unit and calendar-validation tests
         working-directory: source
-        run: cargo test -p one-core --lib utc_text_parses_strict_bounded_gregorian_timestamps
+        run: cargo --locked test -p one-core --lib utc_text_parses_strict_bounded_gregorian_timestamps
       - name: Source-level UTC parser integration tests
         working-directory: source
-        run: cargo test -p one-core --test stdlib_builtins utc_timestamp_parser_runs_through_the_canonical_pipeline
+        run: cargo --locked test -p one-core --test stdlib_builtins utc_timestamp_parser_runs_through_the_canonical_pipeline
       - name: SQLite SQL byte-limit regression
         working-directory: source
-        run: cargo test -p one-core --lib sqlite_adapter_rejects_sql_over_query_byte_limit
+        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_sql_over_query_byte_limit
       - name: SQLite individual parameter byte-limit regression
         working-directory: source
-        run: cargo test -p one-core --lib sqlite_adapter_rejects_individually_oversized_parameters
+        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_individually_oversized_parameters
       - name: SQLite parameter-count regression
         working-directory: source
-        run: cargo test -p one-core --lib sqlite_adapter_rejects_excessive_parameter_count
+        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_excessive_parameter_count
       - name: SQLite aggregate parameter byte-limit regression
         working-directory: source
-        run: cargo test -p one-core --lib sqlite_adapter_rejects_aggregate_parameter_bytes_over_the_limit
+        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_aggregate_parameter_bytes_over_the_limit
       - name: SQLite read-only missing-file regression
         working-directory: source
-        run: cargo test -p one-core --test database_vertical_slice sqlite_read_query_does_not_create_missing_database_file
+        run: cargo --locked test -p one-core --test database_vertical_slice sqlite_read_query_does_not_create_missing_database_file
       - name: Standard-library lint
         working-directory: source
-        run: cargo clippy -p one-core --all-targets -- -D warnings
+        run: cargo --locked clippy -p one-core --all-targets -- -D warnings
