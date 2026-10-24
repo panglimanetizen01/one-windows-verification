@@ -18,7 +18,7 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout verification harness
@@ -91,16 +91,19 @@ jobs:
           set -euo pipefail
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           test -f "$ANDROID_AVD_HOME/one-android-arm64.ini"
-          nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
+          uname -a
+          "$ANDROID_HOME/emulator/emulator" -version
+          avdmanager list avd
+          nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -gpu host > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
           if ! timeout 180s adb wait-for-device; then
             cat "$RUNNER_TEMP/one-android-emulator.log" || true
             exit 1
           fi
           booted=""
-          for attempt in $(seq 1 60); do
-            booted="$(timeout 10s adb shell getprop sys.boot_completed | tr -d '\r' || true)"
+          for attempt in $(seq 1 40); do
+            booted="$(timeout 5s adb shell getprop sys.boot_completed | tr -d '\r' || true)"
             if [ "$booted" = "1" ]; then break; fi
-            sleep 5
+            sleep 3
           done
           if [ "$booted" != "1" ]; then
             cat "$RUNNER_TEMP/one-android-emulator.log" || true
