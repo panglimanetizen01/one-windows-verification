@@ -11,8 +11,8 @@ This file is the evidence index for the candidate. The workflows check out the e
 
 | Gate | Run | Current evidence |
 |---|---|---|
-| Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40084595238](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595238) | Running on final source SHA; includes SQLite NOFOLLOW symlink regression; do not count yet |
-| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40084595259](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595259) | Running on final source SHA; do not count yet |
+| Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40084595238](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595238) | **PASS** on exact source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; UTC/JSON/SQLite/provenance tests, Clippy, and SQLite NOFOLLOW regression passed |
+| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40084595259](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595259) | **PASS** on exact source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; Ubuntu 24.04 and Debian 12 passed |
 | Full cross-platform verification (Ubuntu and Windows 2025) | [40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236) | Running on final source SHA; do not count yet |
 | Android AArch64 native ELF runtime execution | [40084595188](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595188) | Queued on final source SHA; Linux TCG AVD-home fix; runtime acceptance not yet counted |
 
@@ -76,3 +76,5 @@ The final candidate source SHA adds a defense-in-depth SQLite fix: file-backed r
 The reusable Definition of Done received a final documentation correction in source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; the selector is repinned to this SHA. All runs that checked out `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd` are historical evidence only for the new candidate. Re-run and inspect the new exact-SHA matrix before acceptance.
 
 The current source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8` is documentation-only relative to the reviewed code SHA; final-SHA matrix and fresh candidate bundles are still required.
+
+**Final candidate focused/distro verification detail:** focused run `40084595238` passed on exact SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`, including the SQLite final-symlink regression and trusted-publisher signature/tampering test. Linux distro run `40084595259` passed both Ubuntu 24.04 and Debian 12; both logs assert the exact source SHA.
