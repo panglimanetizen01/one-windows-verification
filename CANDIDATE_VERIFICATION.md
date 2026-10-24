@@ -2,11 +2,15 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `6d1577e078dfcf23295afdaf41568b85d3ba07bb`  
+**Current source SHA:** `533744e33e8e95ab83e239c2751846701b2604ea`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the 7777 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
+
+## Final candidate after ledger/DoD reconciliation
+
+Current canonical source SHA: `533744e33e8e95ab83e239c2751846701b2604ea`. This source candidate reconciles the fixed-weight ledger and Definition of Done to the last passing candidate matrix. The previous candidate `6d1577e078dfcf23295afdaf41568b85d3ba07bb` passed cross-platform Ubuntu/Windows, Ubuntu/Debian, focused stdlib/database, lockfile, and artifact-integrity workflows. Because the ledger and DoD were updated afterward, **all exact-SHA checks must pass again on 533744e33e8e95ab83e239c2751846701b2604ea**. Android execution is still not proven. The fixed-weight ledger remains 91/100 implementation and 64/100 verified; E1 remains partial and E2/E3/E4/E6 acceptance is open.
 
 ## Latest candidate rerun — E1 boundary contracts
 
