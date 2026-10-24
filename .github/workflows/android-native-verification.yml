@@ -1,5 +1,5 @@
-name: ONE Android AArch64 Native Runtime Verification (Linux TCG host)
-# Android AArch64 guest under Linux-hosted software TCG to avoid unavailable nested HVF/KVM.
+name: ONE Android AArch64 Native Runtime Verification (macOS TCG workaround)
+# Android AArch64 guest on macOS ARM64, with the emulator's injected HVF flag filtered to force software TCG.
 # Require actual AArch64 ELF execution on the pinned canonical source SHA.
 
 on:
@@ -20,8 +20,8 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    # x86_64 Linux avoids the hosted macOS nested-HVF failure; Android AArch64 executes via explicit software TCG.
-    runs-on: ubuntu-24.04
+    # macOS ARM64 supports the Android AArch64 system image; a QEMU wrapper below strips unsupported nested-HVF activation.
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - name: Checkout verification harness
@@ -105,6 +105,26 @@ jobs:
           test -f "$ANDROID_AVD_HOME/one-api35-arm64.ini"
           emulator_bin="$ANDROID_HOME/emulator/emulator"
           test -x "$emulator_bin"
+          # The hosted macOS runner reports HVF as available, but nested HVF fails at QEMU startup.
+          # Android Emulator injects -enable-hvf even with -accel off; filter that QEMU argument so TCG is used.
+          qemu_bin="$ANDROID_HOME/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless"
+          test -x "$qemu_bin"
+          mv "$qemu_bin" "$qemu_bin.real"
+          cat > "$qemu_bin" <<'WRAPPER'
+          #!/bin/bash
+          set -euo pipefail
+          real="$(dirname "$0")/qemu-system-aarch64-headless.real"
+          args=()
+          for arg in "$@"; do
+            [[ "$arg" == "-enable-hvf" ]] && continue
+            args+=("$arg")
+          done
+          printf 'QEMU TCG wrapper removed -enable-hvf; remaining args: ' >&2
+          printf '%q ' "${args[@]}" >&2
+          printf '\\n' >&2
+          exec "$real" "${args[@]}"
+          WRAPPER
+          chmod +x "$qemu_bin"
           log="$RUNNER_TEMP/one-android-emulator.log"
           "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect -feature -HVF -accel off -verbose >"$log" 2>&1 &
           emulator_pid=$!
