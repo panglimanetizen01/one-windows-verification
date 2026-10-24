@@ -123,27 +123,27 @@ jobs:
         run: python tools/check_contract.py
       - name: Build
         working-directory: source
-        run: cargo build --workspace --all-targets
+        run: cargo --locked build --workspace --all-targets
       - name: AST contract regression tests
         working-directory: source
-        run: cargo test -p one-core ast_contract_tests
+        run: cargo --locked test -p one-core ast_contract_tests
       - name: Clippy
         working-directory: source
         shell: bash
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo --locked clippy --workspace --all-targets -- -D warnings
       - name: Tests
         working-directory: source
         if: runner.os != 'Windows'
-        run: cargo test --workspace --all-targets
+        run: cargo --locked test --workspace --all-targets
       - name: Tests (Windows; Android target covered on Ubuntu)
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
-        run: cargo test --workspace --all-targets -- --skip android_target_explicit_mempertahankan_build_native
+        run: cargo --locked test --workspace --all-targets -- --skip android_target_explicit_mempertahankan_build_native
       - name: Real network runtime tests
         working-directory: source
         shell: bash
-        run: cargo test -p one-core --features real-network --all-targets
+        run: cargo --locked test -p one-core --features real-network --all-targets
       - name: Offline verification
         working-directory: source
         shell: bash
