@@ -131,3 +131,8 @@ Independent inspection [40088506284](https://github.com/panglimanetizen01/one-wi
 - Windows artifact [12558350265](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116/artifacts/12558350265): ZIP SHA-256 `0686d79036c5ce4f4f95bf861c3e82ce8bd9813dbf5dcbe748053ed9c749ee9e`; binary SHA-256 `0abae22d28b34ffe266090679786132323dd7508f0f38b8a79c8229aa6cff279`; PE32+ x86-64; target `x86_64-pc-windows-msvc`.
 - Both metadata files pin source SHA `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`, Rust/Cargo 1.99.0 and CLI `one 0.1.0`.
 - This is artifact-integrity evidence, not signed package provenance or final release authorization; E2 remains open.
+
+
+### Canonical repository CI retry classification — source `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`
+
+Canonical runs [40088066589](https://github.com/panglimanetizen01/one/actions/runs/40088066589) (main CI), [40088066594](https://github.com/panglimanetizen01/one/actions/runs/40088066594) (Linux distro), and [40088066614](https://github.com/panglimanetizen01/one/actions/runs/40088066614) (focused stdlib) failed. I invoked the supported rerun-failed-jobs action for all three. The retry attempts again returned completed-failure jobs with `steps: null` and `logs_url: null`; no executable test step or source failure diagnostic is available. These are **unusable runner/infrastructure attempts**, not evidence of a source test failure and certainly not PASS. The independent exact-SHA mirror remains the executable evidence path; canonical hosted CI infrastructure remains an open item.
