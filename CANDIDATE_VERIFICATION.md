@@ -1,7 +1,7 @@
 # ONE Candidate Verification — Exact-SHA Evidence
 
 **Canonical source repository:** https://github.com/panglimanetizen01/one  
-**Candidate source SHA:** `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`  
+**Candidate source SHA:** `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`  
 **Source branch:** `milestone/100-ecosystem-20261023`  
 **Candidate PR:** https://github.com/panglimanetizen01/one/pull/80
 
@@ -11,12 +11,12 @@ This file is the evidence index for the candidate. The workflows check out the e
 
 | Gate | Run | Current evidence |
 |---|---|---|
-| Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40083651574](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083651574) | **PASS** on exact source SHA `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`; UTC/JSON/SQLite regressions, trusted-publisher signature/tampering test, and Clippy passed |
-| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40083651500](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083651500) | **PASS** on exact source SHA `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`; Ubuntu 24.04 and Debian 12 completed successfully |
-| Full cross-platform verification (Ubuntu and Windows 2025) | [40083651463](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083651463) | Queued on final candidate SHA; do not count yet |
-| Android AArch64 native ELF runtime execution | [40083651724](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083651724) | Emulator boot diagnostics running; NDK setup passed, runtime acceptance not yet counted |
+| Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40083875334](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875334) | Running on final source SHA; includes SQLite NOFOLLOW regression; do not count yet |
+| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) | Running on final source SHA; do not count yet |
+| Full cross-platform verification (Ubuntu and Windows 2025) | [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) | Queued on final source SHA; do not count yet |
+| Android AArch64 native ELF runtime execution | [40083875211](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875211) | Direct emulator boot with HVF disabled; runtime acceptance not yet counted |
 
-**Historical release bundle evidence (prior source SHA `1a48989f213cd000a1eb3143b97549415b733241`; not final-SHA acceptance):** the earlier passing cross-platform run produced non-expired artifacts: [Linux bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12556010150), SHA-256 `5a5a63fef110959c5880a020f0933084e691814e6a92f403f35bea3d396f1f80`; [Windows bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12555024750), SHA-256 `c43d5811ac872af8a07c1f453e5f87ff7adc138d2a445b267e2655f9ab35f197`. Both artifacts are named with source SHA `1a48989f213cd000a1eb3143b97549415b733241`. The final candidate SHA `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac` requires fresh bundles and checksum inspection.
+**Historical release bundle evidence (prior source SHA `1a48989f213cd000a1eb3143b97549415b733241`; not final-SHA acceptance):** the earlier passing cross-platform run produced non-expired artifacts: [Linux bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12556010150), SHA-256 `5a5a63fef110959c5880a020f0933084e691814e6a92f403f35bea3d396f1f80`; [Windows bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12555024750), SHA-256 `c43d5811ac872af8a07c1f453e5f87ff7adc138d2a445b267e2655f9ab35f197`. Both artifacts are named with source SHA `1a48989f213cd000a1eb3143b97549415b733241`. The final candidate SHA `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd` requires fresh bundles and checksum inspection.
 
 The downloaded ZIPs were independently inspected, and their locally computed SHA-256 digests match GitHub's reported artifact ZIP digests exactly. Linux bundle contains an x86-64 ELF executable and Windows bundle contains a PE32+ x86-64 executable. Both embedded `SHA256SUMS` files verified successfully. Embedded binary digests: Linux `6b6190ac0fe3c3954178e4f1e15601e959206015aaf06aee4fb157fc394ba676`; Windows `d7cb24e1833730566d6a62fbed71748a1295637ab0e82efd6f2700b60b1306da`. `BUILD-METADATA.txt` in both bundles pins source SHA `1a48989f213cd000a1eb3143b97549415b733241`, target triple, Rust/Cargo 1.99.0, and CLI version `one 0.1.0`.
 
@@ -36,7 +36,7 @@ The canonical repository's candidate runs [40077268116](https://github.com/pangl
 
 ## Final gate checklist
 
-The canonical PR now includes [DEFINITION_OF_DONE.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md), which defines exact-SHA evidence rules and the fixed-weight E1–E6 release acceptance criteria. Candidate SHA is now `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`; previously passing cross-platform, distro, and focused runs were on the prior SHA and must not be counted as final-SHA acceptance until rerun.
+The canonical PR now includes [DEFINITION_OF_DONE.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md), which defines exact-SHA evidence rules and the fixed-weight E1–E6 release acceptance criteria. Candidate SHA is now `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; previously passing cross-platform, distro, and focused runs were on the prior SHA and must not be counted as final-SHA acceptance until rerun.
 
 ## Remaining fixed-ledger acceptance scope
 
@@ -57,10 +57,12 @@ The canonical fixed-weight [completion ledger](https://github.com/panglimanetize
 - Do not mark the overall milestone GREEN LOCKED until all weighted ledger rows and required release gates have acceptance evidence, the completion ledger is reconciled, and the final forensic audit is complete.
 - The focused workflow PASS is a narrow pass only; it does not by itself establish the full release gate.
 
-The fixed-weight ledger was then reconciled in source commit `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`; this is the current candidate SHA and the selector has been repinned. Runs started before this pin are historical and cannot close the current SHA gate. Wait for the new run set whose harness commit includes the pin update, then inspect every job's checked-out source SHA in its logs.
+The fixed-weight ledger was then reconciled in source commit `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; this is the current candidate SHA and the selector has been repinned. Runs started before this pin are historical and cannot close the current SHA gate. Wait for the new run set whose harness commit includes the pin update, then inspect every job's checked-out source SHA in its logs.
 
-Current final-SHA workflow set is pinned to source `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`: cross-platform `40083651463`, Linux distro `40083651500`, focused standard-library/database/provenance `40083651574`, lockfile bootstrap `40083651487`, Android runtime `40083651724`. These IDs are the acceptance candidates; older run IDs above are historical and must not be used to claim final-SHA acceptance.
+Current final-SHA workflow set is pinned to source `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`: cross-platform `40083875189`, Linux distro `40083875252`, focused standard-library/database/provenance `40083875334`, lockfile bootstrap `40083875327`, Android runtime `40083875211`. These IDs are the acceptance candidates; older run IDs above are historical and must not be used to claim final-SHA acceptance.
 
-**Current final-SHA lockfile bootstrap:** [run 40083651487](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083651487) passed after checking out exact source SHA `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`; generated Cargo lockfile SHA-256 `284f1186517314c88ac31412c86f09e6418114376e56cd4bb2ae5fd676495c90`.
+**Current final-SHA lockfile bootstrap:** [run 40083875327](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875327) passed after checking out exact source SHA `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; generated Cargo lockfile SHA-256 `284f1186517314c88ac31412c86f09e6418114376e56cd4bb2ae5fd676495c90`.
 
-**Final-SHA distro evidence detail:** [run 40083651500](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083651500) completed successfully on source `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac`; both Ubuntu 24.04 and Debian 12 job logs explicitly check out and assert that SHA, then complete native workspace and real-network test steps with no failures.
+**Final-SHA distro evidence detail:** [run 40083651500](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083651500) on previous source SHA `9598e56ef4aaada5d37faae30110cf5f3ae6c4ac` (historical) completed successfully on source `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; both Ubuntu 24.04 and Debian 12 job logs explicitly check out and assert that SHA, then complete native workspace and real-network test steps with no failures.
+
+The final candidate source SHA adds a defense-in-depth SQLite fix: file-backed read-only opens include `SQLITE_OPEN_NOFOLLOW`, with a Unix regression for final symlinks. The full matrix must confirm the new flag/test on Linux and Windows; the remaining parent-component/mount confinement caveat remains open.
