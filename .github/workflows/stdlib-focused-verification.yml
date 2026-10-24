@@ -96,6 +96,15 @@ jobs:
       - name: V2 provenance unit tests (source binding, trust store, tampering, malformed inputs)
         working-directory: source
         run: cargo --locked test -p one-cli --bin one package_provenance::tests
+      - name: Packaging deterministic bytes, stale-lock rejection, and dependency fail-closed tests
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo --locked test -p one-cli --test cli package_command_writes_manifested_artifact -- --exact
+          cargo --locked test -p one-cli --test cli build_and_package_artifacts_are_byte_deterministic -- --exact
+          cargo --locked test -p one-cli --test cli package_command_supports_modular_human_core_projects_deterministically -- --exact
+          cargo --locked test -p one-cli --test cli package_rejects_unsupported_dependency_declarations_instead_of_ignoring_them -- --exact
       - name: E1 text Unicode, empty-value, and integer-boundary regressions
         working-directory: source
         run: cargo --locked test -p one-core --test stdlib_builtins text_builtins_cover_empty_values_unicode_scalars_and_i64_boundaries
