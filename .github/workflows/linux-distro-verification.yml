@@ -1,4 +1,5 @@
 name: ONE Linux Distro Verification
+# Exact-SHA Ubuntu 24.04 and Debian 12 acceptance for the pinned candidate.
 # Keep this workflow in sync with the default-branch definition so runs use the latest matrix contract.
 
 on:
