@@ -15,7 +15,7 @@ This candidate adds the default-parser mapping regression test `mapping_builtins
 
 | Gate | Run | Current exact-SHA status |
 |---|---|---|
-| Focused Standard Library/database + package signature | [40106909849](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909849) | In progress; exact SHA checkout verified, test suite has not completed |
+| Focused Standard Library/database + package signature | [40107005038](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40107005038) | **PASS** — 27 steps passed, including the new default-parser mapping API regression, E1 boundary regressions, SQLite resource/symlink tests, and package signature verification |
 | Cargo lockfile bootstrap | [40106909806](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909806) | In progress |
 | Linux distro conformance | [40106909776](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909776) | In progress |
 | Cross-platform Ubuntu + Windows Server 2025 | [40106909764](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40106909764) | Queued |
