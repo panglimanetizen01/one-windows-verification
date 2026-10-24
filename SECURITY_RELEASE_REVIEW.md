@@ -40,7 +40,7 @@ This is a focused source review, not a claim of a complete sandbox or a third-pa
 - Focused SQLite/stdlib/provenance regression and Clippy: [40083996493](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083996493) — PASS on the reviewed source SHA.
 - Cross-platform Ubuntu/Windows verification: [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) — **PASS** on the reviewed source SHA; both jobs passed and produced inspected bundles.
 - Ubuntu/Debian distribution verification: [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) — **PASS** on the reviewed source SHA.
-- Android AArch64 ELF runtime: [40084595188](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595188) — queued for the AVD-home fix on Ubuntu x86_64 with explicit software TCG; not yet accepted.
+- Android AArch64 ELF runtime: [40084822122](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084822122) — running on macOS ARM64 with a QEMU wrapper that strips the injected `-enable-hvf`; not yet accepted.
 
 ## Decision
 
