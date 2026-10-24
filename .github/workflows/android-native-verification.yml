@@ -89,26 +89,61 @@ jobs:
           test -x "$clang"
           echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
 
-      - name: Build and execute ELF AArch64 on Android emulator
-        uses: reactivecircus/android-emulator-runner@v2
+      - name: Boot Android AArch64 emulator with observable diagnostics
+        shell: bash
         env:
-          # Android Emulator requires explicit opt-in before starting software TCG mode.
           ANDROID_I_WANT_MY_TCG: yes
-        with:
-          api-level: 35
-          target: google_apis
-          arch: arm64-v8a
-          profile: pixel_2
-          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect -accel off
-          disable-animations: true
-          emulator-boot-timeout: 1800
-          script: |
-            set -euo pipefail
-            cd source
-            export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
-            uname -a
-            "$ONE_ANDROID_CLANG" --version
-            adb devices
-            test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = "35"
-            test "$(adb shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
-            cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
+        run: |
+          set -euo pipefail
+          echo "Host architecture: $(uname -m)"
+          echo "Host kernel: $(uname -a)"
+          sdkmanager --install "emulator" "platform-tools" "system-images;android-35;google_apis;arm64-v8a"
+          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name one-api35-arm64 --package "system-images;android-35;google_apis;arm64-v8a" --device pixel_2
+          emulator_bin="$ANDROID_HOME/emulator/emulator"
+          test -x "$emulator_bin"
+          log="$RUNNER_TEMP/one-android-emulator.log"
+          "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect -accel off -verbose >"$log" 2>&1 &
+          emulator_pid=$!
+          echo "Emulator PID: $emulator_pid"
+          echo "Emulator log: $log"
+          adb start-server
+          booted=0
+          for attempt in $(seq 1 120); do
+            if ! kill -0 "$emulator_pid" 2>/dev/null; then
+              echo "Android emulator process exited before boot."
+              tail -n 240 "$log" || true
+              exit 1
+            fi
+            devices="$(adb devices | tr -d '\r')"
+            echo "Boot poll $attempt/120: $devices"
+            if printf '%s\n' "$devices" | grep -q '^emulator-5554[[:space:]]\+device$'; then
+              completed="$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+              if [ "$completed" = "1" ]; then booted=1; break; fi
+            fi
+            sleep 15
+          done
+          if [ "$booted" != "1" ]; then
+            echo "Android emulator did not reach sys.boot_completed=1 within 30 minutes."
+            tail -n 300 "$log" || true
+            adb devices -l || true
+            exit 1
+          fi
+          adb -s emulator-5554 shell getprop ro.build.version.sdk
+          adb -s emulator-5554 shell getprop ro.product.cpu.abi
+          test "$(adb -s emulator-5554 shell getprop ro.build.version.sdk | tr -d '\r')" = "35"
+          test "$(adb -s emulator-5554 shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
+          echo "ONE_ANDROID_ADB=$ANDROID_HOME/platform-tools/adb" >> "$GITHUB_ENV"
+
+      - name: Build and execute ELF AArch64 on Android emulator
+        shell: bash
+        working-directory: source
+        env:
+          ANDROID_I_WANT_MY_TCG: yes
+          ONE_ANDROID_ADB: ${{ env.ONE_ANDROID_ADB }}
+        run: |
+          set -euo pipefail
+          export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
+          uname -a
+          "$ONE_ANDROID_CLANG" --version
+          adb devices
+          cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
