@@ -14,7 +14,7 @@ This file is the evidence index for the candidate. The workflows check out the e
 | Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40081565281](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081565281) | **PASS** on the candidate SHA |
 | Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40081562357](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081562357) | **PASS** on the candidate SHA; both distro jobs green |
 | Full cross-platform verification (Ubuntu and Windows 2025) | [40081549604](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604) | **PASS** on the candidate SHA; Ubuntu and Windows jobs green |
-| Android AArch64 native ELF runtime execution | [40081481013](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081481013) | Running; do not count yet |
+| Android AArch64 native ELF runtime execution | [40082714472](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40082714472) | Running with explicit TCG opt-in and a 30-minute boot window; do not count yet |
 
 **Release bundle evidence:** the passing cross-platform run produced non-expired artifacts: [Linux bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12556010150), SHA-256 `5a5a63fef110959c5880a020f0933084e691814e6a92f403f35bea3d396f1f80`; [Windows bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12555024750), SHA-256 `c43d5811ac872af8a07c1f453e5f87ff7adc138d2a445b267e2655f9ab35f197`. Both artifacts are named with source SHA `1a48989f213cd000a1eb3143b97549415b733241`.
 
@@ -26,7 +26,7 @@ The passing exact-SHA cross-platform run [40081549604](https://github.com/pangli
 
 ## Android runner diagnosis and remediation
 
-The prior Android attempt [40080133616](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40080133616) failed before the native test ran: the Android emulator process exited with `HVF error: HV_UNSUPPORTED` / `failed to initialize HVF`, and ADB never saw `emulator-5554`. The verification workflow now adds `-accel off` so QEMU uses software emulation instead of the unsupported HVF path. This change is an infrastructure remediation, not proof that Android runtime acceptance passed; only the actual ELF build, AArch64 header checks, ADB push, and successful execution output can close that gate.
+Android attempt [40081481013](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081481013) proved that `-accel off` alone was insufficient: QEMU still appended `-enable-hvf` and failed with `HVF error: HV_UNSUPPORTED`. Android's official emulator CLI requires `ANDROID_I_WANT_MY_TCG=yes` to opt in to software TCG mode. The workflow now sets that environment variable and extends the boot window to 1800 seconds (job timeout 60 minutes); the new exact-SHA attempt is [40082714472](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40082714472). This is a targeted remediation, not proof that Android runtime acceptance passed; only the actual ELF build, AArch64 header checks, ADB push, and successful execution output can close that gate.
 
 ## Canonical CI runner issue
 
