@@ -176,7 +176,7 @@ The current canonical candidate source is `9f24014cd1ebde1f0a72ef598e44e29fa779a
 | Cargo lockfile bootstrap | [40092715680](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715680) | PASS |
 | Linux/Windows candidate artifact integrity | [40092715698](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715698) | PASS — bundle digests match GitHub artifact metadata; embedded source SHA/toolchain/CLI metadata and ELF64 EM_X86_64 / PE32+ x86-64 headers validated |
 | Android AArch64 runtime | [40092942784](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092942784) | IN PROGRESS — API 35 arm64 emulator boot; no ELF execution evidence yet |
-| Fixed-weight ledger gate | [40092715712](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715712) | NOT PASSED at time of evaluation: current-SHA cross-platform/artifact runs were still in progress; protected canonical release API returned HTTP 403; nine Definition of Done items remain unchecked |
+| Fixed-weight ledger gate | [40092715712](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715712) | NOT PASSED at time of evaluation: current-SHA cross-platform/artifact runs were still in progress; protected canonical release evidence remains inaccessible because `CANONICAL_READ_TOKEN` lacks Actions:read on the private source repository; nine Definition of Done items remain unchecked |
 
 Artifact metadata observed in the successful integrity run:
 - Linux candidate ZIP artifact ID `12559338923`, SHA-256 `f2d00fa3ce1bf6489a29006b29df5e31a84a53c1c920ce9d481418374be38979`.
@@ -190,3 +190,8 @@ The canonical repository hosted workflow remains an independent gate: its recent
 ## Canonical hosted-CI retry result for source SHA `9f24014cd1ebde1f0a72ef598e44e29fa779ac3f`
 
 I retried the canonical failed workflow jobs instead of treating the first failure as final: [One CI run 40092705031, attempt 2](https://github.com/panglimanetizen01/one/actions/runs/40092705031), [Linux distribution run 40092705049, attempt 2](https://github.com/panglimanetizen01/one/actions/runs/40092705049), and [focused stdlib run 40092705091, attempt 2](https://github.com/panglimanetizen01/one/actions/runs/40092705091). All three retries still ended in failure with **zero executable steps** in every job. This is recorded as a hosted-runner/infrastructure failure, not a source test failure and not a PASS. Independent exact-SHA mirror results remain separate evidence and do not replace canonical hosted CI.
+
+
+## Ledger-gate permission diagnosis
+
+The verifier now retries a public unauthenticated read after HTTP 403, but the canonical repository is private, so that fallback correctly returns 404. To finish the live protected-release evidence check, the repository administrator must update the verification repository secret `CANONICAL_READ_TOKEN` to a token with read access to Actions on `panglimanetizen01/one`. The gate remains fail-closed until that permission exists and an exact-SHA protected release workflow succeeds.
