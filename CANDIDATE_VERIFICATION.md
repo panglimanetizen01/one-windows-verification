@@ -72,9 +72,9 @@ The canonical PR now includes the [Definition of Done](https://github.com/pangli
 
 - **Pinned source SHA:** `9d5d319b88cbee17b18554cfe7641ec1008ba62a`.
 - This candidate contains documentation-only corrections reconciling the fixed-weight ledger total with its row values and adding the checkpoint evidence summary. The prior four passing mirror runs listed above are tied to `f46b95ebdd0e26c5ba17f6acb953538f32401aeb` and are **historical for this new SHA**.
-- Required current-SHA runs: cross-platform Ubuntu/Windows, Linux distro, focused standard-library/SQLite/provenance, Cargo lockfile bootstrap, and Android AArch64 ELF build-and-execute. No current-SHA run is credited until its logs assert this SHA and all required steps pass.
+- Required current-SHA runs: cross-platform Ubuntu/Windows, Linux distro, focused standard-library/SQLite/provenance, Cargo lockfile bootstrap, artifact integrity, and Android AArch64 ELF build-and-execute. The first five now pass against source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a`; Android remains in progress and unaccepted.
 - Android run `40085406752` was still booting the emulator on the prior SHA at the last check; it does not prove ELF execution on this candidate.
-- Fixed weights unchanged. Implementation: **91/100 provisional**; verified: **60/100**; gate **NOT PASSED**. E1–E6 acceptance remains open, including protected release dispatch, Android execution, security disposition, and final forensic audit.
+- Fixed weights unchanged. Implementation: **91/100 provisional**; verified: **60/100**; gate **NOT PASSED**. E1–E6 acceptance remains open, including full stdlib scope, protected release dispatch/signature, Android execution, security disposition, and final forensic audit.
 
 
 ## Exact-SHA bundle metadata — source `9d5d319b88cbee17b18554cfe7641ec1008ba62a`
@@ -83,7 +83,7 @@ Run [40086990528](https://github.com/panglimanetizen01/one-windows-verification/
 - Linux candidate artifact [12557347980](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528/artifacts/12557347980), ZIP digest from GitHub artifact metadata: `sha256:33cc3445cbccc3780bb776a6d9b2ec846d1687e8d45a8526adf27aa120cf237f`, size 1,738,836 bytes.
 - Windows candidate artifact [12557247338](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528/artifacts/12557247338), ZIP digest from GitHub artifact metadata: `sha256:564f7105d3f12face750d68431699d3f2491c28ff526c75e7951d766f21d8c0a`, size 1,488,731 bytes.
 
-Both names embed the canonical source SHA. The artifact workflow generated `BUILD-METADATA.txt` and `SHA256SUMS` during packaging, but independent download/extraction and comparison of the embedded checksums and executable formats has not been performed in this session. These remain unsigned candidate bundles, not final release artifacts.
+Both names embed the canonical source SHA. Independent download, extraction, ZIP digest comparison, embedded checksum validation, metadata review, and executable-header inspection have now been completed by [artifact integrity run 40087385932](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40087385932). See the PASS section below. These remain unsigned candidate bundles, not final release artifacts.
 
 
 ## Candidate artifact integrity — PASS for source `9d5d319b88cbee17b18554cfe7641ec1008ba62a`
