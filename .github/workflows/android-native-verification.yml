@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-android-runtime-linux-${{ github.workflow }}-${{ github.ref_name }}
+  group: one-android-runtime-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -61,7 +61,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          yes | sdkmanager --licenses || true
+          license_log="$(mktemp)"
+          set +e
+          yes | sdkmanager --licenses >"$license_log" 2>&1
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          license_status="${statuses[1]}"
+          yes_status="${statuses[0]}"
+          cat "$license_log"
+          if (( license_status != 0 )); then
+            exit "$license_status"
+          fi
+          if (( yes_status != 0 && yes_status != 141 )); then
+            exit "$yes_status"
+          fi
           sdkmanager --install "ndk;27.2.12479018"
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -type f -path '*/bin/clang' -print -quit)"
           test -n "$clang"
