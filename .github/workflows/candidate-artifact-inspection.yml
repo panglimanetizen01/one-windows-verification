@@ -83,6 +83,7 @@ jobs:
 
           print(f"Selected cross-platform run {selected['id']} at mirror SHA {selected['head_sha']} for source SHA {source_sha}")
           artifacts = api(f"https://api.github.com/repos/{owner_repo}/actions/runs/{selected['id']}/artifacts?per_page=100")["artifacts"]
+          manifest = {}
           for platform in ("Linux", "Windows"):
               prefix = f"one-release-candidate-{platform}-{source_sha}"
               found = [a for a in artifacts if a.get("name", "").startswith(prefix) and not a.get("expired")]
@@ -92,23 +93,22 @@ jobs:
               expected_digest = artifact.get("digest", "")
               if not expected_digest.startswith("sha256:"):
                   raise SystemExit(f"GitHub artifact metadata has no SHA-256 digest for {artifact['name']}: {expected_digest}")
-              url = f"https://api.github.com/repos/{owner_repo}/actions/artifacts/{artifact['id']}/zip"
-              req = urllib.request.Request(url, headers={
-                  "Authorization": f"Bearer {token}",
-                  "Accept": "application/vnd.github+json",
-                  "User-Agent": "one-candidate-artifact-integrity",
-              })
-              with urllib.request.urlopen(req, timeout=120) as response:
-                  data = response.read()
-              actual_digest = "sha256:" + hashlib.sha256(data).hexdigest()
-              if actual_digest != expected_digest:
-                  raise SystemExit(f"{platform} archive digest mismatch: downloaded {actual_digest}, GitHub metadata {expected_digest}")
-              output = root / f"{platform.lower()}-candidate.zip"
-              output.write_bytes(data)
-              print(f"{platform}: artifact_id={artifact['id']} name={artifact['name']}")
-              print(f"{platform}: archive_digest={actual_digest} size={len(data)} bytes")
+              manifest[platform] = {"id": artifact["id"], "name": artifact["name"], "digest": expected_digest}
+              print(f"{platform}: artifact_id={artifact['id']} name={artifact['name']} digest={expected_digest}")
+          pathlib.Path("artifact-manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
           PY
           mkdir -p extracted/linux extracted/windows
+          for platform in Linux Windows; do
+            key="$(printf '%s' "$platform" | tr '[:upper:]' '[:lower:]')"
+            artifact_id="$(jq -r ".${platform}.id" artifact-manifest.json)"
+            expected_digest="$(jq -r ".${platform}.digest" artifact-manifest.json | sed 's/^sha256://')"
+            curl --fail --location --silent --show-error \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/${artifact_id}/zip" \
+              --output "downloads/${key}-candidate.zip"
+            echo "${expected_digest}  downloads/${key}-candidate.zip" | sha256sum --check
+          done
           unzip -q downloads/linux-candidate.zip -d extracted/linux
           unzip -q downloads/windows-candidate.zip -d extracted/windows
           find extracted -maxdepth 3 -type f -print | sort
