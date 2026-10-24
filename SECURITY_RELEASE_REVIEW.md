@@ -37,9 +37,9 @@ This is a focused source review, not a claim of a complete sandbox or a third-pa
 ## Verification evidence
 
 - Focused SQLite/stdlib/provenance regression and Clippy: [40083996493](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083996493) — PASS on the reviewed source SHA.
-- Cross-platform Ubuntu/Windows verification: [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) — still required to finish for the reviewed source SHA.
-- Ubuntu/Debian distribution verification: [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) — still required to finish for the reviewed source SHA.
-- Android AArch64 ELF runtime: [40083911641](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083911641) — still required to execute successfully for the reviewed source SHA.
+- Cross-platform Ubuntu/Windows verification: [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) — **PASS** on the reviewed source SHA; both jobs passed and produced inspected bundles.
+- Ubuntu/Debian distribution verification: [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) — **PASS** on the reviewed source SHA.
+- Android AArch64 ELF runtime: [40083911641](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083911641) — still running with `-feature -HVF` to avoid unsupported nested HVF; not yet accepted.
 
 ## Decision
 
