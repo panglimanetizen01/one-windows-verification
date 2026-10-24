@@ -11,7 +11,7 @@ This file is the evidence index for the candidate. The workflows check out the e
 
 | Gate | Run | Current evidence |
 |---|---|---|
-| Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40083875334](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875334) | Running on final source SHA; includes SQLite NOFOLLOW regression; do not count yet |
+| Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40083996493](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083996493) | Running on final source SHA; includes explicit SQLite NOFOLLOW symlink test; do not count yet |
 | Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) | Running on final source SHA; do not count yet |
 | Full cross-platform verification (Ubuntu and Windows 2025) | [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) | Queued on final source SHA; do not count yet |
 | Android AArch64 native ELF runtime execution | [40083911641](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083911641) | Latest attempt adds explicit `-feature -HVF` before `-accel off`; runtime acceptance not yet counted |
@@ -59,7 +59,7 @@ The canonical fixed-weight [completion ledger](https://github.com/panglimanetize
 
 The fixed-weight ledger was then reconciled in source commit `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; this is the current candidate SHA and the selector has been repinned. Runs started before this pin are historical and cannot close the current SHA gate. Wait for the new run set whose harness commit includes the pin update, then inspect every job's checked-out source SHA in its logs.
 
-Current final-SHA workflow set is pinned to source `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`: cross-platform `40083875189`, Linux distro `40083875252`, focused standard-library/database/provenance `40083875334`, lockfile bootstrap `40083875327`, Android runtime `40083911641`. These IDs are the acceptance candidates; older run IDs above are historical and must not be used to claim final-SHA acceptance.
+Current final-SHA workflow set is pinned to source `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`: cross-platform `40083875189`, Linux distro `40083875252`, focused standard-library/database/provenance `40083996493`, lockfile bootstrap `40083875327`, Android runtime `40083911641`. These IDs are the acceptance candidates; older run IDs above are historical and must not be used to claim final-SHA acceptance.
 
 **Current final-SHA lockfile bootstrap:** [run 40083875327](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875327) passed after checking out exact source SHA `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; generated Cargo lockfile SHA-256 `284f1186517314c88ac31412c86f09e6418114376e56cd4bb2ae5fd676495c90`.
 
