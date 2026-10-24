@@ -94,3 +94,8 @@ Independent workflow [40087385932](https://github.com/panglimanetizen01/one-wind
 - Windows artifact [12557247338](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528/artifacts/12557247338): ZIP SHA-256 `564f7105d3f12face750d68431699d3f2491c28ff526c75e7951d766f21d8c0a`; embedded binary `one.exe` SHA-256 `f5749302ef052c6f192939a9d0c96b54edc2c12cba606551383c3e194d7890a9`; PE32+ x86-64; target `x86_64-pc-windows-msvc`.
 - Both metadata files assert source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a`, Rust/Cargo 1.99.0, and CLI `one 0.1.0`.
 - These are checksum-verified **unsigned candidate bundles**, not signed final release artifacts. This does not close E2.
+
+
+## Supplemental Linux bundle execution — manual, not hosted CI
+
+The Linux candidate ZIP from artifact `12557347980` was downloaded and its embedded `SHA256SUMS` checked in the current ChatGPT execution container. The binary's `BUILD-METADATA.txt` pins source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a`. Manual smoke commands executed successfully: `one version` reported `one 0.1.0`; `one help` displayed the documented CLI commands; `one buat` created a temporary project; `one periksa`, `one jalankan`, `one bangun`, `one test` (1 fixture), and `one package` all succeeded on the generated example. The temporary project was removed after the test. This is supplemental direct artifact execution, **not GitHub-hosted CI**, and does not replace the required Windows/Android or release-provenance gates.
