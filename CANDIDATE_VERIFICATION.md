@@ -2,7 +2,7 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `533744e33e8e95ab83e239c2751846701b2604ea`  
+**Current source SHA:** `54f3de667e05075805fcc5cd5dc621b653075667`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the 7777 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
 
@@ -10,7 +10,7 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 
 ## Final candidate after ledger/DoD reconciliation
 
-Current canonical source SHA: `533744e33e8e95ab83e239c2751846701b2604ea`. The completion ledger and Definition of Done are reconciled, and the final-SHA rerun now has these results:
+Current canonical source SHA: `54f3de667e05075805fcc5cd5dc621b653075667`. The completion ledger and Definition of Done E5 references were reconciled to the passing matrix on the prior candidate. That documentation-only reconciliation creates source SHA `54f3de667e05075805fcc5cd5dc621b653075667`; a fresh exact-SHA matrix is mandatory, and the prior candidate's results below remain historical until the rerun completes:
 
 | Gate | Exact-SHA evidence | Result |
 |---|---|---|
@@ -22,7 +22,7 @@ Current canonical source SHA: `533744e33e8e95ab83e239c2751846701b2604ea`. The co
 | Android AArch64 ELF runtime | [40095539358](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40095539358) | IN PROGRESS at emulator boot; ELF execution/output not yet observed |
 | Fixed-weight ledger gate | [40095563933](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40095563933) | NOT PASSED — evaluated before all matrix jobs completed; E1/E2/E3/E4/E6 remain unaccepted and canonical release evidence token permission is still missing |
 
-The previous candidate `6d1577e078dfcf23295afdaf41568b85d3ba07bb` passed the same cross-platform, distro, focused, lockfile, and artifact checks; it is historical. Current ledger remains 91/100 implementation and 64/100 verified. Do not award E1 full credit: its implementation score remains 7/10 because the broader reusable standard-library scope is incomplete. The canonical hosted CI retries for this final SHA failed before executing any steps; this is an infrastructure failure, not source-test evidence. Protected release evidence remains inaccessible because `CANONICAL_READ_TOKEN` needs Actions:read on the private canonical repository.
+The previous candidate `6d1577e078dfcf23295afdaf41568b85d3ba07bb` passed the same cross-platform, distro, focused, lockfile, and artifact checks; it is historical. Current ledger remains 91/100 implementation and 64/100 verified. E5's row now points to the last passing matrix on `533744e33e8e95ab83e239c2751846701b2604ea`; rerun this candidate before treating that evidence as current. Do not award E1 full credit: its implementation score remains 7/10 because the broader reusable standard-library scope is incomplete. The canonical hosted CI retries for this final SHA failed before executing any steps; this is an infrastructure failure, not source-test evidence. Protected release evidence remains inaccessible because `CANONICAL_READ_TOKEN` needs Actions:read on the private canonical repository.
 
 ## Latest candidate rerun — E1 boundary contracts
 
