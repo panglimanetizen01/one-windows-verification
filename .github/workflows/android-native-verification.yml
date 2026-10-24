@@ -18,7 +18,7 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-14
     timeout-minutes: 45
     steps:
       - name: Checkout verification harness
@@ -60,12 +60,19 @@ jobs:
         shell: bash
         run: |
           sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0" "emulator" "system-images;android-35;google_apis;arm64-v8a" "ndk;27.2.12479018"
-          clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          case "$(uname -s)" in
+  Darwin) host_tag=darwin-x86_64 ;;
+  Linux) host_tag=linux-x86_64 ;;
+  *) echo "Unsupported Android NDK host: $(uname -s)" >&2; exit 1 ;;
+esac
+          clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/$host_tag/bin/clang"
           test -x "$clang"
           echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
           echo "ONE_ANDROID_ADB=$ANDROID_HOME/platform-tools/adb" >> "$GITHUB_ENV"
           echo "ANDROID_AVD_HOME=$HOME/.android/avd" >> "$GITHUB_ENV"
           mkdir -p "$HOME/.android/avd"
+          brew install coreutils
+          echo "$(brew --prefix coreutils)/libexec/gnubin" >> "$GITHUB_PATH"
 
       - name: Create Android ARM64 emulator
         shell: bash
@@ -84,7 +91,7 @@ jobs:
           set -euo pipefail
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           test -f "$ANDROID_AVD_HOME/one-android-arm64.ini"
-          nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel off > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
+          nohup "$ANDROID_HOME/emulator/emulator" -avd one-android-arm64 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > "$RUNNER_TEMP/one-android-emulator.log" 2>&1 &
           if ! timeout 180s adb wait-for-device; then
             cat "$RUNNER_TEMP/one-android-emulator.log" || true
             exit 1
