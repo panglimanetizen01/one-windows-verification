@@ -8,6 +8,7 @@ the ledger can be marked PASS GREEN LOCKED.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -142,6 +143,20 @@ def main() -> int:
         print("\nACCEPTANCE FAILURES:")
         for error in errors:
             print(f"- {error}")
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_path:
+        with open(summary_path, "a", encoding="utf-8") as report:
+            report.write("## ONE fixed-weight completion ledger gate\n\n")
+            report.write(f"- **Gate:** {summary['gate']}\n")
+            report.write(f"- **Pinned source SHA:** \`{summary['source_sha']}\`\n")
+            report.write(f"- **Implementation:** {summary['implementation_points']}/100\n")
+            report.write(f"- **Verified:** {summary['verified_points']}/100\n")
+            report.write(f"- **Fixed-weight sum:** {summary['fixed_weight_total']}/100\n")
+            report.write(f"- **Unchecked Definition of Done items:** {summary['unchecked_definition_of_done_items']}\n")
+            if errors:
+                report.write("\n### Acceptance failures\n")
+                for error in errors:
+                    report.write(f"- {error}\n")
     return code
 
 
