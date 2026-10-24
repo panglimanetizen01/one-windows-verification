@@ -1,0 +1,47 @@
+name: ONE Fixed-Weight Ledger Gate
+
+on:
+  push:
+    branches: [verification]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-ledger:
+    name: Verify ledger against exact pinned ONE source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@v4
+
+      - name: Read canonical source SHA pin
+        id: pin
+        shell: bash
+        run: |
+          sha="$(tr -d '\r\n' < CANONICAL_COMMIT.txt)"
+          if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid CANONICAL_COMMIT.txt: $sha" >&2
+            exit 2
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "Pinned ONE source SHA: $sha"
+
+      - name: Checkout exact ONE source revision
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.pin.outputs.sha }}
+          path: one-source
+
+      - name: Test ledger verifier
+        run: python -m unittest discover -s tests -p 'test_verify_completion_ledger.py' -v
+
+      - name: Enforce fixed weights, evidence SHA, and Definition of Done
+        run: |
+          python tools/verify_completion_ledger.py \
+            --ledger one-source/docs/verification/one-completion-ledger.md \
+            --dod one-source/docs/verification/DEFINITION_OF_DONE.md \
+            --evidence-index CANDIDATE_VERIFICATION.md \
+            --source-sha "${{ steps.pin.outputs.sha }}"
