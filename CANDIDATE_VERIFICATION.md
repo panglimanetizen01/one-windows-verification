@@ -12,7 +12,7 @@ This file is the evidence index for the candidate. The workflows check out the e
 | Gate | Run | Current evidence |
 |---|---|---|
 | Focused standard library, UTC parser/formatter, JSON bounds, SQLite limits, package signing and trusted-publisher verification, Clippy | [40083996493](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083996493) | **PASS** on exact source SHA `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; focused UTC/JSON/SQLite/provenance tests, Clippy, and new SQLite NOFOLLOW symlink regression passed |
-| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) | Running on final source SHA; do not count yet |
+| Linux distro conformance (Ubuntu 24.04 and Debian 12) | [40083875252](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875252) | **PASS** on exact source SHA `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`; Ubuntu 24.04 and Debian 12 passed |
 | Full cross-platform verification (Ubuntu and Windows 2025) | [40083875189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083875189) | Queued on final source SHA; do not count yet |
 | Android AArch64 native ELF runtime execution | [40083911641](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40083911641) | Latest attempt adds explicit `-feature -HVF` before `-accel off`; runtime acceptance not yet counted |
 
