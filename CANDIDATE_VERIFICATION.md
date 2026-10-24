@@ -185,3 +185,8 @@ Artifact metadata observed in the successful integrity run:
 - Embedded Windows binary SHA-256 `30efd82327c058f49c45fb30a0be9d298efac6e3c259928097061af52b5804b6`.
 
 The canonical repository hosted workflow remains an independent gate: its recent failure had no executable job steps/logs, so independent mirror passes do not convert canonical CI to PASS. Protected release dispatch, trusted-publisher configuration, full E1, Android ELF execution, complete E4 security acceptance, and E6 forensic closeout remain open. Do not merge PR #80 or claim GREEN LOCKED until those are accepted on the final frozen source SHA.
+
+
+## Canonical hosted-CI retry result for source SHA `9f24014cd1ebde1f0a72ef598e44e29fa779ac3f`
+
+I retried the canonical failed workflow jobs instead of treating the first failure as final: [One CI run 40092705031, attempt 2](https://github.com/panglimanetizen01/one/actions/runs/40092705031), [Linux distribution run 40092705049, attempt 2](https://github.com/panglimanetizen01/one/actions/runs/40092705049), and [focused stdlib run 40092705091, attempt 2](https://github.com/panglimanetizen01/one/actions/runs/40092705091). All three retries still ended in failure with **zero executable steps** in every job. This is recorded as a hosted-runner/infrastructure failure, not a source test failure and not a PASS. Independent exact-SHA mirror results remain separate evidence and do not replace canonical hosted CI.
