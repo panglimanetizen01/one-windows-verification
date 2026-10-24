@@ -1,4 +1,4 @@
-name: ONE Android AArch64 Native Runtime Verification (software ARM64 guest)
+name: ONE Android AArch64 Native Runtime Verification (x86 software guest)
 
 on:
   push:
