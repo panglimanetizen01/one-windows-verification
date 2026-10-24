@@ -93,6 +93,15 @@ jobs:
       - name: Built package signing and trusted-publisher verification
         working-directory: source
         run: cargo --locked test -p one-cli --test cli package_signature_cli_authenticates_trusted_publisher_and_detects_tampering -- --exact
+      - name: E1 text Unicode, empty-value, and integer-boundary regressions
+        working-directory: source
+        run: cargo --locked test -p one-core --test stdlib_builtins text_builtins_cover_empty_values_unicode_scalars_and_i64_boundaries
+      - name: E1 empty-collection, join-type, and index-boundary regressions
+        working-directory: source
+        run: cargo --locked test -p one-core --test stdlib_builtins collection_builtins_cover_empty_join_and_invalid_indices
+      - name: E1 UTC parser full-year-range regression
+        working-directory: source
+        run: cargo --locked test -p one-core --test stdlib_builtins utc_parser_source_contract_includes_year_zero_and_upper_boundary
       - name: Standard-library lint
         working-directory: source
         run: cargo --locked clippy -p one-core --all-targets -- -D warnings
