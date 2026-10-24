@@ -21,7 +21,7 @@ jobs:
     name: Android AArch64 ELF build and execute
     # macOS ARM64 provides a native ARM64 Android emulator; Linux ARM64 images lack the emulator package.
     runs-on: macos-15
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout verification harness
         uses: actions/checkout@v4
@@ -91,6 +91,9 @@ jobs:
 
       - name: Build and execute ELF AArch64 on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          # Android Emulator requires explicit opt-in before starting software TCG mode.
+          ANDROID_I_WANT_MY_TCG: yes
         with:
           api-level: 35
           target: google_apis
@@ -98,7 +101,7 @@ jobs:
           profile: pixel_2
           emulator-options: -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -gpu swiftshader_indirect -accel off
           disable-animations: true
-          emulator-boot-timeout: 900
+          emulator-boot-timeout: 1800
           script: |
             set -euo pipefail
             cd source
