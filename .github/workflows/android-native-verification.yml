@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-android-runtime-${{ github.workflow }}-${{ github.ref_name }}
+  group: one-android-runtime-linux-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
