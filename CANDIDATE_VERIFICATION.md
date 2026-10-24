@@ -12,7 +12,7 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 
 | Gate | Evidence | Result |
 |---|---|---|
-| Cross-platform Ubuntu + Windows Server 2025 | [Run 40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236) | **PASS** — both jobs assert SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; workspace tests, Clippy, real-network tests, offline verification, and bundle generation passed |
+| Cross-platform Ubuntu + Windows Server 2025 | [Run 40085406746](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406746) | Running on current SHA; do not count until both jobs pass |
 | Linux distro conformance | [Run 40085406859](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406859) | **PASS** on exact source SHA `f46b95ebdd0e26c5ba17f6acb953538f32401aeb`; Ubuntu 24.04 and Debian 12 passed |
 | Focused stdlib / SQLite / provenance | [Run 40085406818](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406818) | **PASS** on exact source SHA `f46b95ebdd0e26c5ba17f6acb953538f32401aeb`; UTC/JSON/SQLite/provenance, Clippy, and final-symlink NOFOLLOW regression passed |
 | Deterministic Cargo lockfile bootstrap | [Run 40085406783](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406783) | **PASS** on exact source SHA; deterministic Cargo lockfile generated with SHA-256 `284f1186517314c88ac31412c86f09e6418114376e56cd4bb2ae5fd676495c90` |
@@ -49,7 +49,7 @@ Their jobs have empty `steps: []`; they provide no source build/test evidence. I
 
 - [Run 40081481013](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081481013): macOS nested HVF failed with `HV_UNSUPPORTED`; Android Emulator injected `-enable-hvf` even with `-accel off`.
 - [Run 40084595188](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595188): Ubuntu x86_64 rejected an ARM64 AVD because the emulator requires a system image matching the host architecture.
-- Current [run 40084822122](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084822122) returns to macOS ARM64 and wraps the emulator's QEMU binary to remove only the injected `-enable-hvf` argument. The run must prove actual boot, API 35 / arm64-v8a, ADB push, and execution output before E3 can be accepted.
+- Current [run 40085406752](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40085406752) returns to macOS ARM64 and wraps the emulator's QEMU binary to remove only the injected `-enable-hvf` argument. The run must prove actual boot, API 35 / arm64-v8a, ADB push, and execution output before E3 can be accepted.
 
 ## Security review and remaining fixed-ledger gates
 
@@ -57,9 +57,9 @@ The focused [security release review](https://github.com/panglimanetizen01/one-w
 
 - **E1 — Standard library (10 points):** complete required API acceptance is not proven; broader domains such as concurrency, logging/configuration, and complete persistence APIs remain outside the currently implemented stable subset.
 - **E2 — Packaging/provenance (8 points):** package-signature/trusted-publisher tests pass, but protected `one-release` environment dispatch and source-bound signed release acceptance have not been exercised.
-- **E3 — Cross-platform (8 points):** Linux/Windows/distro matrix passes; Android runtime remains open.
+- **E3 — Cross-platform (8 points):** Linux/Windows/distro matrix passed on prior SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`; the current candidate's cross-platform and distro reruns are in progress, and Android runtime remains open.
 - **E4 — Security/recovery (6 points):** open parent-component TOCTOU, root/mount confinement, non-Unix/non-Windows fallback guarantees, and runtime-wide quota/threat review.
-- **E5 — Docs/tooling (4 points):** contract/doc consistency checks and CLI smoke workflow passed in the cross-platform run; final user-workflow acceptance still needs ledger reconciliation.
+- **E5 — Docs/tooling (4 points):** implementation 4/4 after manual user-workflow review and documentation corrections; verified credit remains 0/4 until the current exact-SHA doc-consistency and CLI smoke tests pass.
 - **E6 — Forensic audit (4 points):** open until E1–E5 are accepted and all release evidence, source SHA, ledger, and provenance are reconciled.
 
 The canonical PR now includes the [Definition of Done](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md). Do not change the fixed weights to manufacture a passing score. Do not claim **PASS GREEN LOCKED — FINAL RELEASE** while any gate above remains open.
