@@ -42,3 +42,18 @@ The current source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a` has now passed
 - Current canonical CI runs failed before execution with `runner_id: 0` and `steps: []`: [40086935480](https://github.com/panglimanetizen01/one/actions/runs/40086935480), [40086935432](https://github.com/panglimanetizen01/one/actions/runs/40086935432), and [40086935441](https://github.com/panglimanetizen01/one/actions/runs/40086935441).
 - New Linux/Windows candidate artifact metadata and digests are recorded in the candidate index. ZIP contents, embedded SHA256SUMS and executable formats are not independently inspected yet because the available GitHub connector exposes metadata/logs but does not provide artifact ZIP bytes.
 - Gate remains **NOT PASSED**. E1 full API acceptance, E2 protected release dispatch/signature acceptance, E3 Android, E4 security acceptance, and E6 final forensic audit remain open.
+
+
+## 2026-10-24 — current candidate exact-SHA continuation
+
+The current source candidate is `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`. Commit inspection confirms its only change relative to parent `9d5d319b88cbee17b18554cfe7641ec1008ba62a` is +49 lines in `crates/one-core/tests/stdlib_builtins.rs`; no production source files changed in that commit.
+
+Current-SHA workflow evidence:
+- Cross-platform Ubuntu + Windows Server 2025 [40088230116](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230116): **PASS**, both jobs, including contract/user-doc checks, build/release build, Clippy, workspace tests, real-network tests, and platform offline verification.
+- Ubuntu 24.04 + Debian 12 [40088230098](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230098): **PASS**, both jobs.
+- Focused stdlib/SQLite/provenance regressions [40088230099](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230099): **PASS**.
+- Cargo lockfile bootstrap [40088230148](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230148): **PASS**.
+- Candidate artifact integrity [40088506284](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088506284): **PASS** for both Linux and Windows candidate bundles, including metadata and executable headers.
+- Android AArch64 runtime [40088230097](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40088230097): emulator boot is still active; no ELF execution PASS recorded.
+
+Manual user workflow review remains PASS, but **final E5 verified credit is still not awarded independently** until final ledger/DoD reconciliation. This review does not close E1 full stdlib scope, E2 protected release environment and signed source-bound provenance, E3 Android execution, E4 residual security findings, or E6 final forensic audit.
