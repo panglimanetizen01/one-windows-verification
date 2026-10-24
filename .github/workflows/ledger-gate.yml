@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   verify-ledger:
@@ -39,10 +40,14 @@ jobs:
       - name: Test ledger verifier
         run: python -m unittest discover -s tests -p 'test_verify_completion_ledger.py' -v
 
-      - name: Enforce fixed weights, evidence SHA, and Definition of Done
+      - name: Enforce fixed weights, exact-SHA workflow evidence, protected release, and Definition of Done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANONICAL_READ_TOKEN: ${{ secrets.CANONICAL_READ_TOKEN }}
         run: |
           python tools/verify_completion_ledger.py \
             --ledger one-source/docs/verification/one-completion-ledger.md \
             --dod one-source/docs/verification/DEFINITION_OF_DONE.md \
             --evidence-index CANDIDATE_VERIFICATION.md \
-            --source-sha "${{ steps.pin.outputs.sha }}"
+            --source-sha "${{ steps.pin.outputs.sha }}" \
+            --require-live-workflows
