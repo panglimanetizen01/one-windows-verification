@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
-      SOURCE_SHA: 9d5d319b88cbee17b18554cfe7641ec1008ba62a
+      SOURCE_SHA: 2ead9dba45db4ce4105deaa81720aacc8fcadd6c
     steps:
       - name: Download artifact archives through GitHub API
         shell: bash
@@ -28,15 +28,15 @@ jobs:
           curl --fail --location --silent --show-error \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12557347980/zip \
+            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12557424853/zip \
             --output downloads/linux/candidate.zip
           curl --fail --location --silent --show-error \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12557247338/zip \
+            https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12558350265/zip \
             --output downloads/windows/candidate.zip
-          echo "33cc3445cbccc3780bb776a6d9b2ec846d1687e8d45a8526adf27aa120cf237f  downloads/linux/candidate.zip" | sha256sum --check
-          echo "564f7105d3f12face750d68431699d3f2491c28ff526c75e7951d766f21d8c0a  downloads/windows/candidate.zip" | sha256sum --check
+          echo "1a9b889b980b309fb3807471399c5556b83631145d148a8e9cefb2afe135bd09  downloads/linux/candidate.zip" | sha256sum --check
+          echo "0686d79036c5ce4f4f95bf861c3e82ce8bd9813dbf5dcbe748053ed9c749ee9e  downloads/windows/candidate.zip" | sha256sum --check
           unzip -q downloads/linux/candidate.zip -d extracted/linux
           unzip -q downloads/windows/candidate.zip -d extracted/windows
           find extracted -maxdepth 3 -type f -print | sort
@@ -51,7 +51,7 @@ jobs:
           import struct
 
           root = Path("extracted")
-          source_sha = "9d5d319b88cbee17b18554cfe7641ec1008ba62a"
+          source_sha = "2ead9dba45db4ce4105deaa81720aacc8fcadd6c"
 
           def one_file(folder: Path, name: str) -> Path:
               found = list(folder.rglob(name))
