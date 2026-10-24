@@ -22,7 +22,7 @@ The gate does not award points automatically and does not treat the existence of
 
 ## First live audit
 
-- Run: [40089955175](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40089955175)
+- Run: [40090023582](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40090023582)
 - Pinned source SHA: `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`
 - Unit tests for the verifier: **PASS** (4 tests).
 - Ledger arithmetic: **100 total fixed-weight points; 91/100 implementation; 60/100 verified**. The row sum agrees with the ledger TOTAL row.
