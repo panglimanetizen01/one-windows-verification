@@ -1,8 +1,8 @@
 # ONE v0.1 — User Workflow Acceptance Review
 
 **Reviewed documentation/code baseline:** source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`  
-**Current source candidate:** `f46b95ebdd0e26c5ba17f6acb953538f32401aeb` (documentation and ledger reconciliation since reviewed baseline; exact-SHA rerun pending)  
-**Review status:** Manual review complete; final-SHA executable acceptance pending  
+**Current source candidate:** `9d5d319b88cbee17b18554cfe7641ec1008ba62a` (ledger/checkpoint arithmetic reconciliation; exact-SHA executable rerun now complete for cross-platform, focused, distro and lockfile workflows)  
+**Review status:** Manual review complete; exact-SHA cross-platform, focused, distro, lockfile and CLI/docs acceptance passes; final E5 credit pending whole-milestone gate reconciliation  
 **Evidence:** [candidate verification index](https://github.com/panglimanetizen01/one-windows-verification/blob/verification/CANDIDATE_VERIFICATION.md), [cross-platform run 40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236), [focused run 40084595238](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595238), [distro run 40084595259](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595259)
 
 ## User workflow reviewed
@@ -26,8 +26,19 @@
 
 At the reviewed baseline SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8`, the cross-platform workflow passed CLI smoke tests, contract and user-doc consistency checks, workspace tests, real-network tests, offline verification, and release-bundle generation on Ubuntu and Windows Server 2025. Focused stdlib/SQLite/provenance tests and Ubuntu/Debian distro tests also passed on that SHA.
 
-The current source SHA `f46b95ebdd0e26c5ba17f6acb953538f32401aeb` contains documentation and ledger reconciliation since that tested baseline, but exact-SHA policy still requires the cross-platform, focused, distro, and lockfile workflows to rerun before final acceptance.
+The current source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a` has now passed the cross-platform, focused, distro, and lockfile mirror workflows: [cross-platform 40086990528](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528), [focused 40086990463](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990463), [distro 40086990470](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990470), and [lockfile 40086990479](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990479). Android remains open; these passes do not close E1, E2, E3, E4 or E6.
 
 ## Decision
 
 **Manual user-workflow review: PASS. E5 implementation is recorded as 4/4; final E5 verified credit remains 0/4 pending exact-SHA rerun and ledger acceptance.** This review does not close E1, E2, E3 Android runtime, E4 security/root confinement, or E6 forensic audit.
+
+
+## Exact-SHA continuation update — 2026-10-24
+
+- Current canonical source SHA: `9d5d319b88cbee17b18554cfe7641ec1008ba62a`.
+- Exact-SHA cross-platform workflow [40086990528](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528) completed successfully on Ubuntu and Windows Server 2025; CLI smoke, docs checks, offline verification, and workspace tests passed.
+- Exact-SHA distro workflow [40086990470](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990470), focused workflow [40086990463](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990463), and lockfile workflow [40086990479](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990479) completed successfully.
+- Android [40086990457](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990457) is still in the macOS ARM64 emulator boot step. No Android ELF runtime PASS is recorded.
+- Current canonical CI runs failed before execution with `runner_id: 0` and `steps: []`: [40086935480](https://github.com/panglimanetizen01/one/actions/runs/40086935480), [40086935432](https://github.com/panglimanetizen01/one/actions/runs/40086935432), and [40086935441](https://github.com/panglimanetizen01/one/actions/runs/40086935441).
+- New Linux/Windows candidate artifact metadata and digests are recorded in the candidate index. ZIP contents, embedded SHA256SUMS and executable formats are not independently inspected yet because the available GitHub connector exposes metadata/logs but does not provide artifact ZIP bytes.
+- Gate remains **NOT PASSED**. E1 full API acceptance, E2 protected release dispatch/signature acceptance, E3 Android, E4 security acceptance, and E6 final forensic audit remain open.
