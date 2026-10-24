@@ -99,7 +99,7 @@ jobs:
           echo "Host kernel: $(uname -a)"
           log="$RUNNER_TEMP/one-android-sdkmanager.log"
           set +e
-          timeout 18m sdkmanager --verbose --install "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a" 2>&1 | tee "$log"
+          python3 -c 'import subprocess,sys; subprocess.run(sys.argv[1:], timeout=1080, check=True)' sdkmanager --verbose --install "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a" 2>&1 | tee "$log"
           statuses=( "${PIPESTATUS[@]}" )
           set -e
           sdk_status="${statuses[0]}"
