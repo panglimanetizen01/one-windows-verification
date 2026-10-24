@@ -1,4 +1,4 @@
-name: ONE Android AArch64 Native Runtime Verification (Apple Silicon ARM64 host)
+# Android AArch64 guest under Linux-hosted software TCG to avoid unavailable nested HVF/KVM.
 # Require actual AArch64 ELF execution on the pinned canonical source SHA.
 
 on:
@@ -19,8 +19,8 @@ concurrency:
 jobs:
   android-aarch64-runtime:
     name: Android AArch64 ELF build and execute
-    # macOS ARM64 provides a native ARM64 Android emulator; Linux ARM64 images lack the emulator package.
-    runs-on: macos-15
+    # x86_64 Linux avoids the hosted macOS nested-HVF failure; Android AArch64 executes via explicit software TCG.
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - name: Checkout verification harness
