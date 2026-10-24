@@ -1,7 +1,7 @@
 # ONE v0.1 — Focused Security Release Review
 
 **Reviewed code SHA:** `11d53e8558a948b9607b5d70ab84d1ddcc0e29cd`  
-**Current candidate SHA:** `f46b95ebdd0e26c5ba17f6acb953538f32401aeb` (documentation and ledger reconciliation; code under review unchanged)  
+**Current candidate SHA:** `9d5d319b88cbee17b18554cfe7641ec1008ba62a` (ledger/checkpoint arithmetic reconciliation; code under review unchanged)  
 **Review date:** 2026-10-24  
 **Status:** Findings documented; security acceptance remains OPEN  
 **Normative context:** [SECURITY.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/SECURITY.md), [effect/capability contract](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/spec/one-v0.1-effect-capability.md), [Definition of Done](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/DEFINITION_OF_DONE.md)
@@ -45,3 +45,10 @@ This is a focused source review, not a claim of a complete sandbox or a third-pa
 ## Decision
 
 **Security release acceptance: NOT PASSED.** The final-symlink SQLite hardening is a verified improvement, but it does not close parent-component TOCTOU, mount/root confinement, unsupported-platform fallback, or runtime-wide quota gaps. E4 must remain unverified until these are resolved or formally accepted within an explicitly narrower v0.1 threat model. Do not claim complete sandboxing.
+
+
+## Exact-SHA continuation evidence — 2026-10-24
+
+The current candidate source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a` passed the independent cross-platform suite [40086990528](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528), Ubuntu/Debian suite [40086990470](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990470), and focused stdlib/SQLite/provenance suite [40086990463](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990463). These runs provide fresh executable evidence for existing security regression tests; they do not resolve SEC-01 through SEC-04. Android [40086990457](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990457) remains in emulator boot and has no runtime acceptance yet. Canonical CI remains infrastructure-failed with zero steps; see index for exact run links.
+
+Security acceptance remains **OPEN**. This review does not waive the residual risks or mark E4 verified.
