@@ -98,7 +98,7 @@ jobs:
           set -euo pipefail
           echo "Host architecture: $(uname -m)"
           echo "Host kernel: $(uname -a)"
-          sdkmanager --install "emulator" "platform-tools" "system-images;android-35;google_apis;arm64-v8a"
+          sdkmanager --install "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a"
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           mkdir -p "$ANDROID_AVD_HOME"
           avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
@@ -110,7 +110,7 @@ jobs:
           fi
           test -n "$device_id"
           echo "Selected installed AVD device profile: $device_id"
-          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64 --package "system-images;android-35;google_apis;arm64-v8a" --device "$device_id"
+          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64 --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
           test -f "$ANDROID_AVD_HOME/one-api35-arm64.ini"
           emulator_bin="$ANDROID_HOME/emulator/emulator"
           test -x "$emulator_bin"
