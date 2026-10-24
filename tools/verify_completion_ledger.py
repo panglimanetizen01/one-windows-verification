@@ -8,9 +8,13 @@ the ledger can be marked PASS GREEN LOCKED.
 from __future__ import annotations
 
 import argparse
+import base64
+import json
 import os
 import re
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 ROW_RE = re.compile(r"^\|\s*(F[1-6]|C[1-6]|E[1-6])\s*\|")
@@ -53,6 +57,117 @@ def parse_ledger(text: str) -> tuple[list[dict], dict | None, list[str]]:
             if len(cells) >= 5:
                 total = {"implementation": fraction(cells[3]), "verified": fraction(cells[4]), "line": line_no}
     return rows, total, errors
+
+
+
+
+REQUIRED_MIRROR_WORKFLOWS = {
+    "One Cross-Platform Verification",
+    "ONE Linux Distro Verification",
+    "ONE Focused Standard Library and Database Verification",
+    "ONE Cargo Lockfile Bootstrap Evidence",
+    "ONE Candidate Artifact Integrity Verification",
+    "ONE Android AArch64 Native Runtime Verification (macOS TCG workaround)",
+}
+
+
+def github_json(url: str, token: str) -> dict:
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {token}",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "one-ledger-gate",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=20) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def pin_at_mirror_commit(commit_sha: str, token: str, cache: dict[str, str | None]) -> str | None:
+    if commit_sha in cache:
+        return cache[commit_sha]
+    url = (
+        "https://api.github.com/repos/panglimanetizen01/one-windows-verification/"
+        f"contents/CANONICAL_COMMIT.txt?ref={commit_sha}"
+    )
+    try:
+        payload = github_json(url, token)
+        pin = base64.b64decode(payload["content"]).decode("utf-8").strip()
+    except (OSError, ValueError, KeyError, urllib.error.HTTPError) as exc:
+        print(f"WARNING: cannot resolve source pin for mirror commit {commit_sha}: {exc}", file=sys.stderr)
+        pin = None
+    cache[commit_sha] = pin
+    return pin
+
+
+def check_live_workflow_evidence(source_sha: str) -> list[str]:
+    errors: list[str] = []
+    mirror_token = os.environ.get("GITHUB_TOKEN", "")
+    source_token = os.environ.get("CANONICAL_READ_TOKEN", "")
+    if not mirror_token:
+        return ["live evidence check requires GITHUB_TOKEN with Actions/Contents read access"]
+    if not source_token:
+        return ["live evidence check requires CANONICAL_READ_TOKEN with source Actions read access"]
+
+    mirror_url = (
+        "https://api.github.com/repos/panglimanetizen01/one-windows-verification/"
+        "actions/runs?branch=verification&per_page=100"
+    )
+    try:
+        mirror_runs = github_json(mirror_url, mirror_token).get("workflow_runs", [])
+    except (OSError, ValueError, urllib.error.HTTPError) as exc:
+        return [f"cannot query live independent workflow evidence: {exc}"]
+
+    pin_cache: dict[str, str | None] = {}
+    for workflow_name in sorted(REQUIRED_MIRROR_WORKFLOWS):
+        candidates = []
+        for run in mirror_runs:
+            if run.get("name") != workflow_name:
+                continue
+            pin = pin_at_mirror_commit(run.get("head_sha", ""), mirror_token, pin_cache)
+            if pin == source_sha:
+                candidates.append(run)
+        candidates.sort(key=lambda run: run.get("created_at", ""), reverse=True)
+        if not candidates:
+            errors.append(f"no independent run found for current source SHA: {workflow_name}")
+            continue
+        latest = candidates[0]
+        if latest.get("status") != "completed" or latest.get("conclusion") != "success":
+            errors.append(
+                f"{workflow_name} for source SHA {source_sha} is "
+                f"{latest.get('status')}/{latest.get('conclusion') or 'no conclusion'} "
+                f"(run {latest.get('id')}); only completed success is accepted"
+            )
+
+    release_url = (
+        "https://api.github.com/repos/panglimanetizen01/one/"
+        "actions/runs?branch=milestone%2F100-ecosystem-20261023&per_page=100"
+    )
+    try:
+        release_runs = github_json(release_url, source_token).get("workflow_runs", [])
+    except (OSError, ValueError, urllib.error.HTTPError) as exc:
+        return errors + [f"cannot query canonical release workflow evidence: {exc}"]
+
+    matching_release = [
+        run for run in release_runs
+        if run.get("name") == "ONE Package Provenance Release"
+        and run.get("head_sha") == source_sha
+    ]
+    matching_release.sort(key=lambda run: run.get("created_at", ""), reverse=True)
+    if not matching_release:
+        errors.append(
+            "no protected ONE Package Provenance Release run exists for the exact source SHA; "
+            "E2 cannot be accepted from unsigned candidate bundles"
+        )
+    elif matching_release[0].get("status") != "completed" or matching_release[0].get("conclusion") != "success":
+        run = matching_release[0]
+        errors.append(
+            f"protected release workflow for exact source SHA is "
+            f"{run.get('status')}/{run.get('conclusion') or 'no conclusion'} (run {run.get('id')})"
+        )
+    return errors
 
 
 def verify(ledger_text: str, dod_text: str, evidence_text: str, source_sha: str) -> tuple[int, list[str], dict]:
@@ -126,6 +241,7 @@ def main() -> int:
     parser.add_argument("--dod", required=True, type=Path)
     parser.add_argument("--evidence-index", required=True, type=Path)
     parser.add_argument("--source-sha", required=True)
+    parser.add_argument("--require-live-workflows", action="store_true")
     args = parser.parse_args()
     try:
         code, errors, summary = verify(
@@ -137,6 +253,12 @@ def main() -> int:
     except OSError as exc:
         print(f"ERROR: cannot read required input: {exc}", file=sys.stderr)
         return 2
+    if args.require_live_workflows:
+        live_errors = check_live_workflow_evidence(args.source_sha)
+        errors.extend(live_errors)
+        if live_errors:
+            code = 1
+            summary["gate"] = "NOT PASSED"
     for key, value in summary.items():
         print(f"{key}: {value}")
     if errors:
