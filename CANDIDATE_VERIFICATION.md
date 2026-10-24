@@ -162,3 +162,26 @@ Exact-SHA matrix triggered by verification pin commit [`07f2f4dcd3689b2903f6e5f1
 The prior bundle integrity and manual Linux bundle execution evidence refer to older source SHAs and are historical only. They do not satisfy current-source artifact integrity or Android execution. The canonical repository's hosted CI has repeatedly failed before executable steps (`runner_id: 0`, `steps: []`); independent verification does not relabel those canonical CI runs as PASS.
 
 The release gate remains **NOT PASSED**. E1 requires the full public API contract suite; E2 requires independently configured trusted publisher and protected release-path evidence; E3 requires actual Android AArch64 ELF execution; E4 requires the complete security/root-confinement and resource-bound review; E6 requires a final forensic reconciliation after E1–E5 acceptance. Do not merge PR #80 or publish a release under this state.
+
+
+## Exact-SHA candidate evidence — source `9f24014cd1ebde1f0a72ef598e44e29fa779ac3f`
+
+The current canonical candidate source is `9f24014cd1ebde1f0a72ef598e44e29fa779ac3f`. This is the source SHA selected by `CANONICAL_COMMIT.txt` and the open PR #80 head. The fixed-weight ledger is `91/100 implementation, 64/100 verified`; weights were not changed. E5 is the only ecosystem row currently credited as verified.
+
+| Required workflow | Exact-SHA run | Result |
+|---|---|---|
+| Cross-platform Ubuntu + Windows Server 2025 | [40092715740](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715740) | PASS — both jobs completed successfully |
+| Linux distro conformance, Ubuntu 24.04 + Debian 12 | [40092715691](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715691) | PASS — both jobs completed successfully |
+| Focused UTC/database resource-bound regressions | [40092715735](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715735) | PASS — focused subset only; not full E1 acceptance |
+| Cargo lockfile bootstrap | [40092715680](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715680) | PASS |
+| Linux/Windows candidate artifact integrity | [40092715698](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715698) | PASS — bundle digests match GitHub artifact metadata; embedded source SHA/toolchain/CLI metadata and ELF64 EM_X86_64 / PE32+ x86-64 headers validated |
+| Android AArch64 runtime | [40092942784](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092942784) | IN PROGRESS — API 35 arm64 emulator boot; no ELF execution evidence yet |
+| Fixed-weight ledger gate | [40092715712](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40092715712) | NOT PASSED at time of evaluation: current-SHA cross-platform/artifact runs were still in progress; protected canonical release API returned HTTP 403; nine Definition of Done items remain unchecked |
+
+Artifact metadata observed in the successful integrity run:
+- Linux candidate ZIP artifact ID `12559338923`, SHA-256 `f2d00fa3ce1bf6489a29006b29df5e31a84a53c1c920ce9d481418374be38979`.
+- Windows candidate ZIP artifact ID `12559339113`, SHA-256 `d19fbda9d8df0a2aca82f433e28d745d34c5ba131eef3117595b83a062b0bf0e`.
+- Embedded Linux binary SHA-256 `36aaf109b3689e61d879f2bc2f9ebe685976f703035eb06c08935a8a7c7b2c79`.
+- Embedded Windows binary SHA-256 `30efd82327c058f49c45fb30a0be9d298efac6e3c259928097061af52b5804b6`.
+
+The canonical repository hosted workflow remains an independent gate: its recent failure had no executable job steps/logs, so independent mirror passes do not convert canonical CI to PASS. Protected release dispatch, trusted-publisher configuration, full E1, Android ELF execution, complete E4 security acceptance, and E6 forensic closeout remain open. Do not merge PR #80 or claim GREEN LOCKED until those are accepted on the final frozen source SHA.
