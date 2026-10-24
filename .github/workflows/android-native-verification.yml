@@ -42,6 +42,12 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
 
+      - name: Assert native ARM64 macOS host
+        shell: bash
+        run: |
+          uname -a
+          test "$(uname -m)" = "arm64"
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -101,6 +107,9 @@ jobs:
             set -euo pipefail
             cd source
             export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
+            uname -a
+            "$ONE_ANDROID_CLANG" --version
             adb devices
+            test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = "35"
             test "$(adb shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
             cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
