@@ -2,19 +2,19 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `db40fe3be3fb17ff6d1656ecda135cc3d01a0750`  
+**Current source SHA:** `77770620e2072afd75aaf1ead05929054f48ed69`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the db40 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
+**Release gate:** **NOT PASSED** — fixed-weight ledger reconciled to 91/100 provisional implementation, 64/100 verified; the 7777 candidate adds E1 boundary-contract regression tests and is undergoing a fresh exact-SHA matrix.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
 ## Latest candidate rerun — E1 boundary contracts
 
-Current canonical source SHA `db40fe3be3fb17ff6d1656ecda135cc3d01a0750` adds three regression tests for invalid text conversion/replacement/splitting inputs, strict UTC parser forms and full year-range boundaries, checked numeric overflow, and invalid collection inputs. Fresh exact-SHA verification was triggered by pinning this source; no result is accepted until each job completes:
+Current canonical source SHA `77770620e2072afd75aaf1ead05929054f48ed69` adds three regression tests for invalid text conversion/replacement/splitting inputs, strict UTC parser forms and full year-range boundaries, checked numeric overflow, and invalid collection inputs. A first test attempt exposed that source syntax does not accept a leading negative numeric literal; the test was corrected to express the negative epoch using the supported subtraction expression. Fresh exact-SHA verification was triggered by pinning this source; no result is accepted until each job completes:
 
 | Gate | Result |
 |---|---|
-| Cross-platform Ubuntu + Windows | Awaiting fresh run for `db40fe3be3fb17ff6d1656ecda135cc3d01a0750` |
+| Cross-platform Ubuntu + Windows | Awaiting fresh run for `77770620e2072afd75aaf1ead05929054f48ed69` |
 | Linux distro | Awaiting fresh run |
 | Focused stdlib/database | Awaiting fresh run; includes the new E1 tests through the workspace test suite only if configured to run that integration target |
 | Cargo lockfile | Awaiting fresh run |
