@@ -3,6 +3,12 @@ name: ONE Fixed-Weight Ledger Gate
 on:
   push:
     branches: [verification]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - 'CANDIDATE_VERIFICATION.md'
+      - 'tools/verify_completion_ledger.py'
+      - 'tests/test_verify_completion_ledger.py'
+      - '.github/workflows/ledger-gate.yml'
   workflow_dispatch:
 
 permissions:
