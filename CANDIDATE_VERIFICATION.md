@@ -4,7 +4,7 @@
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
 **Current source SHA:** `a75362fcb9dd7514c1253f661443252122053aa9`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The exact-SHA matrix for `15e6ac358742b89076f21e079e16aa6ca5a2124a` is in progress; E1/E2 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
+**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `a75362fcb9dd7514c1253f661443252122053aa9` has passing focused, lockfile, Linux distro, cross-platform, and artifact-integrity gates; Android API 35 and the fixed-weight release gate remain open; E1/E2 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
 
