@@ -1,0 +1,49 @@
+name: ONE Cargo Lockfile Bootstrap Evidence
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - ".github/workflows/emit-cargo-lock.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lockfile:
+    name: Generate deterministic Cargo lockfile from exact canonical source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read canonical source SHA
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
+      - name: Checkout canonical ONE source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.canonical.outputs.ref }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify source SHA and generate lockfile
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+          rustc --version
+          cargo --version
+          cargo generate-lockfile
+          echo "LOCKFILE_SOURCE_SHA=${{ steps.canonical.outputs.ref }}"
+          echo "LOCKFILE_SHA256=$(sha256sum Cargo.lock | cut -d ' ' -f 1)"
+          echo "LOCKFILE_BASE64_BEGIN"
+          base64 -w0 Cargo.lock
+          echo
+          echo "LOCKFILE_BASE64_END"
