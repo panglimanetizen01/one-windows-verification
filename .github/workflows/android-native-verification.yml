@@ -61,10 +61,10 @@ jobs:
         run: |
           sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0" "emulator" "system-images;android-35;google_apis;arm64-v8a" "ndk;27.2.12479018"
           case "$(uname -s)" in
-  Darwin) host_tag=darwin-x86_64 ;;
-  Linux) host_tag=linux-x86_64 ;;
-  *) echo "Unsupported Android NDK host: $(uname -s)" >&2; exit 1 ;;
-esac
+          Darwin) host_tag=darwin-x86_64 ;;
+          Linux) host_tag=linux-x86_64 ;;
+          *) echo "Unsupported Android NDK host: $(uname -s)" >&2; exit 1 ;;
+          esac
           clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/$host_tag/bin/clang"
           test -x "$clang"
           echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
