@@ -18,6 +18,10 @@ This file is the evidence index for the candidate. The workflows check out the e
 
 **Release bundle evidence:** the passing cross-platform run produced non-expired artifacts: [Linux bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12556010150), SHA-256 `5a5a63fef110959c5880a020f0933084e691814e6a92f403f35bea3d396f1f80`; [Windows bundle](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604/artifacts/12555024750), SHA-256 `c43d5811ac872af8a07c1f453e5f87ff7adc138d2a445b267e2655f9ab35f197`. Both artifacts are named with source SHA `1a48989f213cd000a1eb3143b97549415b733241`.
 
+## User workflow and documentation checks
+
+The passing exact-SHA cross-platform run [40081549604](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40081549604) also executed `tools/check_contract.py`, `tools/check_user_docs.py`, and `tools/check_user_docs_test.py`; the user-doc consistency check reported `OK: user documentation is consistent: docs/panduan-pengguna`. The CLI smoke sequence exercised project creation, source checking, running, building, testing, and packaging; both Linux and Windows offline verification ended with `OFFLINE VERIFICATION: PASS`. These are concrete workflow/doc checks, but they do not substitute for the remaining security review or final Definition-of-Done audit.
+
 ## Android runner diagnosis and remediation
 
 The prior Android attempt [40080133616](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40080133616) failed before the native test ran: the Android emulator process exited with `HVF error: HV_UNSUPPORTED` / `failed to initialize HVF`, and ADB never saw `emulator-5554`. The verification workflow now adds `-accel off` so QEMU uses software emulation instead of the unsupported HVF path. This change is an infrastructure remediation, not proof that Android runtime acceptance passed; only the actual ELF build, AArch64 header checks, ADB push, and successful execution output can close that gate.
