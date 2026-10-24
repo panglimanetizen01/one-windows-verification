@@ -1,4 +1,5 @@
 name: One Cross-Platform Verification
+# Exact-SHA milestone acceptance; canonical source is pinned in CANONICAL_COMMIT.txt
 
 on:
   push:
