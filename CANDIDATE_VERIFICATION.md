@@ -21,7 +21,7 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 
 ## Current candidate bundles
 
-The following bundles are **historical**, produced on prior source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8` by run [40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236). They were downloaded and inspected; embedded checksums pass, but they are not current-candidate acceptance. Fresh bundles for source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a` were uploaded by run 40086990528; artifact metadata digests are listed below. This session's available GitHub connector returns artifact metadata but not binary ZIP contents, so independent extraction/embedded-manifest inspection of these new ZIPs is **not yet verified**.
+The following bundles are **historical**, produced on prior source SHA `1dec26abcc90ac27d892cf3ff0a83dedb8b90fd8` by run [40084595236](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236). They were downloaded and inspected; embedded checksums pass, but they are not current-candidate acceptance. Fresh bundles for source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a` were uploaded by run 40086990528 and independently downloaded/extracted by [artifact integrity workflow 40087385932](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40087385932). Both ZIP hashes matched GitHub artifact metadata; embedded `SHA256SUMS`, build metadata, source SHA, toolchain versions, CLI version, and binary formats passed. Exact binary hashes and metadata are recorded in the dedicated section below.
 
 - **Linux:** [artifact 12556841440](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40084595236/artifacts/12556841440)  
   ZIP SHA-256: `e7266614dc9a5feb5e3673a63c409542b16d86c6d36fbea6a17be498b6fa3797`  
@@ -84,3 +84,13 @@ Run [40086990528](https://github.com/panglimanetizen01/one-windows-verification/
 - Windows candidate artifact [12557247338](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528/artifacts/12557247338), ZIP digest from GitHub artifact metadata: `sha256:564f7105d3f12face750d68431699d3f2491c28ff526c75e7951d766f21d8c0a`, size 1,488,731 bytes.
 
 Both names embed the canonical source SHA. The artifact workflow generated `BUILD-METADATA.txt` and `SHA256SUMS` during packaging, but independent download/extraction and comparison of the embedded checksums and executable formats has not been performed in this session. These remain unsigned candidate bundles, not final release artifacts.
+
+
+## Candidate artifact integrity — PASS for source `9d5d319b88cbee17b18554cfe7641ec1008ba62a`
+
+Independent workflow [40087385932](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40087385932) passed. It downloaded both artifact archives by ID, compared ZIP SHA-256 against GitHub artifact metadata, extracted them, verified each embedded `SHA256SUMS`, checked metadata fields, and inspected executable headers.
+
+- Linux artifact [12557347980](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528/artifacts/12557347980): ZIP SHA-256 `33cc3445cbccc3780bb776a6d9b2ec846d1687e8d45a8526adf27aa120cf237f`; embedded binary `one` SHA-256 `36aaf109b3689e61d879f2bc2f9ebe685976f703035eb06c08935a8a7c7b2c79`; ELF64 little-endian `EM_X86_64`; target `x86_64-unknown-linux-gnu`.
+- Windows artifact [12557247338](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40086990528/artifacts/12557247338): ZIP SHA-256 `564f7105d3f12face750d68431699d3f2491c28ff526c75e7951d766f21d8c0a`; embedded binary `one.exe` SHA-256 `f5749302ef052c6f192939a9d0c96b54edc2c12cba606551383c3e194d7890a9`; PE32+ x86-64; target `x86_64-pc-windows-msvc`.
+- Both metadata files assert source SHA `9d5d319b88cbee17b18554cfe7641ec1008ba62a`, Rust/Cargo 1.99.0, and CLI `one 0.1.0`.
+- These are checksum-verified **unsigned candidate bundles**, not signed final release artifacts. This does not close E2.
