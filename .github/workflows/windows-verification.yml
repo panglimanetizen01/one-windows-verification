@@ -3,8 +3,14 @@ name: One Cross-Platform Verification
 on:
   push:
     branches: [ verification ]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/windows-verification.yml'
   pull_request:
     branches: [ verification ]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/windows-verification.yml'
   workflow_dispatch:
 
 permissions:
