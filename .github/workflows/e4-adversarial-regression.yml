@@ -61,6 +61,9 @@ jobs:
       - name: Run capability denial and root-scope policy regressions
         working-directory: source
         run: cargo test --locked -p one-core governance::tests
+      - name: Run capability-denial side-effect regression
+        working-directory: source
+        run: cargo test --locked -p one-core orchestrator::tests::denied_request_never_reaches_adapter_invocation
 
   windows-reparse-regression:
     name: Windows reparse-point and handle checks
