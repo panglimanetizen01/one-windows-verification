@@ -22,13 +22,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          ref: 85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
       - name: Verify exact SHA
         working-directory: source
-        run: test "$(git rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+        run: test "$(git rev-parse HEAD)" = "85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd"
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -66,7 +66,7 @@ jobs:
           test -n "$device_id"
           printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-tcg --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
           log="$RUNNER_TEMP/one-android-tcg.log"
-          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-tcg -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 2048 -cores 2 -gpu swiftshader_indirect -accel off -verbose >"$log" 2>&1 &
+          "$ANDROID_HOME/emulator/emulator" -accel off -avd one-api35-arm64-tcg -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 2048 -cores 2 -gpu swiftshader_indirect -verbose >"$log" 2>&1 &
           pid=$!
           adb start-server
           booted=0
@@ -90,3 +90,14 @@ jobs:
           export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
           "$ONE_ANDROID_CLANG" --version
           cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
+
+      - name: Upload API 35 TCG runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-android-api35-macos-tcg-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/one-android-tcg.log
+            ${{ runner.temp }}/one-android-avd-list.txt
+          if-no-files-found: warn
+          retention-days: 30
