@@ -48,3 +48,19 @@ The six SEC-05 tests had passed earlier in the same workflow on both platforms. 
 - Add explicit descendant-cleanup tests, especially to demonstrate the documented Windows direct-child-only semantics and ensure inherited pipe handles cannot cause an unbounded wait.
 - Run `cargo fmt --check --all` and the full suite on the final candidate SHA.
 - Keep SEC-05 open until all acceptance criteria are satisfied.
+
+## Follow-up final-candidate CI result (2026-10-25)
+
+- Final candidate tested: `65ec5aa66e7ebf77595fe2839f096cfc36def5d8`
+- Workflow run: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40195243449
+- Workflow harness commit: `0c7156e42da90ab09260337c45391bd556457b4b`
+- Overall conclusion: **SUCCESS**; both Linux and Windows jobs completed successfully.
+- Linux Ubuntu 24.04: complete `cargo test --locked -p one-core` passed, with the main test binary reporting 234 passed and 0 failed; additional test binaries also passed. Scoped `rustfmt --edition 2024 --check crates/one-core/src/interop.rs` passed.
+- Windows Server 2025: focused subprocess contract tests passed (6 passed, 0 failed); complete `cargo test --locked -p one-core` passed (main test binary 223 passed, 0 failed; additional test binaries passed); scoped rustfmt and static SEC-05 guard passed.
+- Windows toolchain selection was verified in logs: `C:\\Program Files\\LLVM\\bin\\clang.exe`, clang 20.1.8.
+- The prior compiler-not-found and formatting blockers are resolved for this candidate and workflow.
+
+## Acceptance caveat — not yet a full security sign-off
+
+This successful workflow validates the current focused implementation and full `one-core` test suite on both OSes at the exact candidate SHA above. It does **not** close every SEC-05 security criterion: the Windows implementation explicitly guarantees direct-child termination/reaping only, and explicit descendant-process cleanup / inherited-pipe bounded-wait tests remain outstanding. `cargo fmt --check --all` has not been established as passing for the whole repository. Keep issue #81 open until those remaining acceptance criteria are either implemented and tested or explicitly resolved in the issue's acceptance contract.
+
