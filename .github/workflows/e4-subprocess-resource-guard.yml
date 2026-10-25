@@ -1,0 +1,43 @@
+name: E4 subprocess resource guard
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/e4-subprocess-resource-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  subprocess-resource-guard:
+    name: Audit candidate subprocess resource enforcement
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout lab harness
+        uses: actions/checkout@v4
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Assert bounded subprocess execution exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=source/crates/one-core/src/interop.rs
+          test -f "$file"
+          echo "Auditing exact candidate SHA: $(git -C source rev-parse HEAD)"
+          # Fail closed while Command::output() remains the capture mechanism:
+          # it buffers both complete streams before returning and has no deadline.
+          if grep -Fq 'command.output()' "$file"; then
+            echo "::error file=crates/one-core/src/interop.rs::Unbounded Command::output() remains; subprocess timeout/output quotas are not enforced."
+            exit 1
+          fi
+          # A replacement must visibly use bounded streaming and a timeout policy.
+          grep -Eq 'MAX_.*(OUTPUT|STDOUT|STDERR)|ProcessExecutionPolicy|ProcessLimits' "$file"
+          grep -Eq 'try_wait|wait_timeout|deadline|timeout' "$file"
+          echo "Static markers present; dynamic adversarial tests are still required for acceptance."
