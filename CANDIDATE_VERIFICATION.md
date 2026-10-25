@@ -10,9 +10,17 @@ This file is the live exact-SHA evidence index. A workflow run counts only if it
 
 ## Newest candidate — `2ea52d4c39aac98be8678a2e1ac0b67997610c22`
 
-The protected release workflow now enforces byte-identical package builds, validates signed source/artifact metadata, and emits a portable relative-path SHA-256 manifest that is checked before upload. The independent verification pin has been advanced to this exact source revision. The new exact-SHA matrix has been triggered; results from SHA `6478fe571b70f6ac088603ce955270fd47f9b0f2` are historical and do not certify this new revision until its runs finish.
+The protected release workflow now enforces byte-identical package builds, validates signed source/artifact metadata, and emits a portable relative-path SHA-256 manifest that is checked before upload. The independent verification pin has been advanced to this exact source revision.
 
-**Acceptance status:** E2 remains unaccepted pending successful exact-SHA lab evidence and a real protected `one-release` run. The mirror's ledger gate also remains fail-closed until the current matrix finishes and canonical Actions evidence can be queried. The available GitHub connection cannot configure repository secrets/environment protection or dispatch the protected workflow.
+| Gate | Run | Result |
+|---|---|---|
+| E2 package/provenance synthetic-key lab | [40154415287](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415287) | **PASS** — exact source SHA `2ea52d4c39aac98be8678a2e1ac0b67997610c22`; provenance/CLI tests, stale-lock rejection, release build, two-build byte determinism, V2 signature/source verification, untrusted publisher rejection, modified artifact/metadata rejection, and artifact retention passed |
+| Independent artifact checksum inspection | [artifact 12583637983](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415287/artifacts/12583637983) | **PASS** — downloaded archive digest `sha256:9c85b60d6806393236a681ec13201fa0138c002c9dccb4c5e1ab85d59cacea84`; independently ran `sha256sum --check SHA256SUMS` and both package and provenance sidecar verified. Package SHA-256 `fb1f5d28e8f95ba89332739c69f2602115c24701ab091334659366864fc126f5`; sidecar SHA-256 `b15307e79dd701613422b58d086192bb8de7e5bcb7ee87540a3e542fedae50e2` |
+| Focused standard library/database | [40154415289](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415289) | **PASS** |
+| Cargo lockfile bootstrap | [40154415296](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415296) | **PASS** |
+| Cross-platform, Linux distro, candidate artifact, Windows E1, Android | [matrix runs](https://github.com/panglimanetizen01/one-windows-verification/actions) | **IN PROGRESS** at index update; no credit until each required run completes on this exact source SHA |
+
+**Acceptance status:** E2's independent synthetic-key acceptance suite passes on the current SHA, but the E2 ledger row remains **0/8 verified** until the protected `one-release` workflow runs with independently provisioned production trust material. The canonical repository's own E2 run and retry still fail before any job steps; logs/step data are absent, so this is an Actions infrastructure blocker, not a test pass. The available GitHub connection cannot configure repository secrets/environment protection or dispatch the protected workflow. The global release gate remains **NOT PASSED**.
 
 ## Latest candidate — `6478fe571b70f6ac088603ce955270fd47f9b0f2`
 
