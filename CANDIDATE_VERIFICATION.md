@@ -393,3 +393,16 @@ Updated 2026-10-25 after the previously running jobs completed:
 - **Android native runtime remains NOT PASSED** — [run 40155108942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155108942); the emulator/ELF execution probe failed.
 
 The synthetic E2 package/provenance test, focused tests, lockfile bootstrap, Linux distro matrix, and now the full Ubuntu/Windows cross-platform matrix have passed for the exact source SHA. This is substantial test evidence but **does not constitute production release acceptance**: the protected `one-release` workflow with independently trusted production signing material has not run, and artifact inspection plus the complete ledger/DoD gate are not green.
+
+
+## Artifact inspection completion — 2026-10-25
+
+**Candidate artifact integrity: PASS** — [run 40155109003](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155109003) completed successfully for source SHA `56606c7f8076bc9a67e321835077315d321b8b7a`.
+
+The inspection verified GitHub archive SHA-256 digests, embedded `BUILD-METADATA.txt` source SHA and target/toolchain/version fields, binary hashes against embedded `SHA256SUMS`, and executable formats:
+- Linux bundle: `x86_64-unknown-linux-gnu`, ELF64 little-endian EM_X86_64, binary SHA-256 `36aaf109b3689e61d879f2bc2f9ebe685976f703035eb06c08935a8a7c7b2c79`.
+- Windows bundle: `x86_64-pc-windows-msvc`, PE32+ x86-64, binary SHA-256 `a515f22091d729131e352107f9b282ddb128c795402e06527938c72461d3ef2f`.
+- Both report source SHA `56606c7f8076bc9a67e321835077315d321b8b7a`, Rust/Cargo 1.99.0, and CLI version 0.1.0.
+- GitHub archive digests are recorded above in the matrix update; both archives were downloaded and checked against their API-provided digest.
+
+This closes the synthetic candidate-bundle integrity checks for the current exact source SHA. It does not replace the protected production signing/trust workflow, which still has no successful run.
