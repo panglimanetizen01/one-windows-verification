@@ -1,0 +1,119 @@
+name: ONE Android AArch64 runtime — software-emulation fallback
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-aarch64-tcg-fallback.yml'
+      - 'CANONICAL_COMMIT.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: one-android-tcg-${ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  android-aarch64-tcg:
+    name: Android API 35 arm64-v8a ELF execution using QEMU TCG
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@v4
+
+      - name: Read canonical source SHA
+        id: target
+        shell: bash
+        run: echo "sha=$(tr -d '\r\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact canonical ONE source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${ steps.target.outputs.sha }}
+          token: ${ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+
+      - name: Verify exact source SHA
+        working-directory: source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "${ steps.target.outputs.sha }}"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Install NDK and Android API 35 AArch64 emulator
+        shell: bash
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "ndk;27.2.12479018" "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/clang' -print -quit)"
+          test -x "$clang"
+          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
+
+      - name: Run Android backend contract tests
+        working-directory: source
+        run: cargo test --locked -p one-core --test native_backend_android_aarch64
+
+      - name: Boot API 35 arm64-v8a using software emulation
+        shell: bash
+        timeout-minutes: 45
+        run: |
+          set -euo pipefail
+          export ANDROID_AVD_HOME="$HOME/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+          avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
+          device_list="$("$avdmanager" list device)"
+          device_id="$(printf '%s\n' "$device_list" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
+          test -n "$device_id"
+          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-tcg --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
+          log="$RUNNER_TEMP/one-android-tcg-emulator.log"
+          echo "Emulator log: $log"
+          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-tcg -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 2048 -cores 2 -gpu swiftshader_indirect -accel off -verbose >"$log" 2>&1 &
+          emulator_pid=$!
+          adb start-server
+          booted=0
+          for attempt in $(seq 1 180); do
+            if ! kill -0 "$emulator_pid" 2>/dev/null; then
+              echo "Emulator exited before boot."
+              tail -n 240 "$log" || true
+              exit 1
+            fi
+            if adb devices | tr -d '\r' | grep -q '^emulator-5554[[:space:]]\+device$'; then
+              completed="$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+              if [ "$completed" = "1" ]; then booted=1; break; fi
+            fi
+            sleep 10
+          done
+          if [ "$booted" != "1" ]; then
+            echo "Android emulator did not boot under TCG."
+            tail -n 300 "$log" || true
+            adb devices -l || true
+            exit 1
+          fi
+          test "$(adb -s emulator-5554 shell getprop ro.build.version.sdk | tr -d '\r')" = "35"
+          test "$(adb -s emulator-5554 shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
+          adb -s emulator-5554 shell getprop ro.build.version.sdk
+          adb -s emulator-5554 shell getprop ro.product.cpu.abi
+          echo "ONE_ANDROID_ADB=$ANDROID_HOME/platform-tools/adb" >> "$GITHUB_ENV"
+
+      - name: Build and execute exact-SHA AArch64 ELF on Android
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
+          "$ONE_ANDROID_CLANG" --version
+          cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
