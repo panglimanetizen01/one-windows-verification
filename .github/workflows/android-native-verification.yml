@@ -12,6 +12,7 @@ on:
     branches: [verification]
     paths:
       - 'CANONICAL_COMMIT.txt'
+      - 'evidence/triggers/prompt3-android-runtime.txt'
       - '.github/workflows/android-native-verification.yml'
   workflow_dispatch:
 
@@ -137,64 +138,61 @@ jobs:
           set -euo pipefail
           cargo test --locked -p one-core --test native_backend_android_aarch64
 
-      - name: Boot Android AArch64 emulator with observable diagnostics
-        timeout-minutes: 35
+      - name: Boot Android API 35 arm64-v8a emulator with hardware then software fallback
         shell: bash
+        timeout-minutes: 30
         env:
           ONE_ANDROID_ALLOW_HVF: yes
         run: |
           set -euo pipefail
-          echo "Host architecture: $(uname -m)"
-          echo "Host kernel: $(uname -a)"
-          export ANDROID_AVD_HOME="$HOME/.android/avd"
-          mkdir -p "$ANDROID_AVD_HOME"
-          avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
-          device_list="$("$avdmanager" list device)"
-          printf '%s\n' "$device_list"
-          device_id="$(printf '%s\n' "$device_list" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
-          if [ -z "$device_id" ]; then
-            device_id="$(printf '%s\n' "$device_list" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | head -n 1)"
-          fi
-          test -n "$device_id"
-          echo "Selected installed AVD device profile: $device_id"
-          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64 --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
-          test -f "$ANDROID_AVD_HOME/one-api35-arm64.ini"
           emulator_bin="$ANDROID_HOME/emulator/emulator"
           test -x "$emulator_bin"
-          log="$RUNNER_TEMP/one-android-emulator.log"
-          # Do not force TCG or disable HVF here: Android's AArch64 guest requires VM acceleration.
-          # This is a direct capability probe for nested Hypervisor.Framework on the hosted runner.
-          "$emulator_bin" -avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 3072 -cores 4 -gpu swiftshader_indirect -verbose >"$log" 2>&1 &
-          emulator_pid=$!
-          echo "Emulator PID: $emulator_pid"
-          echo "Emulator log: $log"
           adb start-server
-          booted=0
-          for attempt in $(seq 1 120); do
-            if ! kill -0 "$emulator_pid" 2>/dev/null; then
-              echo "Android emulator process exited before boot."
-              tail -n 240 "$log" || true
+          hw_log="$RUNNER_TEMP/one-android-emulator-hw.log"
+          sw_log="$RUNNER_TEMP/one-android-emulator-sw.log"
+          boot_wait() {
+            local pid="$1" max_checks="$2"
+            for _ in $(seq 1 "$max_checks"); do
+              if ! kill -0 "$pid" 2>/dev/null; then return 1; fi
+              devices="$(adb devices | tr -d '\r')"
+              if printf '%s\n' "$devices" | grep -q '^emulator-5554[[:space:]]\+device$'; then
+                completed="$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+                if [ "$completed" = "1" ]; then return 0; fi
+              fi
+              sleep 10
+            done
+            return 1
+          }
+          start_args=(-avd one-api35-arm64 -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 3072 -cores 4 -gpu swiftshader_indirect -verbose)
+          "$emulator_bin" "${start_args[@]}" >"$hw_log" 2>&1 &
+          emulator_pid=$!
+          echo "Hardware-acceleration emulator PID: $emulator_pid"
+          if ! boot_wait "$emulator_pid" 12; then
+            if grep -Eqi 'HV_UNSUPPORTED|HVF is not supported|HVF.*unsupported|Hypervisor.Framework.*unsupported' "$hw_log"; then
+              echo "Hardware acceleration unavailable; trying bounded software-acceleration fallback."
+              kill "$emulator_pid" 2>/dev/null || true
+              wait "$emulator_pid" 2>/dev/null || true
+              adb kill-server || true
+              adb start-server
+              "$emulator_bin" "${start_args[@]}" -accel off >"$sw_log" 2>&1 &
+              emulator_pid=$!
+              echo "Software-acceleration emulator PID: $emulator_pid"
+              if ! boot_wait "$emulator_pid" 120; then
+                echo "Android API 35 emulator failed hardware and software boot attempts."
+                tail -n 160 "$hw_log" || true
+                tail -n 160 "$sw_log" || true
+                exit 1
+              fi
+            else
+              echo "Hardware-acceleration emulator failed for a reason other than an unsupported hypervisor."
+              tail -n 160 "$hw_log" || true
               exit 1
             fi
-            devices="$(adb devices | tr -d '\r')"
-            echo "Boot poll $attempt/120: $devices"
-            if printf '%s\n' "$devices" | grep -q '^emulator-5554[[:space:]]\+device$'; then
-              completed="$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
-              if [ "$completed" = "1" ]; then booted=1; break; fi
-            fi
-            sleep 15
-          done
-          if [ "$booted" != "1" ]; then
-            echo "Android emulator did not reach sys.boot_completed=1 within 30 minutes."
-            tail -n 300 "$log" || true
-            adb devices -l || true
-            exit 1
           fi
           adb -s emulator-5554 shell getprop ro.build.version.sdk
           adb -s emulator-5554 shell getprop ro.product.cpu.abi
           test "$(adb -s emulator-5554 shell getprop ro.build.version.sdk | tr -d '\r')" = "35"
           test "$(adb -s emulator-5554 shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
-          echo "ONE_ANDROID_ADB=$ANDROID_HOME/platform-tools/adb" >> "$GITHUB_ENV"
 
       - name: Build and execute ELF AArch64 on Android emulator
         shell: bash
