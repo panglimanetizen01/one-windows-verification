@@ -73,13 +73,16 @@ jobs:
           #!/bin/bash
           set -euo pipefail
           args=()
+          printf 'ONE_QEMU_TCG_WRAPPER_CALLED=1\\n' >&2
           for arg in "\$@"; do
-            if [[ "\$arg" == "-enable-hvf" ]]; then
+            if [[ "\$arg" == *enable-hvf* ]]; then
+              printf 'Replacing accelerator argument: %s\\n' "\$arg" >&2
               args+=("-accel" "tcg")
             else
               args+=("\$arg")
             fi
           done
+          printf 'Filtered QEMU args: %s\\n' "${args[*]}" >&2
           exec "$qemu_real" "\${args[@]}"
           EOF
           chmod +x "$qemu_bin"
