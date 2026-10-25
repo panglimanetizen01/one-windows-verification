@@ -1,0 +1,62 @@
+name: ONE Android API 35 AArch64 runtime attempt
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-api35-arm64-runtime-attempt.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-runtime:
+    name: Execute native ELF on Android API 35 arm64-v8a
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Android API 35 NDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install NDK and verify source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android24-clang' -print -quit)"
+          test -x "$clang"
+          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
+          echo "ONE_ANDROID_ADB=$(command -v adb)" >> "$GITHUB_ENV"
+          printf 'source_sha=%s\n' "$(git -C source rev-parse HEAD)"
+          "$clang" --version
+      - name: Boot Android API 35 arm64-v8a emulator and execute ELF
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: arm64-v8a
+          profile: pixel_2
+          emulator-options: -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel off
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            adb wait-for-device
+            adb shell getprop ro.build.version.sdk | tee "$RUNNER_TEMP/android-api.txt"
+            adb shell getprop ro.product.cpu.abi | tee "$RUNNER_TEMP/android-abi.txt"
+            test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = "35"
+            test "$(adb shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
+            cd source
+            cargo test --locked -p one-core --test native_backend_android_aarch64 -- --ignored --nocapture
