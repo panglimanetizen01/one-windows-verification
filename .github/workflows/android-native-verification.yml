@@ -125,6 +125,13 @@ jobs:
           fi
           if (( tee_status != 0 )); then exit "$tee_status"; fi
 
+      - name: Run Android backend contract tests before emulator capability probe
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          cargo test --locked -p one-core --test native_backend_android_aarch64
+
       - name: Boot Android AArch64 emulator with observable diagnostics
         timeout-minutes: 35
         shell: bash
