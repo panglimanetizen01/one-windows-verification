@@ -21,7 +21,6 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: 56606c7f8076bc9a67e321835077315d321b8b7a
-          token: \${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
       - name: Install Android NDK
