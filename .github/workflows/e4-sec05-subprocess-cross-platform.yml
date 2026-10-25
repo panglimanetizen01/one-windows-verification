@@ -85,12 +85,6 @@ jobs:
           ref: bdf18288be339524f5fac7fc5740a0f691f64527
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
-      - name: Install Windows LLVM and MinGW toolchains
-        shell: pwsh
-        run: |
-          choco install llvm mingw -y --no-progress
-          $env:Path += ";C:\Program Files\LLVM\bin;C:\tools\mingw64\bin;C:\tools\mingw\bin"
-          "PATH=$env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - uses: dtolnay/rust-toolchain@stable
       - name: Record exact candidate and toolchain
         working-directory: source
