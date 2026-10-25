@@ -82,7 +82,7 @@ jobs:
               args+=("\$arg")
             fi
           done
-          printf 'Filtered QEMU args: %s\\n' "\\${args[*]}" >&2
+          printf 'Filtered QEMU args: %s\n' "\${args[*]}" >&2
           exec "$qemu_real" "\${args[@]}"
           EOF
           chmod +x "$qemu_bin"
