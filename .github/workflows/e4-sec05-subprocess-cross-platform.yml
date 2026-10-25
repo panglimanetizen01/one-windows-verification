@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 5390372a100a4080d5bf14fe10984b7618eef91e
+          ref: 5fa0faa32c9114cccdb42e18fd0568109a653003
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Install Linux native cross-compilers
@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "5390372a100a4080d5bf14fe10984b7618eef91e"
+          test "$(git rev-parse HEAD)" = "5fa0faa32c9114cccdb42e18fd0568109a653003"
           printf 'source_sha=%s\n' "$(git rev-parse HEAD)"
           rustc --version
           cargo --version
@@ -99,7 +99,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 5390372a100a4080d5bf14fe10984b7618eef91e
+          ref: 5fa0faa32c9114cccdb42e18fd0568109a653003
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
@@ -108,7 +108,7 @@ jobs:
         shell: pwsh
         run: |
           $actual = git rev-parse HEAD
-          if ($actual -ne "5390372a100a4080d5bf14fe10984b7618eef91e") { throw "Unexpected source SHA: $actual" }
+          if ($actual -ne "5fa0faa32c9114cccdb42e18fd0568109a653003") { throw "Unexpected source SHA: $actual" }
           Write-Output "source_sha=$actual"
           rustc --version
           cargo --version
