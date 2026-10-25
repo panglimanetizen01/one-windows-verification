@@ -166,6 +166,22 @@ jobs:
           if ("CreateProcessW(" -notmatch "CreateProcessW\s*\(") {
             throw "SEC-05 GUARD SELF-TEST FAILED: CreateProcessW pattern did not match."
           }
+          foreach ($requiredPattern in @(
+            "InitializeProcThreadAttributeList\s*\(",
+            "UpdateProcThreadAttribute\s*\(",
+            "DeleteProcThreadAttributeList\s*\("
+          )) {
+            if ("api_call(" -notmatch $requiredPattern -and
+                "InitializeProcThreadAttributeList(" -notmatch $requiredPattern -and
+                "UpdateProcThreadAttribute(" -notmatch $requiredPattern -and
+                "DeleteProcThreadAttributeList(" -notmatch $requiredPattern) {
+              # The focused synthetic API name is tested below instead.
+              $apiName = ($requiredPattern -split "\\s")[0] -replace "\\\\", ""
+              if ("$apiName(" -notmatch $requiredPattern) {
+                throw "SEC-05 GUARD SELF-TEST FAILED: attribute API pattern failed for $apiName."
+              }
+            }
+          }
           if ("unrelated_function(" -match "AssignProcessToJobObject\s*\(") {
             throw "SEC-05 GUARD SELF-TEST FAILED: unrelated call matched unexpectedly."
           }
@@ -174,10 +190,22 @@ jobs:
           if ($sourceText -match "AssignProcessToJobObject\s*\(") {
             throw "SEC-05 BLOCKED: spawn-then-assign Job Object leaves a descendant-spawn race."
           }
-          if ($sourceText -notmatch "PROC_THREAD_ATTRIBUTE_JOB_LIST") {
-            throw "SEC-05 BLOCKED: race-free process-creation Job Object attribute is missing."
+          foreach ($requiredMarker in @(
+            "PROC_THREAD_ATTRIBUTE_JOB_LIST",
+            "EXTENDED_STARTUPINFO_PRESENT"
+          )) {
+            if ($sourceText -notmatch [regex]::Escape($requiredMarker)) {
+              throw "SEC-05 BLOCKED: required process-creation marker missing: $requiredMarker"
+            }
           }
-          if ($sourceText -notmatch "CreateProcessW\s*\(") {
-            throw "SEC-05 BLOCKED: expected audited Windows CreateProcessW launch path is missing."
+          foreach ($requiredApi in @(
+            "CreateProcessW",
+            "InitializeProcThreadAttributeList",
+            "UpdateProcThreadAttribute",
+            "DeleteProcThreadAttributeList"
+          )) {
+            if ($sourceText -notmatch "$requiredApi\s*\(") {
+              throw "SEC-05 BLOCKED: required process-creation API call missing: $requiredApi"
+            }
           }
           Write-Output "Static launch-path markers present; dynamic race/adversarial tests are still required."
