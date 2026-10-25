@@ -94,3 +94,11 @@ This is stronger evidence for descendant cleanup than the prior candidate, but i
 - Added PowerShell regex self-tests for direct calls, calls with intervening whitespace, the required `CreateProcessW(...)` marker, and a negative unrelated-call case before scanning the pinned candidate.
 - The workflow is configured to run on changes to this workflow file on branch `verification`; however, the connector has not returned a run result for this commit. Treat these checks as authored and read-back verified, not as runtime-passing until the GitHub Actions run logs confirm them.
 - The pinned candidate remains expected to fail the later fail-closed source gate because it uses `AssignProcessToJobObject` after spawning. This is intentional and must not be relabeled as a test pass.
+
+## Candidate-selectable lab workflow (2026-10-25)
+
+- Workflow commit: `2879785ce7389f17636dacc5c1dcee096c0f95b5`.
+- Added optional `workflow_dispatch` input `candidate_sha`; both Linux and Windows jobs check out and assert the exact selected SHA. The default remains `5fa0faa32c9114cccdb42e18fd0568109a653003` for historical reproducibility.
+- Read-back verification confirmed both checkout refs and both SHA assertions use the input/default expression. This makes the lab reusable for a future rewritten candidate without silently changing which source was tested.
+- This workflow update is not a test result. No Actions run conclusion has been confirmed here. The default candidate is still expected to fail the race-free Windows launch gate because its source uses spawn-then-assign.
+- To test a future candidate, use the workflow's **Run workflow** UI on branch `verification`, supply its full source commit SHA, then retain the run URL and logs as evidence. Linux and Windows jobs must report the same source SHA.
