@@ -183,6 +183,9 @@ jobs:
               wait "$emulator_pid" 2>/dev/null || true
               adb kill-server || true
               adb start-server
+              # The hardware-probe opt-in forces HVF inside the emulator. Clear it
+              # before the explicit software-acceleration retry.
+              export ONE_ANDROID_ALLOW_HVF=no
               "$emulator_bin" "${start_args[@]}" -accel off >"$sw_log" 2>&1 &
               emulator_pid=$!
               echo "Software-acceleration emulator PID: $emulator_pid"
