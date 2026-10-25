@@ -67,7 +67,7 @@ jobs:
           cp "$RUNNER_TEMP/SHA256SUMS" "$RUNNER_TEMP/one-android-device-artifact/"
           cp "$RUNNER_TEMP/ELF-FILE.txt" "$RUNNER_TEMP/one-android-device-artifact/"
           cp "$RUNNER_TEMP/ELF-HEADER.txt" "$RUNNER_TEMP/one-android-device-artifact/"
-          printf 'source_sha=%s\\n' "$(git -C "$GITHUB_WORKSPACE/source" rev-parse HEAD)" > "$RUNNER_TEMP/one-android-device-artifact/SOURCE.txt"
+          printf 'source_sha=%s\n' "$(git -C "$GITHUB_WORKSPACE/source" rev-parse HEAD)" > "$RUNNER_TEMP/one-android-device-artifact/SOURCE.txt"
       - uses: actions/upload-artifact@v4
         with:
           name: one-android-aarch64-device-artifact
