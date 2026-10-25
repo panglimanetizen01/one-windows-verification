@@ -15,7 +15,7 @@ on:
       candidate_sha:
         description: "Exact ONE commit SHA to verify"
         required: false
-        default: "1e99c81408b4b5e59407431a9139d875a88a366b"
+        default: ''
         type: string
 
 permissions:
@@ -29,11 +29,23 @@ jobs:
     steps:
       - name: Checkout verification harness
         uses: actions/checkout@v4
+      - name: Resolve exact candidate SHA
+        id: target
+        shell: bash
+        env:
+          CANDIDATE_SHA_INPUT: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          target="${CANDIDATE_SHA_INPUT:-}"
+          if [ -z "$target" ]; then target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"; fi
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+
       - name: Checkout exact ONE candidate
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: ${{ inputs.candidate_sha || '1e99c81408b4b5e59407431a9139d875a88a366b' }}
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Install Linux native cross-compilers
@@ -51,7 +63,7 @@ jobs:
         working-directory: source
         shell: bash
         env:
-          ONE_CANDIDATE_SHA: ${{ inputs.candidate_sha || '1e99c81408b4b5e59407431a9139d875a88a366b' }}
+          ONE_CANDIDATE_SHA: ${{ steps.target.outputs.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
@@ -123,11 +135,23 @@ jobs:
           Get-Command x86_64-w64-mingw32-gcc.exe -ErrorAction SilentlyContinue
       - name: Checkout verification harness
         uses: actions/checkout@v4
+      - name: Resolve exact candidate SHA
+        id: target
+        shell: bash
+        env:
+          CANDIDATE_SHA_INPUT: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          target="${CANDIDATE_SHA_INPUT:-}"
+          if [ -z "$target" ]; then target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"; fi
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+
       - name: Checkout exact ONE candidate
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: ${{ inputs.candidate_sha || '1e99c81408b4b5e59407431a9139d875a88a366b' }}
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
@@ -135,7 +159,7 @@ jobs:
         working-directory: source
         shell: pwsh
         env:
-          ONE_CANDIDATE_SHA: ${{ inputs.candidate_sha || '1e99c81408b4b5e59407431a9139d875a88a366b' }}
+          ONE_CANDIDATE_SHA: ${{ steps.target.outputs.sha }}
         run: |
           $actual = git rev-parse HEAD
           if ($actual -ne $env:ONE_CANDIDATE_SHA) { throw "Unexpected source SHA: $actual (expected $env:ONE_CANDIDATE_SHA)" }
