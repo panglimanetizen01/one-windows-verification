@@ -77,7 +77,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          printf 'no\n' | avdmanager create avd --name one-api35-arm64-tcg --package 'system-images;android-35;default;arm64-v8a' --device pixel_2 --force
+          avd_log="$RUNNER_TEMP/one-api35-avd-create.log"
+          set +e
+          printf 'no\n' | avdmanager create avd --name one-api35-arm64-tcg --package 'system-images;android-35;default;arm64-v8a' --force --verbose 2>&1 | tee "$avd_log"
+          statuses=( "${PIPESTATUS[@]}" )
+          set -e
+          if (( statuses[1] != 0 )); then exit "${statuses[1]}"; fi
+          if (( statuses[0] != 0 )); then
+            echo "avdmanager create failed with exit ${statuses[0]}" >&2
+            tail -n 120 "$avd_log" >&2 || true
+            exit "${statuses[0]}"
+          fi
           "$ANDROID_HOME/emulator/emulator" -list-avds | tee "$RUNNER_TEMP/one-avds.txt"
           grep -Fxq one-api35-arm64-tcg "$RUNNER_TEMP/one-avds.txt"
 
