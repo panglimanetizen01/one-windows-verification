@@ -82,9 +82,13 @@ jobs:
           printf 'no\nno\n' | avdmanager -v create avd --name one-api35-arm64-tcg --package 'system-images;android-35;default;arm64-v8a' --device pixel_2 --force 2>&1 | tee "$avd_log"
           statuses=( "${PIPESTATUS[@]}" )
           set -e
-          if (( statuses[1] != 0 )); then exit "${statuses[1]}"; fi
+          if (( statuses[1] != 0 )); then
+            echo "avdmanager create failed with exit ${statuses[1]}" >&2
+            tail -n 160 "$avd_log" >&2 || true
+            exit "${statuses[1]}"
+          fi
           if (( statuses[0] != 0 )); then
-            echo "avdmanager create failed with exit ${statuses[0]}" >&2
+            echo "prompt input pipeline failed with exit ${statuses[0]}" >&2
             tail -n 120 "$avd_log" >&2 || true
             exit "${statuses[0]}"
           fi
@@ -146,6 +150,7 @@ jobs:
           path: |
             ${{ runner.temp }}/one-api35-tcg-emulator.log
             ${{ runner.temp }}/one-api35-runtime-device.txt
+            ${{ runner.temp }}/one-api35-avd-create.log
             /tmp/one-sdk-licenses.log
           if-no-files-found: warn
           retention-days: 30
