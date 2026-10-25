@@ -5,6 +5,11 @@ on:
     branches: [verification]
     paths:
       - '.github/workflows/android-aarch64-arm-host.yml'
+  pull_request:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-aarch64-arm-host.yml'
+      - 'CANONICAL_COMMIT.txt'
   workflow_dispatch:
 
 permissions:
@@ -14,15 +19,24 @@ jobs:
   android-aarch64-arm-host:
     name: API 35 arm64-v8a ELF runtime on ARM64 host
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 120
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve exact candidate SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout pinned ONE source
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
@@ -31,7 +45,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+          test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
           test "$(uname -m)" = "aarch64"
           uname -a
 
