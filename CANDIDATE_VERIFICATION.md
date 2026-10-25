@@ -415,3 +415,15 @@ This closes the synthetic candidate-bundle integrity checks for the current exac
 - The GitHub job API reports an empty executable step list (`steps: []`) for the canonical job. The job-log endpoint returns a missing-log/404 response. Therefore this retry produced no test evidence; it is neither a source-test failure nor a passing run.
 - The independent lab's prior candidate bundle inspection remains PASS as documented above. This retry does not change or invalidate those scoped lab results, and does not satisfy the protected production release acceptance.
 - Required external action remains: restore a functioning canonical Actions execution path and ensure `CANONICAL_READ_TOKEN` in the lab has Actions: read permission for the private canonical repository; then run the protected `one-release` workflow with independently provisioned production signing/trust material and re-run the fixed-weight ledger gate.
+
+
+## Fixed-weight gate diagnostic — run 40157555318
+
+- Gate run: [40157555318](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40157555318), evidence-index commit `6b045336e48cbdbcd0e950debc35eeb145867d40`, source pin `56606c7f8076bc9a67e321835077315d321b8b7a`.
+- Ledger verifier unit tests: **4/4 PASS**. This confirms the gate checker behaves as intended; it is not project acceptance.
+- Actual ledger summary: fixed weights `100/100`; implementation `91/100`; verified `64/100`; 18 weighted rows checked; 9 Definition of Done items unchecked.
+- Acceptance failures reported by the gate:
+  - E1 `0/10`, E2 `0/8`, E3 `0/8`, E4 `0/6`, E6 `0/4` lack full-row acceptance evidence.
+  - No current-source-SHA run found for Android AArch64 native runtime verification.
+  - Canonical release workflow evidence query fails because `CANONICAL_READ_TOKEN` lacks Actions: read access to the private canonical repository; anonymous fallback returns HTTP 404.
+- Conclusion: gate failure is an acceptance/evidence result, not a failed ledger unit test. Do not change points or checkboxes to hide these blockers.
