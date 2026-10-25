@@ -68,6 +68,10 @@ jobs:
           sdkmanager --install "platform-tools" "emulator" "system-images;android-35;default;arm64-v8a" "ndk;27.2.12479018"
           test -x "$ANDROID_HOME/emulator/emulator"
           test -x "$ANDROID_HOME/platform-tools/adb"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/clang' -print -quit)"
+          test -n "$clang"
+          test -x "$clang"
+          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
 
       - name: Create API 35 arm64-v8a virtual device
         shell: bash
