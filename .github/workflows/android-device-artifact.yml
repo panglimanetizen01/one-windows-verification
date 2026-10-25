@@ -21,7 +21,7 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: 56606c7f8076bc9a67e321835077315d321b8b7a
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          token: \${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
       - name: Install Android NDK
@@ -42,7 +42,7 @@ jobs:
           use std::{fs, path::PathBuf};
           #[test]
           fn build_android_device_artifact() {
-              let source = "tampilkan \"ONE_NATIVE_BACKEND_OK\"\\n";
+              let source = "tampilkan \"ONE_NATIVE_BACKEND_OK\"\n";
               let parsed = parse(source).expect("parse");
               let typed = analyze(&parsed).expect("analyze");
               let ir = lower(&typed).expect("lower");
@@ -50,7 +50,7 @@ jobs:
               NativeAndroidAarch64Backend::new().build(&ir, &out).expect("Android AArch64 build");
               let bytes = fs::read(&out).expect("read artifact");
               assert!(bytes.len() > 20);
-              assert_eq!(&bytes[0..4], b"\\x7fELF");
+              assert_eq!(&bytes[0..4], b"\x7fELF");
               assert_eq!(bytes[4], 2);
               assert_eq!(u16::from_le_bytes([bytes[18], bytes[19]]), 183);
           }
@@ -71,6 +71,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: one-android-aarch64-device-artifact
-          path: ${{ runner.temp }}/one-android-device-artifact/
+          path: \${{ runner.temp }}/one-android-device-artifact/
           if-no-files-found: error
           retention-days: 7
