@@ -131,6 +131,15 @@ jobs:
           fi
           if (( tee_status != 0 )); then exit "$tee_status"; fi
 
+      - name: Create Android API 35 arm64-v8a AVD
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v avdmanager
+          printf 'no\n' | avdmanager create avd --name one-api35-arm64 --package 'system-images;android-35;default;arm64-v8a' --device pixel_2 --force
+          emulator -list-avds | tee "$RUNNER_TEMP/one-android-avd-list.txt"
+          grep -Fxq one-api35-arm64 "$RUNNER_TEMP/one-android-avd-list.txt"
+
       - name: Run Android backend contract tests before emulator capability probe
         shell: bash
         working-directory: source
