@@ -377,3 +377,19 @@ The repaired canonical workflow source is pinned in `CANONICAL_COMMIT.txt` and t
 - **Android AArch64 runtime: NOT PASSED** — [run 40155108942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155108942). The Android emulator boot/capability probe failed; ELF execution was skipped. This is not E2 package-provenance evidence, but remains a global platform gate.
 
 The canonical repository's own workflow runs still report no executable steps, so they are not counted as passing tests. The production protected `one-release` workflow has not run. Therefore the synthetic E2 path is now verified on the repaired exact SHA, but **E2 is not GREEN LOCKED / not fully accepted** until the protected production release path succeeds with independently provisioned signing and trusted-publisher material and retained output artifacts.
+
+
+## E2 matrix update — exact candidate SHA `56606c7f8076bc9a67e321835077315d321b8b7a`
+
+Updated 2026-10-25 after the previously running jobs completed:
+
+- **Cross-platform matrix: PASS on both Ubuntu and Windows** — [run 40155108886](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155108886). Ubuntu and Windows jobs completed successfully, including release-mode build, CLI smoke tests, package creation twice, and offline verification. Windows log includes 34 stdlib tests and 10 target-backend foundation tests plus CLI smoke/offline checks.
+- **Linux distro matrix: PASS on Ubuntu 24.04 and Debian 12** — [run 40155108895](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155108895).
+- Cross-platform candidate artifacts (both unexpired) are available from run 40155108886:
+  - Linux bundle ID `12584162788`, GitHub archive digest `sha256:7c7718750048ea52e546fd0f163e81e8e924aad657923e78faa6700691cdc398`.
+  - Windows bundle ID `12584252835`, GitHub archive digest `sha256:dfe7afcd9f727042bc5200869a440ac7f7803f298548716c29a529820c081a22`.
+- **Artifact content inspection remains in progress** — [run 40155109003](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155109003). The independent archive-digest and embedded metadata/binary-format assertions are not credited until that run completes successfully.
+- **Fixed-weight ledger gate remains NOT PASSED** — [run 40155108839](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155108839). It was evaluated before this matrix completed and before this index update; it also reported 9 unchecked Definition of Done items, missing complete E1/E2/E3/E4/E6 row evidence, and missing canonical Actions read permission for protected release evidence. Updating this index does not itself satisfy those acceptance requirements.
+- **Android native runtime remains NOT PASSED** — [run 40155108942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40155108942); the emulator/ELF execution probe failed.
+
+The synthetic E2 package/provenance test, focused tests, lockfile bootstrap, Linux distro matrix, and now the full Ubuntu/Windows cross-platform matrix have passed for the exact source SHA. This is substantial test evidence but **does not constitute production release acceptance**: the protected `one-release` workflow with independently trusted production signing material has not run, and artifact inspection plus the complete ledger/DoD gate are not green.
