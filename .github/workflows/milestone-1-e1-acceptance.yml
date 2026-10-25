@@ -1,0 +1,92 @@
+name: ONE Milestone 1 E1 Cross-Platform Acceptance Lab
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - ".github/workflows/milestone-1-e1-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: one-e1-acceptance-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  e1:
+    name: E1 tests and repository contract (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout verifier harness
+        uses: actions/checkout@v4
+      - name: Read pinned canonical revision
+        id: source
+        shell: bash
+        run: echo "sha=$(tr -d '\r\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact canonical ONE revision
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.source.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Assert exact source revision
+        shell: bash
+        working-directory: source
+        run: test "$(git rev-parse HEAD)" = "${{ steps.source.outputs.sha }}"
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
+          components: rustfmt, clippy
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Cache Cargo dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: source
+      - name: Print exact evidence context
+        shell: bash
+        working-directory: source
+        run: |
+          echo "Source SHA: $(git rev-parse HEAD)"
+          rustc --version
+          cargo --version
+          python --version
+      - name: E1 standard-library integration regression suite
+        working-directory: source
+        run: cargo --locked test -p one-core --test stdlib_builtins
+      - name: E1 standard-library library unit suite
+        working-directory: source
+        run: cargo --locked test -p one-core --lib
+      - name: Full workspace tests
+        working-directory: source
+        run: cargo --locked test --workspace --all-targets
+      - name: Workspace Clippy with warnings denied
+        working-directory: source
+        run: cargo --locked clippy --workspace --all-targets -- -D warnings
+      - name: Repository contract checker
+        working-directory: source
+        run: python tools/check_contract.py
+      - name: Summarize exact revision and run
+        if: always()
+        shell: bash
+        working-directory: source
+        run: |
+          {
+            echo "## ONE E1 Acceptance Lab"
+            echo "- Canonical source SHA: $(git rev-parse HEAD)"
+            echo "- OS: $(uname -a)"
+            echo "- Rust: $(rustc --version)"
+            echo "- Cargo: $(cargo --version)"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } >> "$GITHUB_STEP_SUMMARY"
