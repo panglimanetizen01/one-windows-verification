@@ -82,6 +82,11 @@ jobs:
           choco install llvm mingw -y --no-progress
           $env:Path += ";C:\Program Files\LLVM\bin;C:\tools\mingw64\bin;C:\tools\mingw\bin"
           "PATH=$env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $clang = Get-Command clang.exe -ErrorAction Stop
+          "ONE_WINDOWS_CLANG=$($clang.Source)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Get-Command clang.exe
+          Get-Command x86_64-w64-mingw32-clang.exe -ErrorAction SilentlyContinue
+          Get-Command x86_64-w64-mingw32-gcc.exe -ErrorAction SilentlyContinue
       - name: Checkout verification harness
         uses: actions/checkout@v4
       - name: Checkout exact ONE candidate
