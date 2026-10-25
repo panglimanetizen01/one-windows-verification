@@ -1,0 +1,73 @@
+name: ONE E1 Standard Library Windows Acceptance
+on:
+  push:
+    branches: [ verification ]
+    paths:
+      - "CANONICAL_COMMIT.txt"
+      - ".github/workflows/e1-stdlib-windows.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: one-e1-windows-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  e1-windows:
+    name: E1 standard-library contract, integration, and lint
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read canonical source SHA
+        id: canonical
+        shell: bash
+        run: |
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "invalid canonical commit: $target" >&2
+            exit 1
+          fi
+          echo "ref=$target" >> "$GITHUB_OUTPUT"
+      - name: Checkout canonical source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.canonical.outputs.ref }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify exact source SHA
+        working-directory: source
+        shell: pwsh
+        run: |
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
+          components: rustfmt, clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: source
+      - name: Print exact revision and toolchain
+        working-directory: source
+        shell: pwsh
+        run: |
+          git rev-parse HEAD
+          rustc --version
+          cargo --version
+          python --version
+      - name: Complete E1 standard-library integration suite
+        working-directory: source
+        run: cargo --locked test -p one-core --test stdlib_builtins
+      - name: Complete E1 standard-library library unit suite
+        working-directory: source
+        run: cargo --locked test -p one-core --lib
+      - name: Workspace contract checker
+        working-directory: source
+        run: python tools/check_contract.py
+      - name: E1 warnings-denied Clippy
+        working-directory: source
+        run: cargo --locked clippy -p one-core --all-targets -- -D warnings
