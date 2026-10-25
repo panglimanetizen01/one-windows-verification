@@ -64,3 +64,17 @@ The six SEC-05 tests had passed earlier in the same workflow on both platforms. 
 
 This successful workflow validates the current focused implementation and full `one-core` test suite on both OSes at the exact candidate SHA above. It does **not** close every SEC-05 security criterion: the Windows implementation explicitly guarantees direct-child termination/reaping only, and explicit descendant-process cleanup / inherited-pipe bounded-wait tests remain outstanding. `cargo fmt --check --all` has not been established as passing for the whole repository. Keep issue #81 open until those remaining acceptance criteria are either implemented and tested or explicitly resolved in the issue's acceptance contract.
 
+
+
+## Windows Job Object descendant-cleanup candidate (2026-10-25)
+
+- Candidate source SHA: `5fa0faa32c9114cccdb42e18fd0568109a653003`
+- Lab workflow run: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40196588909
+- Workflow harness commit: `1b6119051d088a2521fb96fb170769b4d85f19f7`
+- Overall conclusion: **SUCCESS**; Linux and Windows jobs completed successfully.
+- Windows Server 2025 focused subprocess contract suite: **7 passed, 0 failed**; includes `windows_job_object_terminates_descendant_after_parent_exits`.
+- Windows full `cargo test --locked -p one-core`: main test binary **224 passed, 0 failed**; auxiliary test binaries also passed (one existing ignored test in an auxiliary binary).
+- Windows scoped rustfmt and static SEC-05 marker guard passed.
+- Linux job passed the workflow's corresponding subprocess, formatting, and static guard steps.
+
+This is stronger evidence for descendant cleanup than the prior candidate, but it is not a blanket release/security sign-off. The test exercises a descendant launched by a child that exits; the current spawn-then-assign Job Object sequence may still have a race if a child creates descendants before assignment. The workflow also uses a scoped rustfmt check, not whole-repository `cargo fmt --check --all`. Keep issue #81 open until the race/containment semantics and the complete SEC-05 acceptance criteria are reviewed and explicitly verified.
