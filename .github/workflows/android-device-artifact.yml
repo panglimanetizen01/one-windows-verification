@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
-          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
           echo "sha=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE candidate
         uses: actions/checkout@v4
