@@ -12,12 +12,6 @@ on:
       - 'CANONICAL_COMMIT.txt'
       - 'evidence/triggers/prompt3-e4-adversarial.txt'
   workflow_dispatch:
-    inputs:
-      candidate_sha:
-        description: Exact ONE source commit SHA (defaults to CANONICAL_COMMIT.txt)
-        required: false
-        type: string
-        default: ''
 
 permissions:
   contents: read
@@ -28,17 +22,15 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout verification harness
+        uses: actions/checkout@v4
       - name: Resolve exact candidate SHA
         id: candidate
         shell: bash
-        env:
-          CANDIDATE_SHA_INPUT: ${{ inputs.candidate_sha }}
         run: |
           set -euo pipefail
-          sha="${CANDIDATE_SHA_INPUT:-}"
-          if [ -z "$sha" ]; then sha="$(tr -d '\r\n' < CANONICAL_COMMIT.txt)"; fi
-          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid candidate SHA" >&2; exit 1; }
+          sha="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$sha" | grep -Eq '^[0-9a-f]{40}$'
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE candidate
         uses: actions/checkout@v4
@@ -75,31 +67,16 @@ jobs:
     runs-on: windows-2025
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout verification harness
+        uses: actions/checkout@v4
       - name: Resolve exact candidate SHA
         id: candidate
-        shell: pwsh
-        env:
-          CANDIDATE_SHA_INPUT: ${{ inputs.candidate_sha }}
+        shell: bash
         run: |
-          $sha = $env:CANDIDATE_SHA_INPUT
-          if ([string]::IsNullOrWhiteSpace($sha)) { $sha = (Get-Content CANONICAL_COMMIT.txt -Raw).Trim() }
-          if ($sha -notmatch '^[0-9a-f]{40}
-      - name: Verify source SHA
-        working-directory: source
-        shell: pwsh
-        env:
-          ONE_CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
-        run: |
-          $actual = git rev-parse HEAD
-          if ($actual -ne $env:ONE_CANDIDATE_SHA) { throw "Unexpected source SHA: $actual (expected $env:ONE_CANDIDATE_SHA)" }
-          Write-Output "source_sha=$actual"
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Run Windows reparse-point regression
-        working-directory: source
-        run: cargo test --locked -p one-core filesystem_windows_reparse_tests
-) { throw "Invalid candidate SHA: $sha" }
-          "sha=$sha" >> $env:GITHUB_OUTPUT
+          set -euo pipefail
+          sha="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$sha" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE candidate
         uses: actions/checkout@v4
         with:
@@ -113,7 +90,7 @@ jobs:
         env:
           ONE_CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
         run: |
-          $actual = git rev-parse HEAD
+          $actual = (git rev-parse HEAD).Trim()
           if ($actual -ne $env:ONE_CANDIDATE_SHA) { throw "Unexpected source SHA: $actual (expected $env:ONE_CANDIDATE_SHA)" }
           Write-Output "source_sha=$actual"
       - uses: dtolnay/rust-toolchain@stable
