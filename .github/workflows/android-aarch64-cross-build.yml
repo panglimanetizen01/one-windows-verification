@@ -1,0 +1,83 @@
+name: ONE Android AArch64 cross-build and contract fallback
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-aarch64-cross-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-aarch64-cross-build:
+    name: Android API 35 AArch64 compile and contract tests (no emulator claim)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout pinned ONE source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+
+      - name: Verify immutable candidate and native ARM64 host
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+          test "$(uname -m)" = "aarch64"
+          printf 'candidate_sha=%s\nhost_arch=%s\n' "$(git rev-parse HEAD)" "$(uname -m)"
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
+
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Install NDK and API 35 platform (without unsupported emulator package)
+        timeout-minutes: 25
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android35-clang' -print -quit)"
+          test -x "$clang"
+          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
+          "$clang" --version
+
+      - name: Compile and inspect a real Android API 35 AArch64 ELF
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/one_android_probe.c" <<'EOF'
+          #include <stdio.h>
+          int main(void) { puts("ONE_ANDROID_API35_AARCH64_PROBE_OK"); return 0; }
+          EOF
+          "$ONE_ANDROID_CLANG" "$RUNNER_TEMP/one_android_probe.c" -O2 -Wall -Wextra -Werror -o "$RUNNER_TEMP/one_android_probe"
+          file "$RUNNER_TEMP/one_android_probe"
+          readelf -h "$RUNNER_TEMP/one_android_probe" | tee "$RUNNER_TEMP/one_android_elf_header.txt"
+          grep -Eq 'Class:[[:space:]]+ELF64' "$RUNNER_TEMP/one_android_elf_header.txt"
+          grep -Eq 'Machine:[[:space:]]+AArch64' "$RUNNER_TEMP/one_android_elf_header.txt"
+          readelf -l "$RUNNER_TEMP/one_android_probe" | grep -F 'Requesting program interpreter: /system/bin/linker64'
+          sha256sum "$RUNNER_TEMP/one_android_probe"
+
+      - name: Run Android backend contract regression tests
+        working-directory: source
+        shell: bash
+        run: cargo test --locked -p one-core --test native_backend_android_aarch64
+
+      - name: Explicitly mark runtime execution as not tested here
+        shell: bash
+        run: |
+          echo "This job verifies NDK compilation, ELF ABI/interpreter, and backend contract tests only."
+          echo "It does NOT execute the ELF on Android; runtime acceptance remains pending a supported Android emulator or physical Android device."
