@@ -1,0 +1,56 @@
+name: Prompt 3 rustfmt-normalized source export
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/e3-e4-format-export.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  export-normalized-source:
+    name: Export formatted interop.rs for review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@v4
+      - name: Resolve exact candidate SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact ONE source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.target.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Normalize and verify scoped Rust formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 source/crates/one-core/src/interop.rs
+          rustfmt --edition 2024 --check source/crates/one-core/src/interop.rs
+      - name: Export normalized source snapshot
+        shell: bash
+        env:
+          ONE_CANDIDATE_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/generated
+          cp source/crates/one-core/src/interop.rs evidence/generated/interop-rustfmt-normalized.rs
+          printf '%s\n' "$ONE_CANDIDATE_SHA" > evidence/generated/interop-rustfmt-source-sha.txt
+          branch="evidence/interop-rustfmt-${ONE_CANDIDATE_SHA:0:8}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add evidence/generated/interop-rustfmt-normalized.rs evidence/generated/interop-rustfmt-source-sha.txt
+          git commit -m "evidence: export rustfmt-normalized interop.rs for $ONE_CANDIDATE_SHA"
+          git push origin "HEAD:refs/heads/$branch"
