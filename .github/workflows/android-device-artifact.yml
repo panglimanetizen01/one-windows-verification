@@ -11,6 +11,7 @@ on:
     paths:
       - '.github/workflows/android-device-artifact.yml'
       - 'CANONICAL_COMMIT.txt'
+      - 'evidence/triggers/prompt3-android-device-artifact.txt'
 
 permissions:
   contents: read
