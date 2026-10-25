@@ -2,11 +2,17 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `6478fe571b70f6ac088603ce955270fd47f9b0f2`  
+**Current source SHA:** `2ea52d4c39aac98be8678a2e1ac0b67997610c22`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `dca9a22c242905b97275161d9fdda933b986ec0d` has passing focused (including package signature/trusted-publisher tests), lockfile, Linux distro, cross-platform Ubuntu/Windows, artifact-integrity, and a new end-to-end package provenance lab using a disposable synthetic trust key. The end-to-end lab independently verifies the retained package/checksum and rejects untrusted publisher, modified artifact, and modified signed metadata. Android API 35 is still booting with no ELF execution result. The fixed-weight gate is NOT PASSED; E1/E2/E3/E4/E6 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
+
+## Newest candidate — `2ea52d4c39aac98be8678a2e1ac0b67997610c22`
+
+The protected release workflow now enforces byte-identical package builds, validates signed source/artifact metadata, and emits a portable relative-path SHA-256 manifest that is checked before upload. The independent verification pin has been advanced to this exact source revision. The new exact-SHA matrix has been triggered; results from SHA `6478fe571b70f6ac088603ce955270fd47f9b0f2` are historical and do not certify this new revision until its runs finish.
+
+**Acceptance status:** E2 remains unaccepted pending successful exact-SHA lab evidence and a real protected `one-release` run. The mirror's ledger gate also remains fail-closed until the current matrix finishes and canonical Actions evidence can be queried. The available GitHub connection cannot configure repository secrets/environment protection or dispatch the protected workflow.
 
 ## Latest candidate — `6478fe571b70f6ac088603ce955270fd47f9b0f2`
 
