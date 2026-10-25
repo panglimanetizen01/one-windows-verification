@@ -146,6 +146,20 @@ jobs:
         working-directory: source
         shell: pwsh
         run: |
+          # Self-test the regexes against synthetic call sites before inspecting candidate code.
+          if ("AssignProcessToJobObject(" -notmatch "AssignProcessToJobObject\s*\(") {
+            throw "SEC-05 GUARD SELF-TEST FAILED: direct-call pattern did not match."
+          }
+          if ("AssignProcessToJobObject   (" -notmatch "AssignProcessToJobObject\s*\(") {
+            throw "SEC-05 GUARD SELF-TEST FAILED: whitespace-call pattern did not match."
+          }
+          if ("CreateProcessW(" -notmatch "CreateProcessW\s*\(") {
+            throw "SEC-05 GUARD SELF-TEST FAILED: CreateProcessW pattern did not match."
+          }
+          if ("unrelated_function(" -match "AssignProcessToJobObject\s*\(") {
+            throw "SEC-05 GUARD SELF-TEST FAILED: unrelated call matched unexpectedly."
+          }
+          Write-Output "Windows containment regex self-tests passed."
           $sourceText = Get-Content "crates/one-core/src/interop.rs" -Raw
           if ($sourceText -match "AssignProcessToJobObject\s*\(") {
             throw "SEC-05 BLOCKED: spawn-then-assign Job Object leaves a descendant-spawn race."
