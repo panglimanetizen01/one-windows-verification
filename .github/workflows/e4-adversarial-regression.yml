@@ -10,6 +10,7 @@ on:
     paths:
       - '.github/workflows/e4-adversarial-regression.yml'
       - 'CANONICAL_COMMIT.txt'
+      - 'evidence/triggers/prompt3-e4-adversarial.txt'
   workflow_dispatch:
     inputs:
       candidate_sha:
