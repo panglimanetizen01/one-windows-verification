@@ -10,7 +10,7 @@ on:
       candidate_sha:
         description: "Exact ONE commit SHA to verify"
         required: false
-        default: "9246332715e81d8736a681c16443b1af494f4ddd"
+        default: "b63ef9d9cf463e5e9607eda8b292d8c02db5b524"
         type: string
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: ${{ inputs.candidate_sha || '9246332715e81d8736a681c16443b1af494f4ddd' }}
+          ref: ${{ inputs.candidate_sha || 'b63ef9d9cf463e5e9607eda8b292d8c02db5b524' }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Install Linux native cross-compilers
@@ -46,7 +46,7 @@ jobs:
         working-directory: source
         shell: bash
         env:
-          ONE_CANDIDATE_SHA: ${{ inputs.candidate_sha || '9246332715e81d8736a681c16443b1af494f4ddd' }}
+          ONE_CANDIDATE_SHA: ${{ inputs.candidate_sha || 'b63ef9d9cf463e5e9607eda8b292d8c02db5b524' }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
@@ -107,7 +107,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: ${{ inputs.candidate_sha || '9246332715e81d8736a681c16443b1af494f4ddd' }}
+          ref: ${{ inputs.candidate_sha || 'b63ef9d9cf463e5e9607eda8b292d8c02db5b524' }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
@@ -115,7 +115,7 @@ jobs:
         working-directory: source
         shell: pwsh
         env:
-          ONE_CANDIDATE_SHA: ${{ inputs.candidate_sha || '9246332715e81d8736a681c16443b1af494f4ddd' }}
+          ONE_CANDIDATE_SHA: ${{ inputs.candidate_sha || 'b63ef9d9cf463e5e9607eda8b292d8c02db5b524' }}
         run: |
           $actual = git rev-parse HEAD
           if ($actual -ne $env:ONE_CANDIDATE_SHA) { throw "Unexpected source SHA: $actual (expected $env:ONE_CANDIDATE_SHA)" }
