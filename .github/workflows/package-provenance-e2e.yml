@@ -43,6 +43,13 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
 
+      - name: Run exact-SHA package provenance and CLI acceptance tests
+        working-directory: source
+        run: |
+          set -euo pipefail
+          cargo --locked test -p one-cli --bin one package_provenance::tests
+          cargo --locked test -p one-cli --test cli
+
       - name: Build CLI from exact source
         working-directory: source
         run: cargo --locked build --release -p one-cli
@@ -69,7 +76,19 @@ jobs:
           target/release/one package "$project_root"
           mapfile -t artifacts < <(find "$project_root/target" -maxdepth 1 -type f -name '*.onepkg' -print)
           test "${#artifacts[@]}" -eq 1
-          echo "artifact=$project_root/target/$(basename "${artifacts[0]}")" >> "$GITHUB_OUTPUT"
+          artifact="${artifacts[0]}"
+          first_digest="$(sha256sum "$artifact" | cut -d' ' -f1)"
+          rm -- "$artifact"
+          target/release/one package "$project_root"
+          mapfile -t rebuilt < <(find "$project_root/target" -maxdepth 1 -type f -name '*.onepkg' -print)
+          test "${#rebuilt[@]}" -eq 1
+          second_digest="$(sha256sum "${rebuilt[0]}" | cut -d' ' -f1)"
+          test "$first_digest" = "$second_digest" || {
+            echo "FAIL: package bytes differ across clean rebuilds: $first_digest != $second_digest" >&2
+            exit 1
+          }
+          echo "Deterministic package SHA-256: $second_digest"
+          echo "artifact=$project_root/target/$(basename "${rebuilt[0]}")" >> "$GITHUB_OUTPUT"
 
       - name: Sign package with source-bound V2 provenance
         working-directory: source
