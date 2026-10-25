@@ -141,3 +141,19 @@ jobs:
             throw "SEC-05 FAIL: no execution-deadline enforcement markers found."
           }
           Write-Output "Static SEC-05 markers found; adversarial timeout/flood/cleanup tests are still required."
+      - name: Fail closed unless Windows descendants are contained at process creation
+        if: always()
+        working-directory: source
+        shell: pwsh
+        run: |
+          $sourceText = Get-Content "crates/one-core/src/interop.rs" -Raw
+          if ($sourceText -match "AssignProcessToJobObject\\s*\\(") {
+            throw "SEC-05 BLOCKED: spawn-then-assign Job Object leaves a descendant-spawn race."
+          }
+          if ($sourceText -notmatch "PROC_THREAD_ATTRIBUTE_JOB_LIST") {
+            throw "SEC-05 BLOCKED: race-free process-creation Job Object attribute is missing."
+          }
+          if ($sourceText -notmatch "CreateProcessW\\s*\\(") {
+            throw "SEC-05 BLOCKED: expected audited Windows CreateProcessW launch path is missing."
+          }
+          Write-Output "Static launch-path markers present; dynamic race/adversarial tests are still required."
