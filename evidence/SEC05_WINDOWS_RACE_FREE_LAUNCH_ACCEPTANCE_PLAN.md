@@ -45,3 +45,15 @@ The lab's stricter static guard was corrected in commit `a9bcd1684cdced75ee69aad
   - https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-startupinfoexw
 
 This plan is deliberately not a pass report. It defines the evidence needed before SEC-05 can be accepted.
+
+
+## Latest verification checkpoint — 2026-10-25
+
+- Candidate SHA: `9246332715e81d8736a681c16443b1af494f4ddd`
+- Lab workflow run #28: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40208256335
+- Linux job: SUCCESS.
+- Windows job: subprocess contract tests SUCCESS; full `cargo test --locked -p one-core` SUCCESS; scoped formatting SUCCESS; timeout/output-cap guard SUCCESS; race-free Windows containment guard FAILURE.
+- The failure is expected and valid: the production code still uses `Command::spawn()` followed by `AssignProcessToJobObject`. Therefore the exact candidate is a verified baseline only, not a race-free implementation and not accepted.
+- Issue #81 tracking comment: https://github.com/panglimanetizen01/one/issues/81#issuecomment-6399714314
+
+Next code change must replace the Windows process creation and lifecycle together; adding API-name markers or loosening the guard is not an acceptable fix. The raw `PROCESS_INFORMATION` lifecycle must explicitly own and close process/thread/job handles, wait/terminate and retrieve exit status, and safely pipe stdout/stderr while restricting inherited handles.
