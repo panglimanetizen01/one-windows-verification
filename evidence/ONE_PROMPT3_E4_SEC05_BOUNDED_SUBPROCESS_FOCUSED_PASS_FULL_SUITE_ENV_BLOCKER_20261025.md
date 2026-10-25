@@ -87,3 +87,10 @@ This is stronger evidence for descendant cleanup than the prior candidate, but i
 - Microsoft documents `PROC_THREAD_ATTRIBUTE_JOB_LIST` as assigning job handles during process creation on Windows 10 / Windows Server 2016 and newer: https://learn.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute
 - The pinned candidate `5fa0faa32c9114cccdb42e18fd0568109a653003` still uses spawn-then-assign and is expected to fail the corrected gate. No pass is claimed for that candidate under this stricter gate.
 - Required next step remains a reviewed process-creation implementation and Linux/Windows dynamic tests on the exact same candidate SHA. SEC-05 remains open.
+
+## Guard self-test added (2026-10-25)
+
+- Workflow commit: `0ba11df6e16b5642e9e05f6689ffe6f1f805e47a`.
+- Added PowerShell regex self-tests for direct calls, calls with intervening whitespace, the required `CreateProcessW(...)` marker, and a negative unrelated-call case before scanning the pinned candidate.
+- The workflow is configured to run on changes to this workflow file on branch `verification`; however, the connector has not returned a run result for this commit. Treat these checks as authored and read-back verified, not as runtime-passing until the GitHub Actions run logs confirm them.
+- The pinned candidate remains expected to fail the later fail-closed source gate because it uses `AssignProcessToJobObject` after spawning. This is intentional and must not be relabeled as a test pass.
