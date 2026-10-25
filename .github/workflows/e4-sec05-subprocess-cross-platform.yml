@@ -29,6 +29,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang lld mingw-w64
+          command -v clang
+          command -v x86_64-w64-mingw32-clang || true
+          command -v x86_64-w64-mingw32-gcc || true
+          command -v x86_64-w64-mingw32-ld || true
+      - name: Configure Windows-target compiler on Linux
+        run: echo 'ONE_WINDOWS_CLANG=clang' >> "$GITHUB_ENV"
       - uses: dtolnay/rust-toolchain@stable
       - name: Record exact candidate and toolchain
         working-directory: source
