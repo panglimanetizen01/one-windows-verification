@@ -6,6 +6,11 @@ on:
     branches: [verification]
     paths:
       - '.github/workflows/android-device-artifact.yml'
+  pull_request:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-device-artifact.yml'
+      - 'CANONICAL_COMMIT.txt'
 
 permissions:
   contents: read
@@ -16,11 +21,19 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve exact candidate SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40]$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE candidate
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
@@ -30,9 +43,11 @@ jobs:
           packages: platform-tools
       - name: Install NDK and compile device artifact
         shell: bash
+        env:
+          ONE_CANDIDATE_SHA: ${{ steps.target.outputs.sha }}
         run: |
           set -euo pipefail
-          test "$(git -C source rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+          test "$(git -C source rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools"
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android24-clang' -print -quit)"
