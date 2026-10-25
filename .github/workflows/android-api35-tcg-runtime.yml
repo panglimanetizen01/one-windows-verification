@@ -78,8 +78,10 @@ jobs:
         run: |
           set -euo pipefail
           avd_log="$RUNNER_TEMP/one-api35-avd-create.log"
+          avdmanager create avd --help | tee "$RUNNER_TEMP/one-avdmanager-create-help.txt"
+          avdmanager list device | tee "$RUNNER_TEMP/one-avdmanager-device-list.txt"
           set +e
-          printf 'no\nno\n' | avdmanager -v create avd --name one-api35-arm64-tcg --package 'system-images;android-35;default;arm64-v8a' --device pixel_2 --force 2>&1 | tee "$avd_log"
+          printf 'no\n' | avdmanager create avd -n one-api35-arm64-tcg -k 'system-images;android-35;default;arm64-v8a' -d pixel_2 -f 2>&1 | tee "$avd_log"
           statuses=( "${PIPESTATUS[@]}" )
           set -e
           if (( statuses[1] != 0 )); then
@@ -151,6 +153,8 @@ jobs:
             ${{ runner.temp }}/one-api35-tcg-emulator.log
             ${{ runner.temp }}/one-api35-runtime-device.txt
             ${{ runner.temp }}/one-api35-avd-create.log
+            ${{ runner.temp }}/one-avdmanager-create-help.txt
+            ${{ runner.temp }}/one-avdmanager-device-list.txt
             /tmp/one-sdk-licenses.log
           if-no-files-found: warn
           retention-days: 30
