@@ -1,0 +1,76 @@
+name: Build Android AArch64 device artifact
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-device-artifact.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Android NDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install NDK and compile device artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android24-clang' -print -quit)"
+          test -x "$clang"
+          cat > source/crates/one-core/tests/android_device_artifact.rs <<'RS'
+          use one_core::{analyze, lower, parse, NativeAndroidAarch64Backend};
+          use std::{fs, path::PathBuf};
+          #[test]
+          fn build_android_device_artifact() {
+              let source = "tampilkan \"ONE_NATIVE_BACKEND_OK\"\\n";
+              let parsed = parse(source).expect("parse");
+              let typed = analyze(&parsed).expect("analyze");
+              let ir = lower(&typed).expect("lower");
+              let out = PathBuf::from(std::env::var("ONE_ANDROID_ARTIFACT_OUT").expect("artifact output path"));
+              NativeAndroidAarch64Backend::new().build(&ir, &out).expect("Android AArch64 build");
+              let bytes = fs::read(&out).expect("read artifact");
+              assert!(bytes.len() > 20);
+              assert_eq!(&bytes[0..4], b"\\x7fELF");
+              assert_eq!(bytes[4], 2);
+              assert_eq!(u16::from_le_bytes([bytes[18], bytes[19]]), 183);
+          }
+          RS
+          export ONE_ANDROID_CLANG="$clang"
+          export ONE_ANDROID_ARTIFACT_OUT="$RUNNER_TEMP/one-android-aarch64"
+          cd source
+          cargo test --locked -p one-core --test android_device_artifact -- --nocapture
+          sha256sum "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/SHA256SUMS"
+          file "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-FILE.txt"
+          readelf -h "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-HEADER.txt"
+          mkdir -p "$RUNNER_TEMP/one-android-device-artifact"
+          cp "$ONE_ANDROID_ARTIFACT_OUT" "$RUNNER_TEMP/one-android-device-artifact/one-android-aarch64"
+          cp "$RUNNER_TEMP/SHA256SUMS" "$RUNNER_TEMP/one-android-device-artifact/"
+          cp "$RUNNER_TEMP/ELF-FILE.txt" "$RUNNER_TEMP/one-android-device-artifact/"
+          cp "$RUNNER_TEMP/ELF-HEADER.txt" "$RUNNER_TEMP/one-android-device-artifact/"
+          printf 'source_sha=%s\n' "$(git -C source rev-parse HEAD)" > "$RUNNER_TEMP/one-android-device-artifact/SOURCE.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: one-android-aarch64-device-artifact
+          path: ${{ runner.temp }}/one-android-device-artifact/
+          if-no-files-found: error
+          retention-days: 7
