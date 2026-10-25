@@ -1,0 +1,71 @@
+name: ONE E4 adversarial filesystem and resource-bound regression
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/e4-adversarial-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unix-security-regressions:
+    name: Unix no-follow and SQLite resource bounds
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify source SHA and toolchain context
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+          printf 'source_sha=%s\n' "$(git rev-parse HEAD)"
+          rustc --version
+          cargo --version
+          uname -a
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run descriptor-relative no-follow adversarial regressions
+        working-directory: source
+        run: cargo test --locked -p one-core descriptor_relative_
+      - name: Run SQLite symlink and resource-limit regressions
+        working-directory: source
+        run: cargo test --locked -p one-core database::tests
+      - name: Run capability denial and root-scope policy regressions
+        working-directory: source
+        run: cargo test --locked -p one-core governance::tests
+
+  windows-reparse-regression:
+    name: Windows reparse-point and handle checks
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+      - name: Verify source SHA
+        working-directory: source
+        shell: pwsh
+        run: |
+          $actual = git rev-parse HEAD
+          if ($actual -ne "56606c7f8076bc9a67e321835077315d321b8b7a") { throw "Unexpected source SHA: $actual" }
+          Write-Output "source_sha=$actual"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run Windows reparse-point regression
+        working-directory: source
+        run: cargo test --locked -p one-core filesystem_windows_reparse_tests
