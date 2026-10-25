@@ -50,6 +50,156 @@ jobs:
           cargo --locked test -p one-cli --bin one package_provenance::tests
           cargo --locked test -p one-cli --test cli
 
+      - name: Prove Cargo rejects a stale lockfile
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          cp Cargo.toml Cargo.lock "$tmp/"
+          cp -R crates "$tmp/crates"
+          # Introduce a dependency absent from the committed lockfile in a disposable copy only.
+          if grep -q '^name = "regex"        working-directory: source
+        run: cargo --locked build --release -p one-cli
+
+      - name: Configure isolated synthetic fixture trust (NOT production)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Disposable test key only: 32-byte seed 0x11 repeated.
+          # Public key was derived independently with OpenSSL Ed25519.
+          printf '11%.0s' {1..32} > "$RUNNER_TEMP/one-lab.seed"
+          printf 'lab-fixture-publisher=d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737\n' > "$RUNNER_TEMP/one-lab-trust.txt"
+          chmod 600 "$RUNNER_TEMP/one-lab.seed" "$RUNNER_TEMP/one-lab-trust.txt"
+
+      - name: Package the committed release demo
+        id: package
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          project_root="$GITHUB_WORKSPACE/source/examples/package-release"
+          test -f "$project_root/one.toml"
+          test -f "$project_root/src/main.one"
+          target/release/one package "$project_root"
+          mapfile -t artifacts < <(find "$project_root/target" -maxdepth 1 -type f -name '*.onepkg' -print)
+          test "${#artifacts[@]}" -eq 1
+          artifact="${artifacts[0]}"
+          first_digest="$(sha256sum "$artifact" | cut -d' ' -f1)"
+          rm -- "$artifact"
+          target/release/one package "$project_root"
+          mapfile -t rebuilt < <(find "$project_root/target" -maxdepth 1 -type f -name '*.onepkg' -print)
+          test "${#rebuilt[@]}" -eq 1
+          second_digest="$(sha256sum "${rebuilt[0]}" | cut -d' ' -f1)"
+          test "$first_digest" = "$second_digest" || {
+            echo "FAIL: package bytes differ across clean rebuilds: $first_digest != $second_digest" >&2
+            exit 1
+          }
+          echo "Deterministic package SHA-256: $second_digest"
+          echo "artifact=$project_root/target/$(basename "${rebuilt[0]}")" >> "$GITHUB_OUTPUT"
+
+      - name: Sign package with source-bound V2 provenance
+        working-directory: source
+        env:
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
+        run: target/release/one sign-package "$RELEASE_ARTIFACT" --publisher lab-fixture-publisher --private-key "$RUNNER_TEMP/one-lab.seed" --source-root "$GITHUB_WORKSPACE/source/examples/package-release"
+
+      - name: Verify signature against independently configured fixture trust and exact source
+        working-directory: source
+        env:
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          target/release/one verify-package "$RELEASE_ARTIFACT" --trusted-publishers "$RUNNER_TEMP/one-lab-trust.txt" --source-root "$GITHUB_WORKSPACE/source/examples/package-release"
+          sidecar="$RELEASE_ARTIFACT.provenance"
+          grep -Eq '^artifact_format=' "$sidecar"
+          grep -Eq '^source_sha256=[0-9a-f]{64}$' "$sidecar"
+          grep -Eq '^source_revision=${{ steps.target.outputs.sha }}$' "$sidecar"
+          grep -Eq '^dependency_model=empty-v0.1$' "$sidecar"
+
+      - name: Reject untrusted publisher
+        working-directory: source
+        env:
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'somebody-else=d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737\n' > "$RUNNER_TEMP/untrusted.txt"
+          if target/release/one verify-package "$RELEASE_ARTIFACT" --trusted-publishers "$RUNNER_TEMP/untrusted.txt" --source-root "$GITHUB_WORKSPACE/source/examples/package-release"; then
+            echo "FAIL: untrusted publisher was accepted" >&2
+            exit 1
+          fi
+
+      - name: Reject modified artifact and modified signed metadata
+        working-directory: source
+        env:
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tampered="$RUNNER_TEMP/tampered.onepkg"
+          cp "$RELEASE_ARTIFACT" "$tampered"
+          cp "$RELEASE_ARTIFACT.provenance" "$tampered.provenance"
+          printf '\nmodified\n' >> "$tampered"
+          if target/release/one verify-package "$tampered" --trusted-publishers "$RUNNER_TEMP/one-lab-trust.txt" --source-root "$GITHUB_WORKSPACE/source/examples/package-release"; then
+            echo "FAIL: modified artifact was accepted" >&2
+            exit 1
+          fi
+          metadata="$RUNNER_TEMP/metadata-tampered.onepkg"
+          cp "$RELEASE_ARTIFACT" "$metadata"
+          cp "$RELEASE_ARTIFACT.provenance" "$metadata.provenance"
+          sed -i 's/^builder_arch=/builder_arch=altered_/' "$metadata.provenance"
+          if target/release/one verify-package "$metadata" --trusted-publishers "$RUNNER_TEMP/one-lab-trust.txt" --source-root "$GITHUB_WORKSPACE/source/examples/package-release"; then
+            echo "FAIL: modified signed metadata was accepted" >&2
+            exit 1
+          fi
+
+      - name: Verify retained artifact checksums and source metadata
+        env:
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/verified-release"
+          mkdir -p "$out"
+          cp "$RELEASE_ARTIFACT" "$RELEASE_ARTIFACT.provenance" "$out/"
+          (
+            cd "$out"
+            sha256sum "$(basename "$RELEASE_ARTIFACT")" "$(basename "$RELEASE_ARTIFACT").provenance" > SHA256SUMS
+            sha256sum --check SHA256SUMS
+            cat SHA256SUMS
+          )
+          echo "SOURCE_SHA=${{ steps.target.outputs.sha }}"
+          echo "This is a disposable fixture-key lab package, not a production release."
+
+      - name: Retain verified package, provenance and checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-provenance-lab-${{ steps.target.outputs.sha }}
+          if-no-files-found: error
+          path: ${{ runner.temp }}/verified-release/
+ "$tmp/Cargo.lock"; then
+            echo "Precondition failed: regex unexpectedly exists in the source lockfile" >&2
+            exit 1
+          fi
+          sed -i '/^sha2 = /a regex = "1"' "$tmp/crates/one-cli/Cargo.toml"
+          set +e
+          output="$(cargo metadata --locked --manifest-path "$tmp/Cargo.toml" --format-version 1 2>&1)"
+          status=$?
+          set -e
+          if [[ "$status" -eq 0 ]]; then
+            echo "FAIL: Cargo accepted a deliberately stale lockfile" >&2
+            exit 1
+          fi
+          if ! grep -Eiq 'lock file.*needs to be updated|lock file.*would change|--locked.*prevent' <<< "$output"; then
+            echo "FAIL: Cargo failed for a reason other than stale-lock rejection" >&2
+            printf '%s\\n' "$output" >&2
+            exit 1
+          fi
+          echo "PASS: Cargo --locked rejected a dependency change that requires lockfile regeneration."
+
       - name: Build CLI from exact source
         working-directory: source
         run: cargo --locked build --release -p one-cli
