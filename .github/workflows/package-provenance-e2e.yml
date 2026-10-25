@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-provenance-e2e-\${{ github.ref_name }}
+  group: one-provenance-e2e-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -33,15 +33,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: \${{ steps.target.outputs.sha }}
-          token: \${{ secrets.CANONICAL_READ_TOKEN }}
+          ref: ${{ steps.target.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
           persist-credentials: false
 
       - name: Assert exact source revision
         working-directory: source
         shell: bash
-        run: test "$(git rev-parse HEAD)" = "\${{ steps.target.outputs.sha }}"
+        run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
 
       - name: Run exact-SHA provenance and CLI tests
         working-directory: source
@@ -102,30 +102,30 @@ jobs:
           test -f "$project_root/src/main.one"
           target/release/one package "$project_root"
           mapfile -t first < <(find "$project_root/target" -maxdepth 1 -type f -name '*.onepkg' -print)
-          test "\${#first[@]}" -eq 1
-          first_digest="$(sha256sum "\${first[0]}" | cut -d' ' -f1)"
-          rm -- "\${first[0]}"
+          test "${#first[@]}" -eq 1
+          first_digest="$(sha256sum "${first[0]}" | cut -d' ' -f1)"
+          rm -- "${first[0]}"
           target/release/one package "$project_root"
           mapfile -t second < <(find "$project_root/target" -maxdepth 1 -type f -name '*.onepkg' -print)
-          test "\${#second[@]}" -eq 1
-          second_digest="$(sha256sum "\${second[0]}" | cut -d' ' -f1)"
+          test "${#second[@]}" -eq 1
+          second_digest="$(sha256sum "${second[0]}" | cut -d' ' -f1)"
           test "$first_digest" = "$second_digest" || {
             echo "FAIL: package bytes are nondeterministic: $first_digest != $second_digest" >&2
             exit 1
           }
           echo "Deterministic package SHA-256: $second_digest"
-          echo "artifact=\${second[0]}" >> "$GITHUB_OUTPUT"
+          echo "artifact=${second[0]}" >> "$GITHUB_OUTPUT"
 
       - name: Sign package with source-bound V2 provenance
         working-directory: source
         env:
-          RELEASE_ARTIFACT: \${{ steps.package.outputs.artifact }}
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
         run: target/release/one sign-package "$RELEASE_ARTIFACT" --publisher lab-fixture-publisher --private-key "$RUNNER_TEMP/one-lab.seed" --source-root "$GITHUB_WORKSPACE/source/examples/package-release"
 
       - name: Verify signature, exact source and signed metadata
         working-directory: source
         env:
-          RELEASE_ARTIFACT: \${{ steps.package.outputs.artifact }}
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
         shell: bash
         run: |
           set -euo pipefail
@@ -133,13 +133,13 @@ jobs:
           sidecar="$RELEASE_ARTIFACT.provenance"
           grep -Eq '^artifact_format=' "$sidecar"
           grep -Eq '^source_sha256=[0-9a-f]{64}$' "$sidecar"
-          grep -Eq '^source_revision=\${{ steps.target.outputs.sha }}$' "$sidecar"
+          grep -Eq '^source_revision=${{ steps.target.outputs.sha }}$' "$sidecar"
           grep -Eq '^dependency_model=empty-v0.1$' "$sidecar"
 
       - name: Reject untrusted publisher
         working-directory: source
         env:
-          RELEASE_ARTIFACT: \${{ steps.package.outputs.artifact }}
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
         shell: bash
         run: |
           set -euo pipefail
@@ -152,7 +152,7 @@ jobs:
       - name: Reject modified artifact and modified metadata
         working-directory: source
         env:
-          RELEASE_ARTIFACT: \${{ steps.package.outputs.artifact }}
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
         shell: bash
         run: |
           set -euo pipefail
@@ -175,7 +175,7 @@ jobs:
 
       - name: Verify and retain checksums and provenance
         env:
-          RELEASE_ARTIFACT: \${{ steps.package.outputs.artifact }}
+          RELEASE_ARTIFACT: ${{ steps.package.outputs.artifact }}
         shell: bash
         run: |
           set -euo pipefail
@@ -187,12 +187,12 @@ jobs:
             sha256sum --check SHA256SUMS
             cat SHA256SUMS
           )
-          echo "SOURCE_SHA=\${{ steps.target.outputs.sha }}"
+          echo "SOURCE_SHA=${{ steps.target.outputs.sha }}"
           echo "This is a disposable synthetic-key lab package, not a production release."
 
       - name: Retain verified package, provenance and checksums
         uses: actions/upload-artifact@v4
         with:
-          name: one-provenance-lab-\${{ steps.target.outputs.sha }}
+          name: one-provenance-lab-${{ steps.target.outputs.sha }}
           if-no-files-found: error
-          path: \${{ runner.temp }}/verified-release/
+          path: ${{ runner.temp }}/verified-release/
