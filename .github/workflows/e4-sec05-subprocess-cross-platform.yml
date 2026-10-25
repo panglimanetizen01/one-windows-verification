@@ -39,6 +39,12 @@ jobs:
       - name: Run existing subprocess contract tests
         working-directory: source
         run: cargo test --locked -p one-core interop::tests -- --nocapture
+      - name: Run complete one-core test suite
+        working-directory: source
+        run: cargo test --locked -p one-core
+      - name: Check formatting
+        working-directory: source
+        run: cargo fmt --check --all
       - name: Fail closed unless subprocess timeout and bounded capture are implemented
         working-directory: source
         shell: bash
@@ -51,7 +57,7 @@ jobs:
           fi
           grep -Eq 'MAX_.*(OUTPUT|STDOUT|STDERR)|ProcessExecutionPolicy|ProcessLimits' "$file"
           grep -Eq 'try_wait|wait_timeout|deadline|timeout' "$file"
-          echo "Static SEC-05 markers found; adversarial timeout/flood/cleanup tests are still required."
+          echo "Static SEC-05 markers found; dynamic timeout/flood tests ran in interop::tests."
 
   subprocess-windows:
     name: Windows subprocess baseline and SEC-05 guard
@@ -81,6 +87,12 @@ jobs:
       - name: Run existing subprocess contract tests
         working-directory: source
         run: cargo test --locked -p one-core interop::tests -- --nocapture
+      - name: Run complete one-core test suite
+        working-directory: source
+        run: cargo test --locked -p one-core
+      - name: Check formatting
+        working-directory: source
+        run: cargo fmt --check --all
       - name: Fail closed unless subprocess timeout and bounded capture are implemented
         working-directory: source
         shell: pwsh
