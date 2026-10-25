@@ -78,21 +78,42 @@ jobs:
         run: |
           set -euo pipefail
           avd_log="$RUNNER_TEMP/one-api35-avd-create.log"
-          avdmanager list device | tee "$RUNNER_TEMP/one-avdmanager-device-list.txt"
-          set +e
-          printf 'no\n' | avdmanager create avd -n one-api35-arm64-tcg -k 'system-images;android-35;default;arm64-v8a' -d pixel_2 -f 2>&1 | tee "$avd_log"
-          statuses=( "${PIPESTATUS[@]}" )
-          set -e
-          if (( statuses[1] != 0 )); then
-            echo "avdmanager create failed with exit ${statuses[1]}" >&2
-            tail -n 160 "$avd_log" >&2 || true
-            exit "${statuses[1]}"
-          fi
-          if (( statuses[0] != 0 )); then
-            echo "prompt input pipeline failed with exit ${statuses[0]}" >&2
-            tail -n 120 "$avd_log" >&2 || true
-            exit "${statuses[0]}"
-          fi
+          avd_root="$HOME/.android/avd"
+          avd_dir="$avd_root/one-api35-arm64-tcg.avd"
+          image_dir="$ANDROID_HOME/system-images/android-35/default/arm64-v8a"
+          test -d "$image_dir"
+          mkdir -p "$avd_dir"
+          cat > "$avd_dir/config.ini" <<'EOF'
+          AvdId=one-api35-arm64-tcg
+          PlayStore.enabled=false
+          abi.type=arm64-v8a
+          avd.ini.displayname=ONE Android API 35 AArch64 TCG
+          avd.ini.encoding=UTF-8
+          disk.dataPartition.size=2G
+          fastboot.forceColdBoot=yes
+          hw.cpu.arch=arm64
+          hw.cpu.ncore=2
+          hw.device.manufacturer=Google
+          hw.device.name=pixel_2
+          hw.gpu.enabled=no
+          hw.lcd.density=420
+          hw.lcd.height=1920
+          hw.lcd.width=1080
+          hw.ramSize=2048
+          image.sysdir.1=system-images/android-35/default/arm64-v8a/
+          runtime.network.speed=full
+          showDeviceFrame=no
+          target=android-35
+          EOF
+          cat > "$avd_root/one-api35-arm64-tcg.ini" <<EOF
+          avd.ini.encoding=UTF-8
+          path=$avd_dir
+          path.rel=avd/one-api35-arm64-tcg.avd
+          target=android-35
+          EOF
+          printf 'AVD root: %s\nAVD config:\n' "$avd_root"
+          cat "$avd_dir/config.ini"
+          printf '\nDiscovered AVDs:\n'
           "$ANDROID_HOME/emulator/emulator" -list-avds | tee "$RUNNER_TEMP/one-avds.txt"
           grep -Fxq one-api35-arm64-tcg "$RUNNER_TEMP/one-avds.txt"
 
@@ -152,6 +173,7 @@ jobs:
             ${{ runner.temp }}/one-api35-tcg-emulator.log
             ${{ runner.temp }}/one-api35-runtime-device.txt
             ${{ runner.temp }}/one-api35-avd-create.log
+            ${{ runner.temp }}/one-avds.txt
             ${{ runner.temp }}/one-avdmanager-device-list.txt
             /tmp/one-sdk-licenses.log
           if-no-files-found: warn
