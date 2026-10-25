@@ -79,7 +79,7 @@ jobs:
           set -euo pipefail
           avd_log="$RUNNER_TEMP/one-api35-avd-create.log"
           set +e
-          printf 'no\n' | avdmanager create avd --name one-api35-arm64-tcg --package 'system-images;android-35;default;arm64-v8a' --force --verbose 2>&1 | tee "$avd_log"
+          printf 'no\n' | avdmanager --verbose create avd --name one-api35-arm64-tcg --package 'system-images;android-35;default;arm64-v8a' --force 2>&1 | tee "$avd_log"
           statuses=( "${PIPESTATUS[@]}" )
           set -e
           if (( statuses[1] != 0 )); then exit "${statuses[1]}"; fi
