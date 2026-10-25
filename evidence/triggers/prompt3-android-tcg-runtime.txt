@@ -1,0 +1,2 @@
+Retry API 35 AArch64 runtime by writing a minimal explicit AVD config after repeated avdmanager invocations returned without a discoverable AVD.
+Candidate source SHA: 85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd
