@@ -8,6 +8,11 @@ on:
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/android-native-verification.yml'
+  pull_request:
+    branches: [verification]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/android-native-verification.yml'
   workflow_dispatch:
 
 permissions:
