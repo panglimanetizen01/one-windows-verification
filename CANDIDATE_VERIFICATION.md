@@ -2,11 +2,27 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `dca9a22c242905b97275161d9fdda933b986ec0d`  
+**Current source SHA:** `6478fe571b70f6ac088603ce955270fd47f9b0f2`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `dca9a22c242905b97275161d9fdda933b986ec0d` has passing focused (including package signature/trusted-publisher tests), lockfile, Linux distro, cross-platform Ubuntu/Windows, artifact-integrity, and a new end-to-end package provenance lab using a disposable synthetic trust key. The end-to-end lab independently verifies the retained package/checksum and rejects untrusted publisher, modified artifact, and modified signed metadata. Android API 35 is still booting with no ELF execution result. The fixed-weight gate is NOT PASSED; E1/E2/E3/E4/E6 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
+
+## Latest candidate — `6478fe571b70f6ac088603ce955270fd47f9b0f2`
+
+This source revision hardens the protected release workflow to build the package twice and fail if package bytes differ, validate the signed sidecar's source revision/digests/format/dependency model, and verify the generated SHA-256 manifest. The exact-SHA matrix was started after the source pin was updated. Do not treat in-progress jobs as passes.
+
+| Gate | Run | Status at index update |
+|---|---|---|
+| E2 package/provenance synthetic-key lab | [40154316866](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154316866) | **IN PROGRESS** — provenance/CLI tests and stale-lock rejection passed; package build and signature/tamper checks were still running |
+| Cross-platform Ubuntu + Windows Server 2025 | [40154316968](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154316968) | **IN PROGRESS** |
+| Focused standard library/database | [40154316898](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154316898) | **IN PROGRESS** |
+| Linux Ubuntu/Debian conformance | [40154316877](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154316877) | **IN PROGRESS** |
+| Candidate artifact integrity | [40154317003](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154317003) | **IN PROGRESS** |
+| Cargo lockfile bootstrap | [40154316809](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154316809) | **PASS** |
+| Fixed-weight ledger gate | [40154316876](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154316876) | **NOT PASSED** — this attempt identified the stale evidence index, unfinished matrix jobs, 9 unchecked Definition-of-Done items, unaccepted full E1/E2/E3/E4/E6 rows, and missing `Actions: read` access for the private canonical repository. No completion points are awarded. |
+
+The protected canonical `one-release` workflow has not been exercised. The synthetic lab uses a disposable test key and cannot replace the protected production signing/trust-store gate. The candidate release gate remains **NOT PASSED**.
 
 
 ## Current canonical source revision — `dca9a22c242905b97275161d9fdda933b986ec0d`
