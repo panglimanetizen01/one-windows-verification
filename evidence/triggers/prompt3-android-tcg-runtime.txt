@@ -1,0 +1,2 @@
+Retry API 35 arm64-v8a QEMU TCG runtime after using explicit emulator binary path.
+Candidate source SHA: 85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd
