@@ -1,0 +1,2 @@
+Retry API 35 AArch64 runtime after removing an unsupported avdmanager help command that had short-circuited AVD creation.
+Candidate source SHA: 85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd
