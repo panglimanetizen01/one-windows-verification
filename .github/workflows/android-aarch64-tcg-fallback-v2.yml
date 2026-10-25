@@ -66,9 +66,9 @@ jobs:
           test -n "$device_id"
           printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-tcg --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
           qemu_bin="$ANDROID_HOME/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless"
-          qemu_real="${qemu_bin}.real"
+          qemu_real="$RUNNER_TEMP/qemu-system-aarch64-headless.real"
           test -x "$qemu_bin"
-          if [ ! -x "$qemu_real" ]; then mv "$qemu_bin" "$qemu_real"; fi
+          mv "$qemu_bin" "$qemu_real"
           cat > "$qemu_bin" <<EOF
           #!/bin/bash
           set -euo pipefail
