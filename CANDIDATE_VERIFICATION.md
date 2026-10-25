@@ -343,3 +343,16 @@ The verifier now retries a public unauthenticated read after HTTP 403, but the c
 - Android AArch64 run [40108646751](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108646751) is still in progress at emulator boot; no native ELF execution result yet.
 - The fixed-weight gate [40108651511](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40108651511) is **NOT PASSED**. It reports 9 unchecked DoD items, full-row acceptance absent for E1/E2/E3/E4/E6, Android pending at evaluation time, and inability to query canonical release evidence due to the missing Actions:read permission for the canonical repository.
 - E2 remains **0/8 verified / NOT ACCEPTED**. Focused tests verify cryptographic signing and rejection of tampering/untrusted keys with synthetic fixture keys, not a real independently authenticated publisher key. The protected `one-release` workflow has not run; environment protection and secret/trust-store configuration are unverified. No release was published.
+
+
+## E2 checkpoint refresh (2026-10-25)
+
+Candidate source SHA: `2ea52d4c39aac98be8678a2e1ac0b67997610c22`.
+
+Exact-SHA lab results: E2 synthetic package/provenance tests PASS [40154415287](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415287); checksum/artifact inspection PASS [40154415291](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415291); focused stdlib/database PASS [40154415289](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415289); lockfile bootstrap PASS [40154415296](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415296); Linux distro jobs PASS [40154415350](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415350).
+
+Cross-platform run [40154415306](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415306) concludes success but skips verification steps in both jobs, so it is not counted as platform-test evidence. Android/macOS HVF capability probe [40154415292](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154415292) failed; Android native runtime remains open.
+
+Canonical repo workflows on this SHA (including E2 [40154410737](https://github.com/panglimanetizen01/one/actions/runs/40154410737)) failed with zero executable steps. Treat as hosted execution failure, not source test failure and not PASS. Latest fixed-weight gate [40154565531](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40154565531) remains failed.
+
+Acceptance: E2 is NOT GREEN LOCKED. Synthetic-key lab evidence does not replace a protected canonical `one-release` run using production signing and independently trusted publisher keys. The canonical Actions read token permission remains unresolved; no production release was published.
