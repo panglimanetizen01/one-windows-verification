@@ -64,7 +64,7 @@ jobs:
           readelf -h "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-HEADER.txt"
           mkdir -p "$RUNNER_TEMP/one-android-device-artifact"
           cp "$ONE_ANDROID_ARTIFACT_OUT" "$RUNNER_TEMP/one-android-device-artifact/one-android-aarch64"
-          cp "$RUNNER_TEMP/SHA256SUMS" "$RUNNER_TEMP/one-android-device-artifact/"
+          (cd "$RUNNER_TEMP/one-android-device-artifact" && sha256sum one-android-aarch64 > SHA256SUMS)
           cp "$RUNNER_TEMP/ELF-FILE.txt" "$RUNNER_TEMP/one-android-device-artifact/"
           cp "$RUNNER_TEMP/ELF-HEADER.txt" "$RUNNER_TEMP/one-android-device-artifact/"
           printf 'source_sha=%s\n' "$(git -C "$GITHUB_WORKSPACE/source" rev-parse HEAD)" > "$RUNNER_TEMP/one-android-device-artifact/SOURCE.txt"
