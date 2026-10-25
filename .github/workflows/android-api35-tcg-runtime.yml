@@ -1,0 +1,137 @@
+name: ONE Android API 35 AArch64 Runtime (Linux TCG)
+
+on:
+  pull_request:
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/android-api35-tcg-runtime.yml'
+      - 'evidence/triggers/prompt3-android-tcg-runtime.txt'
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-api35-tcg-runtime.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: one-android-api35-tcg-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android-api35-arm64-runtime:
+    name: Android API 35 arm64-v8a runtime (QEMU TCG)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@v4
+
+      - name: Resolve exact canonical source SHA
+        id: target
+        shell: bash
+        run: echo "sha=$(tr -d '\r\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.target.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: source
+
+      - name: Verify exact source SHA
+        working-directory: source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
+
+      - name: Install Rust toolchain and Android target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.0
+          targets: aarch64-linux-android
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools emulator "system-images;android-35;default;arm64-v8a" "ndk;27.2.12479018"
+
+      - name: Accept SDK licenses and ensure required packages
+        timeout-minutes: 25
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/tmp/one-sdk-licenses.log 2>&1 || {
+            cat /tmp/one-sdk-licenses.log
+            grep -q "All SDK package licenses accepted" /tmp/one-sdk-licenses.log
+          }
+          sdkmanager --install "platform-tools" "emulator" "system-images;android-35;default;arm64-v8a" "ndk;27.2.12479018"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          test -x "$ANDROID_HOME/platform-tools/adb"
+
+      - name: Create API 35 arm64-v8a virtual device
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'no\n' | avdmanager create avd --name one-api35-arm64-tcg --package 'system-images;android-35;default;arm64-v8a' --device pixel_2 --force
+          emulator -list-avds | tee "$RUNNER_TEMP/one-avds.txt"
+          grep -Fxq one-api35-arm64-tcg "$RUNNER_TEMP/one-avds.txt"
+
+      - name: Run Android backend contract tests
+        working-directory: source
+        shell: bash
+        run: cargo test --locked -p one-core --test native_backend_android_aarch64
+
+      - name: Boot API 35 AArch64 emulator using QEMU TCG
+        timeout-minutes: 60
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/one-api35-tcg-emulator.log"
+          adb start-server
+          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-tcg -port 5554 -accel off -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 3072 -cores 2 -gpu swiftshader_indirect -verbose >"$log" 2>&1 &
+          emulator_pid=$!
+          echo "QEMU TCG emulator PID: $emulator_pid"
+          booted=0
+          for _ in $(seq 1 300); do
+            if ! kill -0 "$emulator_pid" 2>/dev/null; then
+              echo "Emulator process exited before boot."
+              tail -n 200 "$log" || true
+              exit 1
+            fi
+            if adb devices | tr -d '\r' | grep -q '^emulator-5554[[:space:]]\+device$'; then
+              completed="$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+              if [ "$completed" = "1" ]; then booted=1; break; fi
+            fi
+            sleep 10
+          done
+          if [ "$booted" != "1" ]; then
+            echo "Android API 35 AArch64 guest did not boot within the 50-minute bound."
+            tail -n 240 "$log" || true
+            exit 1
+          fi
+          sdk="$(adb -s emulator-5554 shell getprop ro.build.version.sdk | tr -d '\r')"
+          abi="$(adb -s emulator-5554 shell getprop ro.product.cpu.abi | tr -d '\r')"
+          printf 'android_api=%s\nabi=%s\n' "$sdk" "$abi" | tee "$RUNNER_TEMP/one-api35-runtime-device.txt"
+          test "$sdk" = "35"
+          test "$abi" = "arm64-v8a"
+
+      - name: Build and execute AArch64 ELF on API 35
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ONE_ANDROID_ADB="$ANDROID_HOME/platform-tools/adb"
+          cargo --locked test -p one-core --test native_backend_android_aarch64 build_native_menghasilkan_dan_menjalankan_elf_android_aarch64 -- --ignored --exact --nocapture
+
+      - name: Upload Android runtime logs and assertions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-android-api35-tcg-runtime-${{ steps.target.outputs.sha }}
+          path: |
+            ${{ runner.temp }}/one-api35-tcg-emulator.log
+            ${{ runner.temp }}/one-api35-runtime-device.txt
+            /tmp/one-sdk-licenses.log
+          if-no-files-found: warn
+          retention-days: 30
