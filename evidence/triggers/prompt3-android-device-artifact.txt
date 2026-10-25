@@ -1,0 +1,2 @@
+Prompt 3 exact-SHA trigger file for the Android API 35 arm64-v8a device artifact build.
+Candidate SHA: 5751aff3404f000545549908a00ea322cc96e277
