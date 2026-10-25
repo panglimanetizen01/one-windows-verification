@@ -117,6 +117,15 @@ jobs:
       - name: Default-parser mapping API regression
         working-directory: source
         run: cargo --locked test -p one-core --test stdlib_builtins mapping_builtins_work_in_default_parser_after_json_construction -- --exact
+      - name: Complete E1 standard-library integration suite including public Rust APIs
+        working-directory: source
+        run: cargo --locked test -p one-core --test stdlib_builtins
+      - name: Complete E1 standard-library library unit suite
+        working-directory: source
+        run: cargo --locked test -p one-core --lib
+      - name: E1 repository contract checker
+        working-directory: source
+        run: python tools/check_contract.py
       - name: Standard-library lint
         working-directory: source
         run: cargo --locked clippy -p one-core --all-targets -- -D warnings
