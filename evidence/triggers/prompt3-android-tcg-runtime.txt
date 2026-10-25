@@ -1,0 +1,2 @@
+Retry API 35 AArch64 runtime with avdmanager help/device inventory diagnostics and documented short-form create syntax.
+Candidate source SHA: 85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd
