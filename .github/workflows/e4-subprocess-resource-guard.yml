@@ -5,6 +5,11 @@ on:
     branches: [verification]
     paths:
       - '.github/workflows/e4-subprocess-resource-guard.yml'
+  pull_request:
+    branches: [verification]
+    paths:
+      - '.github/workflows/e4-subprocess-resource-guard.yml'
+      - 'CANONICAL_COMMIT.txt'
   workflow_dispatch:
 
 permissions:
@@ -17,11 +22,20 @@ jobs:
     steps:
       - name: Checkout lab harness
         uses: actions/checkout@v4
+      - name: Resolve exact candidate SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+
       - name: Checkout exact ONE candidate
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - name: Assert bounded subprocess execution exists
