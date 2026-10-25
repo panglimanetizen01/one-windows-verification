@@ -166,21 +166,14 @@ jobs:
           if ("CreateProcessW(" -notmatch "CreateProcessW\s*\(") {
             throw "SEC-05 GUARD SELF-TEST FAILED: CreateProcessW pattern did not match."
           }
-          foreach ($requiredPattern in @(
-            "InitializeProcThreadAttributeList\s*\(",
-            "UpdateProcThreadAttribute\s*\(",
-            "DeleteProcThreadAttributeList\s*\("
-          )) {
-            if ("api_call(" -notmatch $requiredPattern -and
-                "InitializeProcThreadAttributeList(" -notmatch $requiredPattern -and
-                "UpdateProcThreadAttribute(" -notmatch $requiredPattern -and
-                "DeleteProcThreadAttributeList(" -notmatch $requiredPattern) {
-              # The focused synthetic API name is tested below instead.
-              $apiName = ($requiredPattern -split "\\s")[0] -replace "\\\\", ""
-              if ("$apiName(" -notmatch $requiredPattern) {
-                throw "SEC-05 GUARD SELF-TEST FAILED: attribute API pattern failed for $apiName."
-              }
-            }
+          if ("InitializeProcThreadAttributeList(" -notmatch "InitializeProcThreadAttributeList\s*\(") {
+            throw "SEC-05 GUARD SELF-TEST FAILED: InitializeProcThreadAttributeList pattern did not match."
+          }
+          if ("UpdateProcThreadAttribute(" -notmatch "UpdateProcThreadAttribute\s*\(") {
+            throw "SEC-05 GUARD SELF-TEST FAILED: UpdateProcThreadAttribute pattern did not match."
+          }
+          if ("DeleteProcThreadAttributeList(" -notmatch "DeleteProcThreadAttributeList\s*\(") {
+            throw "SEC-05 GUARD SELF-TEST FAILED: DeleteProcThreadAttributeList pattern did not match."
           }
           if ("unrelated_function(" -match "AssignProcessToJobObject\s*\(") {
             throw "SEC-05 GUARD SELF-TEST FAILED: unrelated call matched unexpectedly."
