@@ -78,3 +78,12 @@ This successful workflow validates the current focused implementation and full `
 - Linux job passed the workflow's corresponding subprocess, formatting, and static guard steps.
 
 This is stronger evidence for descendant cleanup than the prior candidate, but it is not a blanket release/security sign-off. The test exercises a descendant launched by a child that exits; the current spawn-then-assign Job Object sequence may still have a race if a child creates descendants before assignment. The workflow also uses a scoped rustfmt check, not whole-repository `cargo fmt --check --all`. Keep issue #81 open until the race/containment semantics and the complete SEC-05 acceptance criteria are reviewed and explicitly verified.
+
+## Verification-gate correction (2026-10-25)
+
+- Lab workflow update commit: `a9bcd1684cdced75ee69aad0ea57834581955897`.
+- Corrected the PowerShell/.NET regular expressions in the Windows fail-closed guard. The prior doubled backslashes would have matched literal backslashes rather than the intended whitespace/parenthesis pattern, so that guard was not reliable evidence before this correction.
+- The guard now rejects `AssignProcessToJobObject(...)` and requires `PROC_THREAD_ATTRIBUTE_JOB_LIST` plus `CreateProcessW(...)`. This is a static launch-path gate only; it does not prove correct handle inheritance, argument quoting, cleanup, or runtime behavior.
+- Microsoft documents `PROC_THREAD_ATTRIBUTE_JOB_LIST` as assigning job handles during process creation on Windows 10 / Windows Server 2016 and newer: https://learn.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute
+- The pinned candidate `5fa0faa32c9114cccdb42e18fd0568109a653003` still uses spawn-then-assign and is expected to fail the corrected gate. No pass is claimed for that candidate under this stricter gate.
+- Required next step remains a reviewed process-creation implementation and Linux/Windows dynamic tests on the exact same candidate SHA. SEC-05 remains open.
