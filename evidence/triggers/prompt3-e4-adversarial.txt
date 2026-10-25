@@ -1,3 +1,4 @@
 Prompt 3 exact-SHA trigger file for the E4 filesystem and SQLite adversarial regression workflow.
 Candidate SHA: 5751aff3404f000545549908a00ea322cc96e277
 Workflow trigger refresh after repairing the YAML definition; candidate SHA remains 5751aff3404f000545549908a00ea322cc96e277.
+Refresh trigger for explicit denial-without-side-effect regression at source SHA 5751aff3404f000545549908a00ea322cc96e277.
