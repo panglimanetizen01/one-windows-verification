@@ -102,3 +102,10 @@ This is stronger evidence for descendant cleanup than the prior candidate, but i
 - Read-back verification confirmed both checkout refs and both SHA assertions use the input/default expression. This makes the lab reusable for a future rewritten candidate without silently changing which source was tested.
 - This workflow update is not a test result. No Actions run conclusion has been confirmed here. The default candidate is still expected to fail the race-free Windows launch gate because its source uses spawn-then-assign.
 - To test a future candidate, use the workflow's **Run workflow** UI on branch `verification`, supply its full source commit SHA, then retain the run URL and logs as evidence. Linux and Windows jobs must report the same source SHA.
+
+## Expanded Windows process-creation guard (2026-10-25)
+
+- Workflow commits: `35d09a5b7e9ffb55e28856e88b4ac9a990b01ae4` and self-test simplification `691e6d4f578725c535321327df5d3ed47fb6a6b8`.
+- The Windows static gate now requires the job-list attribute and `EXTENDED_STARTUPINFO_PRESENT`, and checks for calls to `CreateProcessW`, `InitializeProcThreadAttributeList`, `UpdateProcThreadAttribute`, and `DeleteProcThreadAttributeList`. It continues to reject `AssignProcessToJobObject(...)`.
+- Added focused regex self-tests for each attribute-list API call. Read-back inspection confirmed the guard text is present alongside the candidate-SHA input.
+- This remains a fail-closed static gate, not proof of correct pointer lifetimes, handle inheritance, argument quoting, or process cleanup. No new Actions run result is confirmed here; SEC-05 remains open until implementation and dynamic Windows/Linux verification pass on one exact SHA.
