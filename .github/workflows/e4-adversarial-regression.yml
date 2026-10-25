@@ -1,4 +1,5 @@
 name: ONE E4 adversarial filesystem and resource-bound regression
+# Prompt 3 exact-SHA PR-triggered verification run.
 
 on:
   push:
