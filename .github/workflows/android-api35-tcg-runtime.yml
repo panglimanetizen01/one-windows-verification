@@ -53,8 +53,6 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools emulator "system-images;android-35;default;arm64-v8a" "ndk;27.2.12479018"
 
       - name: Accept SDK licenses and ensure required packages
         timeout-minutes: 25
