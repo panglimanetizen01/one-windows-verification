@@ -406,3 +406,12 @@ The inspection verified GitHub archive SHA-256 digests, embedded `BUILD-METADATA
 - GitHub archive digests are recorded above in the matrix update; both archives were downloaded and checked against their API-provided digest.
 
 This closes the synthetic candidate-bundle integrity checks for the current exact source SHA. It does not replace the protected production signing/trust workflow, which still has no successful run.
+
+
+## Canonical Actions retry audit — 2026-10-25
+
+- Re-ran failed jobs for canonical repository workflow run [40155103608](https://github.com/panglimanetizen01/one/actions/runs/40155103608) using GitHub's rerun-failed-jobs operation.
+- Retry attempt 2 completed with **failure** on exact source SHA `56606c7f8076bc9a67e321835077315d321b8b7a`.
+- The GitHub job API reports an empty executable step list (`steps: []`) for the canonical job. The job-log endpoint returns a missing-log/404 response. Therefore this retry produced no test evidence; it is neither a source-test failure nor a passing run.
+- The independent lab's prior candidate bundle inspection remains PASS as documented above. This retry does not change or invalidate those scoped lab results, and does not satisfy the protected production release acceptance.
+- Required external action remains: restore a functioning canonical Actions execution path and ensure `CANONICAL_READ_TOKEN` in the lab has Actions: read permission for the private canonical repository; then run the protected `one-release` workflow with independently provisioned production signing/trust material and re-run the fixed-weight ledger gate.
