@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 8c1dad47eb11243e45df7755b2f9ab93ac5da916
+          ref: 245581187d26eb99d8e80739d3e8e4e4de2e0f15
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "8c1dad47eb11243e45df7755b2f9ab93ac5da916"
+          test "$(git rev-parse HEAD)" = "245581187d26eb99d8e80739d3e8e4e4de2e0f15"
           printf 'source_sha=%s\n' "$(git rev-parse HEAD)"
           rustc --version
           cargo --version
@@ -70,7 +70,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 8c1dad47eb11243e45df7755b2f9ab93ac5da916
+          ref: 245581187d26eb99d8e80739d3e8e4e4de2e0f15
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
       - uses: dtolnay/rust-toolchain@stable
@@ -79,7 +79,7 @@ jobs:
         shell: pwsh
         run: |
           $actual = git rev-parse HEAD
-          if ($actual -ne "8c1dad47eb11243e45df7755b2f9ab93ac5da916") { throw "Unexpected source SHA: $actual" }
+          if ($actual -ne "245581187d26eb99d8e80739d3e8e4e4de2e0f15") { throw "Unexpected source SHA: $actual" }
           Write-Output "source_sha=$actual"
           rustc --version
           cargo --version
