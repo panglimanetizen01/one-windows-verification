@@ -1,4 +1,4 @@
-# Re-run API 35 AArch64 runtime on the pinned source; keep runtime assertions unchanged.
+# Revalidation after final-component mount-boundary fix 2026-10-26; acceptance logic unchanged.
 name: ONE Android AArch64 Native Runtime Verification (macOS TCG workaround)
 
 on:
