@@ -148,6 +148,8 @@ jobs:
           grep -Fq '/system/bin/linker64' ELF-PROGRAM-HEADERS.txt
           file one-android-aarch64
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-35
       - name: Install API 35 arm64-v8a system image and pinned ARM64 emulator
         timeout-minutes: 30
         shell: bash
