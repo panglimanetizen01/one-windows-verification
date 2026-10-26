@@ -594,7 +594,7 @@ This checkpoint is evidence-only: no DoD checkbox, ledger score, verified weight
   - SEC-05 subprocess contract: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455238 — queued.
   - E4 adversarial filesystem/resource regression: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455125 — in progress.
   - E4 subprocess resource guard: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455134 — in progress.
-  - Android API 35 `arm64-v8a` community-emulator runtime: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455162 — in progress.
+  - Android API 35 `arm64-v8a` community-emulator runtime: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455162 — running the earlier API macro assertion; new retry https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272505172 removes that unreliable macro check while retaining the explicit API35 target-triple assertion. Workflow validation for that retry is https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272505145.
   - Android cross-build/contract: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455150 — in progress.
   - Android device artifact build: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455193 — in progress.
 - Do not promote E3/E4 ledger rows or the milestone status until these exact-SHA jobs finish, the API 35 guest boots, the actual ELF executes, and its output/exit code are asserted. The overall project release gate remains separate from this milestone and must not be marked green while out-of-scope ledger rows remain open.
