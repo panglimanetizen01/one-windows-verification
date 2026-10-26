@@ -132,7 +132,7 @@ jobs:
           test "$(uname -m)" = "aarch64"
           sudo apt-get update
           sudo apt-get install -y adb unzip curl libstdc++6 libpulse0 libnss3 libx11-6 libxcb1 libxkbcommon0 libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 libxdamage1 libxfixes3 libxrender1 libxext6 libx11-xcb1 libgl1 libasound2t64
-           file /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+           file -L /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            /usr/bin/adb version
           uname -a
@@ -188,7 +188,7 @@ jobs:
           # Keep the host-native adb installed by Ubuntu's arm64 package.
           sdkmanager --install "platforms;android-35"
           mkdir -p "$ANDROID_HOME/platform-tools"
-           file /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+           file -L /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            /usr/bin/adb version
           repo_xml="$RUNNER_TEMP/android-system-images.xml"
