@@ -65,45 +65,9 @@ jobs:
           device_id="$(printf '%s\n' "$devices" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
           test -n "$device_id"
           printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-tcg --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
-          # The hosted macOS VM lacks nested HVF. Interpose a diagnostic wrapper around the emulator's QEMU binary and replace every HVF/off accelerator request with TCG.
-          qemu_bin="$ANDROID_HOME/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless"
-          qemu_real="$RUNNER_TEMP/qemu-system-aarch64-headless.real"
-          test -x "$qemu_bin"
-          mv "$qemu_bin" "$qemu_real"
-          export ONE_QEMU_REAL="$qemu_real"
-          cat > "$qemu_bin" <<'ONE_QEMU_WRAPPER'
-          #!/bin/bash
-          set -euo pipefail
-          printf 'ONE_QEMU_TCG_WRAPPER_CALLED=1\\n' >&2
-          args=()
-          while (($#)); do
-            arg="$1"
-            shift
-            case "$arg" in
-              -enable-hvf) args+=("-accel" "tcg") ;;
-              -accel)
-                if (($#)); then
-                  accel="$1"
-                  shift
-                  if [[ "$accel" == "hvf" || "$accel" == "off" ]]; then
-                    args+=("-accel" "tcg")
-                  else
-                    args+=("-accel" "$accel")
-                  fi
-                else
-                  args+=("-accel")
-                fi
-                ;;
-              -accel=hvf|-accel=off) args+=("-accel=tcg") ;;
-              *) args+=("$arg") ;;
-            esac
-          done
-          printf 'ONE_QEMU_TCG_FILTERED_ARGS=%s\\n' "${args[*]}" >&2
-          exec "$ONE_QEMU_REAL" "${args[@]}"
-          ONE_QEMU_WRAPPER
-          chmod +x "$qemu_bin"
+          # Do not replace QEMU: the prior wrapper intercepted emulator CLI arguments instead of QEMU's final argv. Disable HVF and pass the software accelerator through the emulator's QEMU passthrough.
           log="$RUNNER_TEMP/one-android-tcg.log"
-          "$ANDROID_HOME/emulator/emulator" -accel off -avd one-api35-arm64-tcg -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 2048 -cores 2 -gpu swiftshader_indirect -verbose >"$log" 2>&1 &
+          "$ANDROID_HOME/emulator/emulator" -feature -HVF -accel off -avd one-api35-arm64-tcg -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 2048 -cores 2 -gpu swiftshader_indirect -verbose -qemu -accel tcg >"$log" 2>&1 &
           pid=$!
           adb start-server
           booted=0
