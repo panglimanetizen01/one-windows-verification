@@ -455,3 +455,11 @@ Canonical candidate source SHA: `68883f000caa7143ee93886753b9a7bf3ce9a448`. The 
 
 - Fixed-weight ledger gate [40262754834](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262754834) failed closed. Besides evidence that was still running at evaluation time, it reported that `CANONICAL_READ_TOKEN` lacks Actions: read permission for the private canonical repository; the anonymous API fallback returned 404. This requires correcting the repository secret's permission outside a source-code assertion change. Do not weaken the gate or infer a protected release PASS.
 - E3/E4 are **not declared PASS GREEN LOCKED**. The Windows cross-platform run and Android API 35 runtime must be confirmed, the exact-source evidence matrix must be refreshed after those results, and the protected canonical release evidence query must be accessible. Fixed ledger weights/scores remain unchanged until a valid gate evaluation supports a change.
+
+
+### Android AArch64 ELF metadata inspection — 2026-10-26
+
+- Exact-source build run [40262754847](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262754847), artifact ID `12625815205`, artifact SHA-256 digest `sha256:0cc7ee554558cfa83bf46b67f2e8c87df037f59287749062295368b6472c31ef`.
+- Downloaded and independently inspected the artifact ZIP. `SOURCE.txt` names source SHA `68883f000caa7143ee93886753b9a7bf3ce9a448`; binary SHA-256 is `b3a52ce990c157332ab39f25264fbdab3de9e796c26f827c497551237855967c`, matching the archived `ELF-SHA256.txt`.
+- `file` and `readelf -h` confirm ELF64, little-endian, PIE/DYN, machine AArch64. `readelf -l` confirms interpreter `/system/bin/linker64`. `readelf -d` shows dynamic dependencies `libdl.so` and `libc.so` only.
+- This proves build artifact architecture, interpreter, and dependency metadata for the exact source SHA. It **does not** prove runtime execution on Android API 35; that remains gated on the queued emulator run.
