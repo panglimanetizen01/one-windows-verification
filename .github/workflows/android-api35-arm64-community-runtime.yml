@@ -160,13 +160,19 @@ jobs:
           archive="$RUNNER_TEMP/android-emulator-aarch64.zip"
           curl --fail --location --retry 3 --output "$archive" "https://github.com/Changqing-JING/android-emulator-aarch64-linux/releases/download/v2.12.0-19097-g85fa07f04ef/sdk-repo-linux_aarch64-emulator-standalone-0.zip"
           echo "67ce4f576687b067d9b36668405b86b9749745d67d31037616aac12c49c63a65  $archive" | sha256sum --check
-          mkdir -p "$ANDROID_HOME/emulator"
-          unzip -q "$archive" -d "$ANDROID_HOME/emulator"
-          if [ ! -x "$ANDROID_HOME/emulator/emulator" ]; then
-            found="$(find "$ANDROID_HOME/emulator" -type f -name emulator -perm -u+x -print -quit)"
+          mkdir -p "$ANDROID_HOME/emulator" "$RUNNER_TEMP/emulator-unpack"
+          unzip -q "$archive" -d "$RUNNER_TEMP/emulator-unpack"
+          if [ -x "$RUNNER_TEMP/emulator-unpack/emulator" ]; then
+            cp -a "$RUNNER_TEMP/emulator-unpack/." "$ANDROID_HOME/emulator/"
+          elif [ -x "$RUNNER_TEMP/emulator-unpack/emulator/emulator" ]; then
+            cp -a "$RUNNER_TEMP/emulator-unpack/emulator/." "$ANDROID_HOME/emulator/"
+          else
+            found="$(find "$RUNNER_TEMP/emulator-unpack" -type f -name emulator -perm -u+x -print -quit)"
             test -n "$found"
-            cp "$found" "$ANDROID_HOME/emulator/emulator"
+            cp -a "$(dirname "$found")/." "$ANDROID_HOME/emulator/"
           fi
+          file "$ANDROID_HOME/emulator/emulator" | tee "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
+          grep -qi 'aarch64\|arm64' "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
           "$ANDROID_HOME/emulator/emulator" -version
           echo "Pinned unofficial ARM64 emulator binary verified by SHA-256; isolated CI test only."
       - name: Create API 35 AVD and probe KVM
@@ -181,7 +187,8 @@ jobs:
             echo "ONE_KVM_AVAILABLE=false" >> "$GITHUB_ENV"
             echo "KVM unavailable; the workflow will still attempt the emulator's software path."
           fi
-          avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
+          avdmanager="$(find "$ANDROID_HOME/cmdline-tools" -type f -path "*/bin/avdmanager" -print -quit)"
+          test -x "$avdmanager"
           devices="$("$avdmanager" list device)"
           device_id="$(printf '%s\n' "$devices" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
           test -n "$device_id"
