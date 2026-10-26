@@ -463,3 +463,12 @@ Canonical candidate source SHA: `68883f000caa7143ee93886753b9a7bf3ce9a448`. The 
 - Downloaded and independently inspected the artifact ZIP. `SOURCE.txt` names source SHA `68883f000caa7143ee93886753b9a7bf3ce9a448`; binary SHA-256 is `b3a52ce990c157332ab39f25264fbdab3de9e796c26f827c497551237855967c`, matching the archived `ELF-SHA256.txt`.
 - `file` and `readelf -h` confirm ELF64, little-endian, PIE/DYN, machine AArch64. `readelf -l` confirms interpreter `/system/bin/linker64`. `readelf -d` shows dynamic dependencies `libdl.so` and `libc.so` only.
 - This proves build artifact architecture, interpreter, and dependency metadata for the exact source SHA. It **does not** prove runtime execution on Android API 35; that remains gated on the queued emulator run.
+
+
+## Candidate SHA advanced for E4 final-component mount-boundary side-effect fix — 2026-10-26
+
+The ONE source branch advanced from `68883f000caa7143ee93886753b9a7bf3ce9a448` to `2da32ef96108579bac4752dc4ad75fa13c6f919e` after a source audit found that Unix write-open used `O_TRUNC` before validating the final opened file's mount identity. That ordering could truncate a final-component bind-mounted file before returning a mount-boundary denial.
+
+The candidate now opens the final file without `O_TRUNC`, verifies the opened handle is on the same filesystem mount as its parent, and truncates only after the boundary check passes. A Linux regression creates a file on `/dev/shm`, invokes the same mount-identity guard against the project directory, and asserts the file contents remain unchanged on denial.
+
+**All earlier E3/E4 runs and Android artifact metadata in this index are now preliminary evidence for the previous source SHA only.** The canonical pin is being advanced to `2da32ef96108579bac4752dc4ad75fa13c6f919e`; rerun Linux 24.04, Debian 12, Windows Server 2025, E4 adversarial, SEC-05, resource-budget tests, candidate artifact integrity, and Android API 35 `arm64-v8a` runtime on this exact SHA. Do not promote previous runs to final-source evidence.
