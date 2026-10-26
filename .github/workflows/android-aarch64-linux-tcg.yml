@@ -5,6 +5,7 @@ on:
     branches: [verification]
     paths:
       - '.github/workflows/android-aarch64-linux-tcg.yml'
+      - 'CANONICAL_COMMIT.txt'
   workflow_dispatch:
 
 permissions:
@@ -18,17 +19,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout pinned ONE source
+      - name: Resolve exact canonical source SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact ONE source
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 744e5d6e0e89f6ba3b85902ead597bae95a9d36d
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          persist-credentials: false
           path: source
 
       - name: Verify exact source SHA
         working-directory: source
-        run: test "$(git rev-parse HEAD)" = "744e5d6e0e89f6ba3b85902ead597bae95a9d36d"
+        run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -45,7 +56,7 @@ jobs:
           set -euo pipefail
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager --install "ndk;27.2.12479018" "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a"
-          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/clang' -print -quit)"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android24-clang' -print -quit)"
           test -x "$clang"
           echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
 

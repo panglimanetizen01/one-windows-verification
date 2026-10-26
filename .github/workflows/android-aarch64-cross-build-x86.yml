@@ -20,12 +20,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout pinned ONE source
+      - name: Resolve exact canonical source SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact ONE source
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 744e5d6e0e89f6ba3b85902ead597bae95a9d36d
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          persist-credentials: false
           path: source
 
       - name: Verify immutable candidate and runner architecture
@@ -33,7 +43,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "744e5d6e0e89f6ba3b85902ead597bae95a9d36d"
+          test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
           test "$(uname -m)" = "x86_64"
           printf 'candidate_sha=%s\nrunner_arch=%s\n' "$(git rev-parse HEAD)" "$(uname -m)"
 
