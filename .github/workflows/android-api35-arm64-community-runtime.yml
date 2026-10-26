@@ -283,7 +283,7 @@ jobs:
           (ldd "$ANDROID_HOME/emulator/emulator" || true) 2>&1 | tee "$RUNNER_TEMP/EMULATOR-LDD.txt"
           "$ANDROID_HOME/emulator/emulator" -accel-check > "$RUNNER_TEMP/EMULATOR-ACCEL-CHECK.txt" 2>&1 || true
           find "$ANDROID_HOME/system-images/android-35/default/arm64-v8a" -maxdepth 2 -type f -printf '%P %s bytes\\n' | sort | head -n 80 | tee "$RUNNER_TEMP/ANDROID-SYSTEM-IMAGE-FILES.txt"
-          cat "$ANDROID_AVD_HOME/one-api35-arm64-community.avd/config.ini" | tee "$RUNNER_TEMP/AVD-CONFIG.txt"
+          tee "$RUNNER_TEMP/AVD-CONFIG.txt" < "$ANDROID_AVD_HOME/one-api35-arm64-community.avd/config.ini"
           accel_args=(-accel off)
           if [ "${ONE_KVM_AVAILABLE:-false}" = "true" ]; then accel_args=(-accel on); fi
           "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-community -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect "${accel_args[@]}" -no-metrics -verbose >"$log" 2>&1 &
@@ -295,7 +295,7 @@ jobs:
             if ! kill -0 "$pid" 2>/dev/null; then
               echo "Emulator process exited before adb device registration; collecting diagnostics."
               tail -n 300 "$log" || true
-              ps -ef | grep -E '[e]mulator|[q]emu' || true
+              pgrep -af 'emulator|qemu' || true
               file "$ANDROID_HOME/emulator/emulator"
               (ldd "$ANDROID_HOME/emulator/emulator" || true) 2>&1 | tee "$RUNNER_TEMP/EMULATOR-LDD-FAILURE.txt"
               find "$ANDROID_HOME" -maxdepth 4 -type f \( -name 'kernel*' -o -name 'ramdisk.img' -o -name 'system.img' \) | head -n 100 || true
