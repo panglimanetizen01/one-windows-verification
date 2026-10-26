@@ -132,7 +132,9 @@ jobs:
           test "$(uname -m)" = "aarch64"
           sudo apt-get update
           sudo apt-get install -y adb unzip curl libstdc++6 libpulse0 libnss3 libx11-6 libxcb1 libxkbcommon0 libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 libxdamage1 libxfixes3 libxrender1 libxext6 libx11-xcb1 libgl1 libasound2t64
-          adb version
+           file /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+           grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+           /usr/bin/adb version
           uname -a
       - uses: actions/download-artifact@v4
         with:
@@ -186,9 +188,9 @@ jobs:
           # Keep the host-native adb installed by Ubuntu's arm64 package.
           sdkmanager --install "platforms;android-35"
           mkdir -p "$ANDROID_HOME/platform-tools"
-          install -m 0755 /usr/lib/android-sdk/platform-tools/adb "$ANDROID_HOME/platform-tools/adb"
-          file "$ANDROID_HOME/platform-tools/adb" | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
-          grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+           file /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+           grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+           /usr/bin/adb version
           repo_xml="$RUNNER_TEMP/android-system-images.xml"
           curl --fail --location --retry 3 --output "$repo_xml" "https://dl.google.com/android/repository/sys-img/android/sys-img2-5.xml"
           python3 scripts/resolve_android_api35_image.py "$repo_xml" "$RUNNER_TEMP/android-system-image-download.txt"
