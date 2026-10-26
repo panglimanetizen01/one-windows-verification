@@ -9,6 +9,8 @@
 
 ## Exact-SHA matrix results
 
+**Evidence boundary update (2026-10-26):** The results in the matrix below were executed against code-bearing SHA `85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd`. The canonical branch then received a documentation-only commit `a8e76ab6f3288c4391e059663e1815a361a54924` to correct the E3/E4 ledger and DoD. Until reruns pin that latest SHA, prior matrix results are historical evidence for the parent SHA, not exact-SHA evidence for the latest branch head. E3/E4 remain unaccepted.
+
 | Gate | Run | Result | Evidence boundary |
 |---|---|---|---|
 | Linux distributions | [40217709918](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40217709918) | PASS | Ubuntu 24.04 and Debian 12 completed build, Clippy, workspace/contract tests, and real-network checks on the pinned source. |
@@ -35,6 +37,8 @@ Open security design gaps:
 These are release-gate blockers, not documentation-only findings. Do not claim a complete OS sandbox. Keep E4 unaccepted until implementation and regression evidence close these requirements or the approved contract explicitly changes them.
 
 ## Status
+
+- Latest branch HEAD `a8e76ab6f3288c4391e059663e1815a361a54924` is not yet covered by a refreshed exact-SHA matrix; do not treat the parent-SHA matrix as current release acceptance.
 
 - E3: **NOT ACCEPTED** pending actual Android API 35 `arm64-v8a` ELF execution and asserted output.
 - E4: **NOT ACCEPTED** pending the open root/mount/quota/fallback security requirements above.
