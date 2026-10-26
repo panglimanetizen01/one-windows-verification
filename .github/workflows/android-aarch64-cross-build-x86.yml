@@ -4,6 +4,7 @@ on:
   push:
     branches: [verification]
     paths:
+      - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/android-aarch64-cross-build-x86.yml'
   workflow_dispatch:
 
@@ -22,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 56606c7f8076bc9a67e321835077315d321b8b7a
+          ref: 25dfbb6aa5bffd7049bf7228f0da190cb2520177
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
@@ -31,7 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "56606c7f8076bc9a67e321835077315d321b8b7a"
+          test "$(git rev-parse HEAD)" = "25dfbb6aa5bffd7049bf7228f0da190cb2520177"
           test "$(uname -m)" = "x86_64"
           printf 'candidate_sha=%s\nrunner_arch=%s\n' "$(git rev-parse HEAD)" "$(uname -m)"
 
