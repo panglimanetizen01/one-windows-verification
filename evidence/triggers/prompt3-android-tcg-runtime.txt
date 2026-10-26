@@ -1,0 +1,5 @@
+Purpose: explicitly trigger the existing Android API 35 AArch64 Linux TCG runtime workflow after the native ARM64-host emulator attempt failed because the host GIC configuration required KVM.
+
+Canonical ONE source SHA: c26e28789fb090ad8a684c6c6853ec2a88e3f9ca
+
+Acceptance remains strict: the exact-source AArch64 ELF must execute on Android API 35 arm64-v8a, exit code must be 0, and output must contain ONE_NATIVE_BACKEND_OK. Cross-build or emulator boot alone is not runtime PASS.
