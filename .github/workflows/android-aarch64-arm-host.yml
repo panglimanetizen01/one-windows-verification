@@ -77,7 +77,7 @@ jobs:
           use one_core::{analyze, lower, parse, NativeAndroidAarch64Backend};
           #[test]
           fn emit_android_c() {
-              let program = parse("tampilkan \\\"ONE_NATIVE_BACKEND_OK\\\"\\n").expect("parse probe");
+              let program = parse("tampilkan \"ONE_NATIVE_BACKEND_OK\"\n").expect("parse probe");
               let typed = analyze(&program).expect("analyze probe");
               let ir = lower(&typed).expect("lower probe");
               let source = NativeAndroidAarch64Backend::new().codegen(&ir).expect("generate C");
