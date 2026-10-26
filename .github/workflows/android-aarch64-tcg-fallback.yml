@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-android-tcg-${ github.ref_name }}
+  group: one-android-tcg-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -33,14 +33,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: ${ steps.target.outputs.sha }}
-          token: ${ secrets.CANONICAL_READ_TOKEN }}
+          ref: ${{ steps.target.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
       - name: Verify exact source SHA
         working-directory: source
         shell: bash
-        run: test "$(git rev-parse HEAD)" = "${ steps.target.outputs.sha }}"
+        run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
