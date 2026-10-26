@@ -72,6 +72,12 @@ jobs:
           # consequently refuses the API 35 image. Install the official image by its
           # published repository metadata and verify its published digest.
           sdkmanager --install "ndk;27.2.12479018" "platforms;android-35"
+          # Export the real Android cross-compiler across workflow steps.
+          # A shell-local variable is not inherited by the build/execute step.
+          ndk_clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android35-clang' -type f -print -quit)"
+          test -n "$ndk_clang" && test -x "$ndk_clang"
+          "$ndk_clang" --version
+          echo "ONE_ANDROID_CLANG=$ndk_clang" >> "$GITHUB_ENV"
           mkdir -p "$ANDROID_HOME/platform-tools"
           ln -sf /usr/bin/adb "$ANDROID_HOME/platform-tools/adb"
           file -L /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
