@@ -4,6 +4,7 @@ on:
   push:
     branches: [verification]
     paths:
+      - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/e4-adversarial-regression.yml'
   pull_request:
     branches: [verification]
