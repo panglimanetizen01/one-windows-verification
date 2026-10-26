@@ -1,4 +1,4 @@
-# Revalidation after final-component mount-boundary fix 2026-10-26; acceptance logic unchanged.
+# Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
 name: ONE Linux Distro Verification
 # Exact-SHA revalidation for the current milestone candidate; keep distro evidence pinned to CANONICAL_COMMIT.txt.
 # Keep this workflow in sync with the default-branch definition so runs use the latest matrix contract.
