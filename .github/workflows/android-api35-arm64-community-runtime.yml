@@ -50,7 +50,7 @@ jobs:
           test "$(git -C source rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools" "emulator"
-          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android24-clang' -print -quit)"
+          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android35-clang' -print -quit)"
           test -x "$clang"
           cat > source/crates/one-core/tests/android_device_artifact.rs <<'RS'
           use one_core::{analyze, lower, parse, NativeAndroidAarch64Backend};
@@ -75,6 +75,7 @@ jobs:
           export ONE_ANDROID_ARTIFACT_OUT="$RUNNER_TEMP/one-android-aarch64"
           (cd source && cargo test --locked -p one-core --test android_device_artifact -- --nocapture)
           file "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-FILE.txt"
+          grep -Fq 'for Android 35' "$RUNNER_TEMP/ELF-FILE.txt"
           readelf -h "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-HEADER.txt"
           readelf -l "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-PROGRAM-HEADERS.txt"
           readelf -d "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-DEPENDENCIES.txt"
