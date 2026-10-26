@@ -142,7 +142,6 @@ jobs:
           tag.id=default
           tag.display=Default
           hw.cpu.arch=arm64
-          hw.cpu.model=cortex-a57
           hw.cpu.ncore=2
           hw.ramSize=2048
           vm.heapSize=256
@@ -169,7 +168,7 @@ jobs:
           log="$RUNNER_TEMP/one-android-arm-host.log"
           # The bundled ARM64 QEMU defaults to gic-version=host, which requires KVM.
           # This hosted runner has no KVM; explicitly select the TCG-compatible GIC version.
-          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-native -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect -accel off -no-metrics -verbose -qemu -machine gic-version=3 >"$log" 2>&1 &
+          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-native -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect -accel off -no-metrics -verbose -qemu -cpu cortex-a57 -machine gic-version=3 >"$log" 2>&1 &
           pid=$!
           trap 'kill "$pid" 2>/dev/null || true' EXIT
           adb start-server
