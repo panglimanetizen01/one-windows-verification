@@ -809,3 +809,11 @@ All statuses below were checked live on 2026-10-26. The canonical ONE source pin
 - The gate was strengthened to require both `ONE Milestone 1 E1 Cross-Platform Acceptance Lab` and `ONE E1 Standard Library Windows Acceptance` in the exact-source workflow matrix. Added tests assert both names remain mandatory. Fixed weights and acceptance criteria were not changed.
 - No completed evidence listed above automatically awards ledger points. Row acceptance remains subject to each original criterion; full E1 scope, complete E4 threat/coverage requirements, Android runtime, protected release provenance, and E6 reconciliation remain distinct acceptance obligations.
 - No score was changed. Historical failed runs remain intact.
+
+
+## Credentialed Actions access diagnostic — 2026-10-26
+
+- The workflow wiring was inspected directly: `.github/workflows/ledger-gate.yml` checks out the canonical source using `secrets.CANONICAL_READ_TOKEN` and maps `secrets.ONE_REPO_TOKEN` to the verifier's `CANONICAL_READ_TOKEN` environment variable for the source Actions API query. No secret values are printed.
+- The latest gate [run 40323027077](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40323027077) logged: `Canonical Actions run-list query succeeded using the supplied source token.` It then found no protected `ONE Package Provenance Release` run for the exact pinned source SHA. This confirms the credentialed query path worked; it is not evidence that a release run exists.
+- The gate's 403 path was changed to emit a safe diagnostic and to retain an explicit failure if the supplied token receives HTTP 403, even when public unauthenticated fallback can list public runs. This prevents fallback from masking a token-access failure.
+- The gate still fails on substantive acceptance: Android API 35 runtime [40321345654](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345654) is still in progress/no conclusion, and protected package provenance is absent. Scores remain `91/100` implementation and `64/100` verified; no points or weights were changed.
