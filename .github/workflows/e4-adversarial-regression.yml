@@ -81,7 +81,7 @@ jobs:
           run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file --exact --test-threads=1
           run_test 11 database::tests
           run_test 10 governance::tests
-          run_test 27 network_runtime::tests
+          run_test 27 network_runtime::tests -- --test-threads=1
           run_test 1 orchestrator::tests::denied_request_never_reaches_adapter_invocation --exact --test-threads=1
 
   windows-reparse-regression:
