@@ -209,6 +209,11 @@ jobs:
         working-directory: source
         run: cargo test --locked -p one-core --test native_backend_android_aarch64
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: one-android-api35-arm64-elf
+          path: ${{ runner.temp }}/one-android-elf
+
       - name: Boot Android API 35 AArch64 on ARM64 host
         timeout-minutes: 25
         shell: bash
@@ -280,15 +285,7 @@ jobs:
           test "$(adb -s emulator-5554 shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
           echo "ONE_ANDROID_ADB=$ANDROID_HOME/platform-tools/adb" >> "$GITHUB_ENV"
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: one-android-api35-arm64-elf
-          path: ${{ runner.temp }}/one-android-elf
-
-      - name: Execute backend-generated AArch64 ELF on Android API 35
-        shell: bash
-        run: |
-          set -euo pipefail
+          # Execute while the emulator is alive; the EXIT trap terminates it at step end.
           adb="$ANDROID_HOME/platform-tools/adb"
           elf="$RUNNER_TEMP/one-android-elf/one-native-android-elf"
           test -f "$elf"
@@ -301,7 +298,8 @@ jobs:
           output="$( "$adb" -s emulator-5554 shell "$remote" 2>&1 )"
           status=$?
           set -e
-          printf "Android ELF exit code: %s\nAndroid ELF output:\n%s\n" "$status" "$output" | tee "$RUNNER_TEMP/one-android-runtime-result.txt"
+          printf "Android ELF exit code: %s\\nAndroid ELF output:\\n%s\\n" "$status" "$output" | tee "$RUNNER_TEMP/one-android-runtime-result.txt"
           test "$status" -eq 0
-          test "$(printf "%s" "$output" | tr -d "\r" | tail -n 1)" = "ONE_NATIVE_BACKEND_OK"
+          test "$(printf "%s" "$output" | tr -d "\\r" | tail -n 1)" = "ONE_NATIVE_BACKEND_OK"
           "$adb" -s emulator-5554 shell rm -f "$remote"
+
