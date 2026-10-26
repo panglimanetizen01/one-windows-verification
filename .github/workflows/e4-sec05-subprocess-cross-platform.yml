@@ -4,6 +4,7 @@ on:
   push:
     branches: [verification]
     paths:
+      - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/e4-sec05-subprocess-cross-platform.yml'
   pull_request:
     branches: [verification]
