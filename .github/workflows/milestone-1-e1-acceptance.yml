@@ -72,8 +72,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            sdkmanager="$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager.bat"
+            if [[ ! -f "$sdkmanager" ]]; then
+              sdkmanager="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -iname sdkmanager.bat -print -quit)"
+            fi
+          else
+            sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+            if [[ ! -x "$sdkmanager" ]]; then
+              sdkmanager="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -type f -name sdkmanager -print -quit)"
+            fi
+          fi
+          test -n "$sdkmanager" && test -f "$sdkmanager"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cmd.exe /c "yes | \"$sdkmanager\" --licenses" >/dev/null 2>&1 || true
+            cmd.exe /c "\"$sdkmanager\" --install \"ndk;27.2.12479018\" \"platforms;android-35\""
+          else
+            yes | "$sdkmanager" --licenses >/dev/null 2>&1 || true
+            "$sdkmanager" --install "ndk;27.2.12479018" "platforms;android-35"
+          fi
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe"
           else
