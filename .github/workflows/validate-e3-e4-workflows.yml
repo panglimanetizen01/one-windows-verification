@@ -1,0 +1,32 @@
+name: Validate E3 E4 workflow definitions
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - '.github/workflows/android-api35-arm64-community-runtime.yml'
+      - 'scripts/resolve_android_api35_image.py'
+      - '.github/workflows/validate-e3-e4-workflows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    name: Validate workflow syntax and schema
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install actionlint
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Validate API 35 ARM64 runtime workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          actionlint -color .github/workflows/android-api35-arm64-community-runtime.yml
