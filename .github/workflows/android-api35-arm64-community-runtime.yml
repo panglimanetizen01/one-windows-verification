@@ -208,22 +208,53 @@ jobs:
             echo "ONE_KVM_AVAILABLE=false" >> "$GITHUB_ENV"
             echo "KVM unavailable; the workflow will still attempt the emulator's software path."
           fi
-          avdmanager="$(find "$ANDROID_HOME/cmdline-tools" -type f -path "*/bin/avdmanager" -print -quit)"
-          test -x "$avdmanager"
+          avd_name="one-api35-arm64-community"
           avd_home="$HOME/.android/avd"
-          mkdir -p "$avd_home"
+          avd_dir="$avd_home/$avd_name.avd"
+          mkdir -p "$avd_dir"
           echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_HOME=$HOME/.android" >> "$GITHUB_ENV"
           export ANDROID_AVD_HOME="$avd_home"
           export ANDROID_SDK_HOME="$HOME/.android"
-          devices="$("$avdmanager" list device)"
-          device_id="$(printf '%s\n' "$devices" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
-          test -n "$device_id"
-          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-community --package "system-images;android-35;default;arm64-v8a" --device "$device_id" --path "$avd_home/one-api35-arm64-community.avd"
-          test -f "$avd_home/one-api35-arm64-community.ini"
-          test -f "$avd_home/one-api35-arm64-community.avd/config.ini"
-          "$avdmanager" list avd
-          find "$avd_home/one-api35-arm64-community.avd" -maxdepth 2 -type f -print
+          cat > "$avd_home/$avd_name.ini" <<EOF
+          avd.ini.encoding=UTF-8
+          path=$avd_dir
+          path.rel=avd/$avd_name.avd
+          target=android-35
+          EOF
+          cat > "$avd_dir/config.ini" <<EOF
+          AvdId=$avd_name
+          avd.ini.displayname=ONE API 35 arm64-v8a community
+          abi.type=arm64-v8a
+          image.sysdir.1=system-images/android-35/default/arm64-v8a/
+          tag.id=default
+          tag.display=Default
+          hw.cpu.arch=arm64
+          hw.cpu.ncore=2
+          hw.ramSize=2048
+          vm.heapSize=256
+          hw.lcd.width=1080
+          hw.lcd.height=1920
+          hw.lcd.density=420
+          hw.keyboard=yes
+          hw.gpu.enabled=yes
+          hw.gpu.mode=swiftshader_indirect
+          hw.audioInput=no
+          hw.audioOutput=no
+          hw.camera.back=none
+          hw.camera.front=none
+          hw.sensors.orientation=yes
+          hw.sensors.proximity=no
+          hw.sdCard=no
+          disk.dataPartition.size=2G
+          fastboot.forceColdBoot=yes
+          snapshot.present=no
+          EOF
+          test -f "$avd_home/$avd_name.ini"
+          test -f "$avd_dir/config.ini"
+          grep -Fqx 'abi.type=arm64-v8a' "$avd_dir/config.ini"
+          grep -Fqx 'image.sysdir.1=system-images/android-35/default/arm64-v8a/' "$avd_dir/config.ini"
+          echo "Created explicit API 35 arm64-v8a AVD config without requiring SDK manager's unavailable emulator package."
       - name: Boot API 35 arm64-v8a and execute actual ONE ELF
         timeout-minutes: 55
         shell: bash
