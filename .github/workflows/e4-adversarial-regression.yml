@@ -57,6 +57,9 @@ jobs:
       - name: Run descriptor-relative no-follow adversarial regressions
         working-directory: source
         run: cargo test --locked -p one-core descriptor_relative_
+      - name: Run final-component mount-boundary no-truncation regression
+        working-directory: source
+        run: cargo test --locked -p one-core adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file -- --exact
       - name: Run SQLite symlink and resource-limit regressions
         working-directory: source
         run: cargo test --locked -p one-core database::tests
