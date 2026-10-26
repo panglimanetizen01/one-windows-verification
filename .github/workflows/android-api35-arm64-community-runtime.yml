@@ -180,7 +180,7 @@ jobs:
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager --install "platform-tools" "platforms;android-35"
           repo_xml="$RUNNER_TEMP/android-system-images.xml"
-          curl --fail --location --retry 3 --output "$repo_xml" "https://dl.google.com/android/repository/sys-img/android/sys-img2-5.xml"
+          curl --fail --location --retry 3 --output "$repo_xml" "https://dl.google.com/android/repository/repository2-1.xml"
           python3 scripts/resolve_android_api35_image.py "$repo_xml" "$RUNNER_TEMP/android-system-image-download.txt"
           read -r digest_algorithm digest image_url < "$RUNNER_TEMP/android-system-image-download.txt"
           image_archive="$RUNNER_TEMP/android-api35-arm64-system-image.zip"
