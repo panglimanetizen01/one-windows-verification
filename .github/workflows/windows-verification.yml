@@ -191,50 +191,11 @@ jobs:
         run: |
           $metadata = Get-Content release-bundle/BUILD-METADATA.txt
           if ($metadata -notcontains "source_sha=${{ steps.canonical.outputs.ref }}") { throw "Bundle source SHA does not match canonical pin" }
-          $manifest = Get-Content release-bundle/SHA256SUMS -Raw
-          if ($manifest -notmatch '(?m)^(?<hash>[0-9a-f]{64})\s+one\.exe\s*        uses: actions/upload-artifact@v4
-        with:
-          name: one-release-candidate-${{ runner.os }}-${{ steps.canonical.outputs.ref }}
-          path: source/release-bundle/*
-          if-no-files-found: error
-          retention-days: 14
-      - name: AST contract regression tests
-        working-directory: source
-        run: cargo --locked test -p one-core ast_contract_tests
-      - name: Clippy
-        working-directory: source
-        shell: bash
-        run: cargo --locked clippy --workspace --all-targets -- -D warnings
-      - name: Tests
-        working-directory: source
-        if: runner.os != 'Windows'
-        run: cargo --locked test --workspace --all-targets
-      - name: Tests (Windows; Android target covered on Ubuntu)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: cargo --locked test --workspace --all-targets -- --skip android_target_explicit_mempertahankan_build_native
-      - name: Real network runtime tests
-        working-directory: source
-        shell: bash
-        run: cargo --locked test -p one-core --features real-network --all-targets
-      - name: Offline verification
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: bash tools/verify_offline.sh
-      - name: Offline verification (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: .\tools\verify_offline.ps1
-
-# Exact source target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
-
-# Android AArch64 runtime acceptance is handled by the dedicated exact-SHA workflow.
-) { throw "Malformed Windows SHA256SUMS manifest" }
+          $manifestLine = (Get-Content release-bundle/SHA256SUMS | Select-Object -First 1).Trim()
+          $manifestParts = $manifestLine -split '\s+'
+          if ($manifestParts.Count -ne 2 -or $manifestParts[1] -ne 'one.exe') { throw "Malformed Windows SHA256SUMS manifest" }
           $actualHash = (Get-FileHash release-bundle/one.exe -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ($actualHash -ne $Matches.hash) { throw "Windows release bundle checksum mismatch" }
+          if ($actualHash -ne $manifestParts[0]) { throw "Windows release bundle checksum mismatch" }
           $expectedVersion = (($metadata | Where-Object { $_ -like 'cli_version=*' } | Select-Object -First 1) -replace '^cli_version=', '')
           $actualVersion = (& .\target\release\one.exe version | Out-String).Trim()
           if (-not $expectedVersion -or $actualVersion -ne $expectedVersion) { throw "Windows bundle CLI version mismatch" }
