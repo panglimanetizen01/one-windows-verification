@@ -1,3 +1,4 @@
+# Re-run API 35 AArch64 runtime on the pinned source; keep runtime assertions unchanged.
 name: ONE Android AArch64 runtime — TCG retry
 
 on:
