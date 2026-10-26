@@ -125,9 +125,11 @@ jobs:
             $exitCode = $LASTEXITCODE
             $output | ForEach-Object { Write-Output $_ }
             if ($exitCode -ne 0) { throw "cargo test failed for $Filter with exit code $exitCode" }
-            $passed = @($output | Where-Object { "$_" -match ("^test " + [regex]::Escape($Filter) + " \.\.\. ok$") })
-            if ($passed.Count -ne 1) {
-              throw "Expected exactly one passing test line for $Filter; observed $($passed.Count). Filtered-only output is not PASS"
+            $joined = $output -join "`n"
+            if ($joined -notmatch [regex]::Escape($Filter) -or
+                $joined -notmatch "running 1 test" -or
+                $joined -notmatch "test result: ok\. 1 passed; 0 failed") {
+              throw "Expected the named test to execute exactly once and pass for $Filter. Filtered-only output is not PASS"
             }
           }
           Invoke-ExpectedTest "adapter::filesystem_windows_reparse_tests::filesystem_reader_rejects_directory_junction_escape"
