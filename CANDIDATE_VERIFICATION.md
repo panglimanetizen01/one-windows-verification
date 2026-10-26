@@ -553,3 +553,25 @@ Android API 35 runtime acceptance remains pending until a completed run proves s
 
 This checkpoint is evidence-only: no DoD checkbox, ledger score, verified weight, or release gate is promoted. E3/E4 milestone remains unaccepted until every mandatory criterion has direct evidence.
 
+
+
+## E3/E4 exact-SHA continuation — 2026-10-26
+
+- Canonical ONE candidate branch: `milestone/100-ecosystem-20261023`.
+- Exact source SHA: `52060994d19ecede9b2a7dd770b6e1842e30e8bb`.
+- Candidate implementation commit: https://github.com/panglimanetizen01/one/commit/52060994d19ecede9b2a7dd770b6e1842e30e8bb.
+- Lab pin commit: https://github.com/panglimanetizen01/one-windows-verification/commit/5b81b71a2e810b5fe5a9f53e80934ea18c204d83; `CANONICAL_COMMIT.txt` resolves to the exact source SHA above.
+- E4 lint correction: the network connection stores its global resource permit in underscore-prefixed named fields so the RAII lifetime remains intact without `dead_code` warnings.
+- E4 test correction: `network_connections_hold_global_resource_permits_until_closed` now accounts for other parallel tests sharing the process-wide quota. It retries transient quota denial, fills capacity until denial, closes a connection, and verifies admission recovers; no assertions were removed or weakened.
+- Exact-SHA matrix triggered by the pin commit; run links below are the current attempts and must be checked for final conclusions before any checkbox is promoted:
+  - Linux distro: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40270030674 — pending.
+  - Cross-platform Linux/Windows: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40270030600 — pending.
+  - SEC-05 subprocess: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40270030654 — pending.
+  - E4 adversarial filesystem/resource: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40270030628 — pending.
+  - Focused standard-library/database regression: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40270030687 — pending.
+  - Candidate artifact integrity: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40270030622 — pending.
+  - Android API 35 arm64-v8a community-emulator runtime: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40270030624 — pending.
+  - Android cross-build/contract jobs are separate from runtime acceptance and cannot substitute for executing the ELF on API 35.
+- Known prior failure preserved: candidate SHA `ac4bd9ae5106d50ccd43cae9829dd406aa6a45d1` failed the focused suite because parallel tests could temporarily occupy the global operation quota. This prompted the test-isolation correction above; that failed run remains historical evidence and is not relabeled.
+- The previous API 35 Linux TCG attempt failed because the stock Android emulator reports that an `arm64` system image is unsupported on an `x86_64` host. The native ARM64-host attempt failed during SDK setup because the official emulator package was unavailable for that host. Neither is Android runtime acceptance.
+- E3/E4 acceptance remains **NOT ACCEPTED** until all required exact-SHA jobs finish successfully, the actual API 35 `arm64-v8a` ELF executes with asserted output and exit code, and the ledger/Definition of Done agree. Do not promote any score or checkbox based on pending jobs.
