@@ -128,6 +128,7 @@ jobs:
           }
           Invoke-ExpectedTest "adapter::filesystem_windows_reparse_tests::filesystem_reader_rejects_directory_junction_escape" 1
           Invoke-ExpectedTest "adapter::tests::filesystem_adapter_reads_absolute_target_inside_project_root" 1
+          Invoke-ExpectedTest "adapter::tests::filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects" 1
           Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_writes_text_target" 1
           Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_rejects_oversized_content" 1
           Invoke-ExpectedTest "adapter::tests::filesystem_adapters_reject_parent_directory_traversal" 1
