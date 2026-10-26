@@ -61,24 +61,27 @@ jobs:
           set -euo pipefail
           run_test() {
             local expected="$1"
-            shift
+            local filter="$2"
+            shift 2
             local log
             log="$(mktemp)"
             set +e
-            cargo test --locked -p one-core "$@" 2>&1 | tee "$log"
+            cargo test --locked -p one-core "$filter" "$@" 2>&1 | tee "$log"
             local rc="${PIPESTATUS[0]}"
             set -e
             if [ "$rc" -ne 0 ]; then return "$rc"; fi
-            if ! grep -Eq "test result: ok\\. ${expected} passed; 0 failed" "$log"; then
-              echo "Expected ${expected} passing test(s); zero-match/filtered-only output is not PASS." >&2
+            local matched
+            matched="$(grep -F "$filter" "$log" | grep -E '^test .* \.\.\. ok$' | wc -l | tr -d ' ')"
+            if [ "$matched" -ne "$expected" ]; then
+              echo "Expected $expected passing test line(s) matching '$filter'; observed $matched. Filtered-only output is not PASS." >&2
               return 1
             fi
           }
-          run_test 5 descriptor_relative_
-          run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file -- --exact --test-threads=1
-          run_test 11 database::tests
-          run_test 10 governance::tests
-          run_test 1 orchestrator::tests::denied_request_never_reaches_adapter_invocation -- --exact --test-threads=1
+          run_test 5 descriptor_relative_ descriptor_relative_
+          run_test 1 final_component_mount_boundary_denial_does_not_truncate_file adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file -- --exact --test-threads=1
+          run_test 11 database::tests database::tests
+          run_test 10 governance::tests governance::tests
+          run_test 1 denied_request_never_reaches_adapter_invocation orchestrator::tests::denied_request_never_reaches_adapter_invocation -- --exact --test-threads=1
 
   windows-reparse-regression:
     name: Windows reparse-point and handle checks
@@ -117,18 +120,19 @@ jobs:
         shell: pwsh
         run: |
           function Invoke-ExpectedTest {
-            param([string]$Filter, [int]$Expected)
+            param([string]$Filter)
             $output = & cargo test --locked -p one-core $Filter -- --exact --test-threads=1 2>&1
             $exitCode = $LASTEXITCODE
             $output | ForEach-Object { Write-Output $_ }
             if ($exitCode -ne 0) { throw "cargo test failed for $Filter with exit code $exitCode" }
-            if (($output -join "`n") -notmatch "test result: ok\. $Expected passed; 0 failed") {
-              throw "Expected $Expected passing test(s) for $Filter; zero-match/filtered-only output is not PASS"
+            $passed = @($output | Where-Object { "$_" -match ("^test " + [regex]::Escape($Filter) + " \.\.\. ok$") })
+            if ($passed.Count -ne 1) {
+              throw "Expected exactly one passing test line for $Filter; observed $($passed.Count). Filtered-only output is not PASS"
             }
           }
-          Invoke-ExpectedTest "adapter::filesystem_windows_reparse_tests::filesystem_reader_rejects_directory_junction_escape" 1
-          Invoke-ExpectedTest "adapter::tests::filesystem_adapter_reads_absolute_target_inside_project_root" 1
-          Invoke-ExpectedTest "adapter::tests::filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects" 1
-          Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_writes_text_target" 1
-          Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_rejects_oversized_content" 1
-          Invoke-ExpectedTest "adapter::tests::filesystem_adapters_reject_parent_directory_traversal" 1
+          Invoke-ExpectedTest "adapter::filesystem_windows_reparse_tests::filesystem_reader_rejects_directory_junction_escape"
+          Invoke-ExpectedTest "adapter::tests::filesystem_adapter_reads_absolute_target_inside_project_root"
+          Invoke-ExpectedTest "adapter::tests::filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects"
+          Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_writes_text_target"
+          Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_rejects_oversized_content"
+          Invoke-ExpectedTest "adapter::tests::filesystem_adapters_reject_parent_directory_traversal"
