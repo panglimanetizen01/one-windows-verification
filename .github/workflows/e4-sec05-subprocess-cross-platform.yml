@@ -53,7 +53,7 @@ jobs:
       - name: Install Linux native cross-compilers
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang lld mingw-w64
+          sudo apt-get install -y clang lld mingw-w64 binutils-x86-64-linux-gnu
           command -v clang
           command -v x86_64-w64-mingw32-clang || true
           command -v x86_64-w64-mingw32-gcc || true
