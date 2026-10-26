@@ -182,7 +182,13 @@ jobs:
           # Fetch the official image directly from Google's published repository metadata,
           # verify its published digest, then install its package contents into the SDK tree.
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager --install "platform-tools" "platforms;android-35"
+          # Android's SDK platform-tools package may contain an x86 adb binary on ARM64 runners.
+          # Keep the host-native adb installed by Ubuntu's arm64 package.
+          sdkmanager --install "platforms;android-35"
+          mkdir -p "$ANDROID_HOME/platform-tools"
+          install -m 0755 /usr/lib/android-sdk/platform-tools/adb "$ANDROID_HOME/platform-tools/adb"
+          file "$ANDROID_HOME/platform-tools/adb" | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+          grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
           repo_xml="$RUNNER_TEMP/android-system-images.xml"
           curl --fail --location --retry 3 --output "$repo_xml" "https://dl.google.com/android/repository/sys-img/android/sys-img2-5.xml"
           python3 scripts/resolve_android_api35_image.py "$repo_xml" "$RUNNER_TEMP/android-system-image-download.txt"
