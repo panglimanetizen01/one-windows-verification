@@ -41,7 +41,7 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.pin.outputs.sha }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          token: ${{ secrets.ONE_REPO_TOKEN }}
           path: one-source
 
       - name: Test ledger verifier
