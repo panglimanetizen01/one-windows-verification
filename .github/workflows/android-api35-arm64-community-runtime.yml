@@ -188,6 +188,7 @@ jobs:
           # Keep the host-native adb installed by Ubuntu's arm64 package.
           sdkmanager --install "platforms;android-35"
           mkdir -p "$ANDROID_HOME/platform-tools"
+          ln -sf /usr/bin/adb "$ANDROID_HOME/platform-tools/adb"
            file -L /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            /usr/bin/adb version
