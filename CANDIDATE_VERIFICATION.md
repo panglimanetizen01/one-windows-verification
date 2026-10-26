@@ -633,3 +633,23 @@ This checkpoint is evidence-only: no DoD checkbox, ledger score, verified weight
 **Residual limits, not concealed:** this implementation is not a general OS sandbox and executes with the caller's OS privileges. The 16 MiB interpreter-output cap is per execution/event dispatch, not an accounting system for arbitrary caller-retained strings or every intermediate heap allocation. Non-Linux Unix mount identity uses `st_dev` best-effort and cannot distinguish same-device bind mounts; unsupported non-Unix/non-Windows filesystem paths fail closed. The filesystem root is resolved from the process working directory per operation rather than held as a permanent process-wide root handle. These boundaries remain documented; no claim of zero residual risk or complete sandboxing is made.
 
 **Disposition:** no critical E4 defect was observed in the reviewed implementation or passing E4 tests on source SHA `520609`; E4 acceptance for the final candidate remains pending until the exact-SHA `0301dc8` E4 reruns pass and the ledger/DoD are reconciled. This review does not authorize global release or merge.
+
+
+## E3/E4 final source candidate after API35 registry-test correction — 2026-10-26
+
+- Candidate branch: `milestone/100-ecosystem-20261023`.
+- Current exact source SHA: `73bd504ac81a14737b321817b94c7bc2fbb17a15`; lab pin commit: https://github.com/panglimanetizen01/one-windows-verification/commit/4e5ab0d6e387c216bf2c14eda03adf251ee6a7db.
+- Root cause from the first API35 candidate run: `target_backend_foundation.rs` still asserted API 24. That test was updated to API 35; prior failure remains preserved in run https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632218. No assertions were removed or weakened.
+- Current exact-SHA runs:
+  - Linux distribution matrix: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900538 — queued.
+  - Cross-platform Linux/Windows: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900560 — pending.
+  - Candidate artifact integrity: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900570 — queued.
+  - Focused standard-library/database suite: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900585 — in progress.
+  - SEC-05 subprocess contract: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900575 — queued.
+  - E4 adversarial filesystem/resource regression: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900540 — queued.
+  - E4 subprocess resource guard: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900536 — queued.
+  - Android API 35 `arm64-v8a` community-emulator runtime: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900565 — in progress.
+  - Android AArch64 cross-build/contract: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900641 — queued.
+  - Android device artifact build: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900506 — in progress.
+- The API35 ELF build artifact from source SHA `0301dc8` (historical candidate, before the last test-only assertion fix) proved the compiler target `aarch64-unknown-linux-android35`, ELF64 little-endian AArch64, interpreter `/system/bin/linker64`, binary SHA-256 `28c1552a8fdd96e79c096611a36118347aef7849d38f0b84b09cfd75b62bf5f7`, and artifact ZIP SHA-256 `5205712efb18f265470f9fc2b75e802968a00ebc627a7c226d9cb5359bea5f89`. This is build/metadata evidence only; runtime acceptance is still pending.
+- Do not mark E3/E4 rows complete until the above runs finish on source SHA `73bd504`, the API35 guest reaches boot completion, and the actual ELF produces the expected output with exit code zero. The global project release gate remains separate and must stay blocked while out-of-scope rows remain open.
