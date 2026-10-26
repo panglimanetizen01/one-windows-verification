@@ -2,11 +2,28 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `2ea52d4c39aac98be8678a2e1ac0b67997610c22`  
+**Current source SHA:** `78b9436c318032b1c19a4e5c110142fffc58b4d5`  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — fixed-weight ledger is 91/100 provisional implementation and 64/100 verified. The current exact-SHA matrix for `dca9a22c242905b97275161d9fdda933b986ec0d` has passing focused (including package signature/trusted-publisher tests), lockfile, Linux distro, cross-platform Ubuntu/Windows, artifact-integrity, and a new end-to-end package provenance lab using a disposable synthetic trust key. The end-to-end lab independently verifies the retained package/checksum and rejects untrusted publisher, modified artifact, and modified signed metadata. Android API 35 is still booting with no ELF execution result. The fixed-weight gate is NOT PASSED; E1/E2/E3/E4/E6 remain unaccepted as full ledger rows, and protected canonical release evidence remains unavailable.
+**Release gate:** **NOT PASSED** — fixed-weight ledger remains 91/100 provisional implementation and 64/100 verified in the last recorded scoring; this is not a final acceptance score. The current independent verification pin is `78b9436c318032b1c19a4e5c110142fffc58b4d5`. Exact-SHA Linux distro (Ubuntu 24.04 + Debian 12), Ubuntu/Windows Server 2025, E4 Unix/Windows adversarial tests, artifact integrity, Android AArch64 build, and Android cross-build/contract jobs have passed their scoped checks. **Android API 35 arm64-v8a runtime execution is not yet proven**: run [40264206706](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264206706) remains queued. The latest ledger gate [40264648659](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264648659) failed closed. Do not award full E3/E4 rows or mark the overall release accepted from scoped passes; the protected canonical release evidence/permission gap also remains unresolved.
 
 This file is the live exact-SHA evidence index. A workflow run counts only if its job logs assert the current source SHA and all required steps pass. Prior-SHA results are historical evidence, not current-candidate acceptance.
+
+## Current pinned candidate — `78b9436c318032b1c19a4e5c110142fffc58b4d5`
+
+This is the canonical source SHA in `CANONICAL_COMMIT.txt` at the current `verification` branch head. The verifier branch SHA and source SHA are different identifiers.
+
+| Gate | Run | Verified result |
+|---|---|---|
+| Linux distro matrix (Ubuntu 24.04 + Debian 12) | [40264090050](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264090050) | **PASS** — both job logs explicitly bind to source SHA `78b9436c318032b1c19a4e5c110142fffc58b4d5` |
+| Cross-platform Ubuntu + Windows Server 2025 | [40264090066](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264090066) | **PASS** — both job logs explicitly bind to the pinned source SHA |
+| E4 adversarial filesystem/resource-bound regression | [40264259048](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264259048) | **PASS for executed assertions only** — Unix and Windows jobs succeeded; logs bind to the pinned source SHA. This is not blanket proof of every filesystem/race acceptance criterion |
+| Android AArch64 device artifact build | [40264171337](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264171337) | **PASS build only** — AArch64 ELF header validated; not Android runtime proof |
+| Android API 35 AArch64 cross-build/contract fallback | [40264234301](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264234301) | **PASS for cross-build/contract only** — log explicitly says no Android ELF execution occurred |
+| Android API 35 arm64-v8a ELF runtime | [40264206706](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264206706) | **QUEUED / NOT ACCEPTED** — no guest boot, exit code 0, or `ONE_NATIVE_BACKEND_OK` evidence |
+| Fixed-weight ledger gate | [40264648659](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264648659) | **FAILURE / NOT PASSED** — acceptance gate remains fail-closed; do not manufacture missing ledger or protected-release evidence |
+
+The source pin and this evidence index are separate from the verifier branch head. Historical sections below document older source revisions and must not be counted as evidence for this current pin unless a run explicitly checked out this exact SHA.
+
 
 ## Newest candidate — `2ea52d4c39aac98be8678a2e1ac0b67997610c22`
 
