@@ -68,37 +68,38 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Configure Android API 35 clang
+      - name: Configure Android API 35 clang (Linux)
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            sdkmanager="$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager.bat"
-            if [[ ! -f "$sdkmanager" ]]; then
-              sdkmanager="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -iname sdkmanager.bat -print -quit)"
-            fi
-          else
-            sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-            if [[ ! -x "$sdkmanager" ]]; then
-              sdkmanager="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -type f -name sdkmanager -print -quit)"
-            fi
+          sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [[ ! -x "$sdkmanager" ]]; then
+            sdkmanager="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -type f -name sdkmanager -print -quit)"
           fi
-          test -n "$sdkmanager" && test -f "$sdkmanager"
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            cmd.exe /c "yes | \"$sdkmanager\" --licenses" >/dev/null 2>&1 || true
-            cmd.exe /c "\"$sdkmanager\" --install \"ndk;27.2.12479018\" \"platforms;android-35\""
-          else
-            yes | "$sdkmanager" --licenses >/dev/null 2>&1 || true
-            "$sdkmanager" --install "ndk;27.2.12479018" "platforms;android-35"
-          fi
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe"
-          else
-            clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
-          fi
+          test -x "$sdkmanager"
+          yes | "$sdkmanager" --licenses >/dev/null 2>&1 || true
+          "$sdkmanager" --install "ndk;27.2.12479018" "platforms;android-35"
+          clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
           test -x "$clang"
           echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
           "$clang" --version
+
+      - name: Configure Android API 35 clang (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $sdkmanager = Get-ChildItem "$env:ANDROID_HOME\cmdline-tools" -Recurse -Filter "sdkmanager.bat" | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $sdkmanager) { throw "sdkmanager.bat not found under ANDROID_HOME\cmdline-tools" }
+          & $sdkmanager --licenses | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "sdkmanager --licenses failed: $LASTEXITCODE" }
+          & $sdkmanager --install "ndk;27.2.12479018" "platforms;android-35"
+          if ($LASTEXITCODE -ne 0) { throw "Android API 35 NDK/platform install failed: $LASTEXITCODE" }
+          $clang = Join-Path $env:ANDROID_HOME "ndk\27.2.12479018\toolchains\llvm\prebuilt\windows-x86_64\bin\clang.exe"
+          if (-not (Test-Path $clang)) { throw "Android API 35 clang missing: $clang" }
+          "ONE_ANDROID_CLANG=$clang" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $clang --version
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
