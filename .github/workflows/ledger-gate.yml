@@ -50,7 +50,10 @@ jobs:
       - name: Enforce fixed weights, exact-SHA workflow evidence, protected release, and Definition of Done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CANONICAL_READ_TOKEN: ${{ secrets.CANONICAL_READ_TOKEN }}
+          # Keep source checkout and live Actions API authorization separate.
+          # CANONICAL_READ_TOKEN is used by actions/checkout for Contents read;
+          # ONE_REPO_TOKEN is tested for canonical Actions: read by the verifier.
+          CANONICAL_READ_TOKEN: ${{ secrets.ONE_REPO_TOKEN }}
         run: |
           python tools/verify_completion_ledger.py \
             --ledger one-source/docs/verification/one-completion-ledger.md \
