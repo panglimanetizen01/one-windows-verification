@@ -700,3 +700,46 @@ The current canonical source SHA is now `990c4e80f657aa2ac0409cfaf3bbf522856bc88
 The exact-source Android build artifact is [artifact ID 12630660350](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895444/artifacts/12630660350), ZIP SHA-256 `24de248930be0b6fa20a4ec1bc77b8aeb7db2b8ad81a61b26f8b0142bdb4c961`. Its `SOURCE.txt` matches `990c4e80f657aa2ac0409cfaf3bbf522856bc889`; compiler target is `aarch64-unknown-linux-android35`; ELF is 64-bit little-endian AArch64, interpreter `/system/bin/linker64`; binary SHA-256 `28c1552a8fdd96e79c096611a36118347aef7849d38f0b84b09cfd75b62bf5f7`. This is verified build/header/dependency evidence only. Android runtime acceptance remains unchecked until the actual ELF runs on a booted API 35 guest with ABI `arm64-v8a`, emits exactly `ONE_NATIVE_BACKEND_OK`, exits 0, and retains the runtime result and logs.
 
 **Status at this checkpoint:** E3 0/8 verified; E4 0/6 verified; global gate NOT PASSED. Do not check any row solely from a successful workflow/job or build artifact. Update this evidence index after the fresh matrix completes, preserving these intermediate results and failures.
+
+
+## Granular acceptance checklist — pinned source SHA 990c4e80
+
+Every checked item below is tied to source SHA `990c4e80f657aa2ac0409cfaf3bbf522856bc889`. Historical SHA `73bd504ac81a14737b321817b94c7bc2fbb17a15` evidence remains separately identified above and is not used as final-SHA proof.
+
+### E3 — Platform conformance
+
+- [x] Linux distribution jobs: Ubuntu 24.04 and Debian 12 passed in [run 40275895385](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895385).
+- [x] Windows Server 2025 and Ubuntu cross-platform jobs passed in [run 40275895382](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895382).
+- [x] Android AArch64 build contract, compiler target, ELF64/AArch64 header, little-endian format, and `/system/bin/linker64` interpreter verified by the build job in [run 40275895444](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895444). This is build/header evidence only.
+- [x] Candidate Linux/Windows bundle integrity, source metadata, embedded checksums, and executable formats passed in [run 40275895457](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895457).
+- [ ] Android API 35 `arm64-v8a` guest has not yet produced a completed runtime result. [Run 40275895444](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895444) is still running the boot/execute step; it must assert guest SDK 35, ABI `arm64-v8a`, actual ELF execution, exact output `ONE_NATIVE_BACKEND_OK`, and exit code 0.
+- [ ] All platform acceptance tests are not yet complete because Android runtime is still open.
+- [ ] All required logs/reports/artifacts for the final matrix are not yet complete because the Android runtime result is outstanding.
+- [ ] Cross-platform verification is not yet complete as a whole until Android runtime acceptance passes, despite Linux/Windows jobs passing.
+- [x] Completed jobs above explicitly checkout and assert the pinned source SHA; the lab pin and PR #80 head both equal `990c4e80f657aa2ac0409cfaf3bbf522856bc889`.
+
+### E4 — Security and resource bounds
+
+- [x] Capability denial prevents adapter invocation: `orchestrator::tests::denied_request_never_reaches_adapter_invocation` passed in [run 40275895449](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895449).
+- [x] Unix descriptor-relative/no-follow filesystem confinement passed: final-symlink rejection, symlinked-parent rejection without precheck, and write denial without modifying target passed in [run 40275895449](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895449).
+- [x] Parent-component traversal, concurrent parent/symlink swap race, and Linux `/proc` mount-boundary denial without truncating the target passed in [run 40275895449](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895449).
+- [x] Windows directory-junction/reparse-point escape rejection and project-root confinement/no-side-effect tests passed in [run 40275895449](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895449).
+- [x] Windows opened-handle/reparse checks ran in the same successful Windows job; the tested junction escape was explicitly exercised.
+- [x] SQLite row/value/output/query/parameter limits and typed timeout/interruption behavior passed in [run 40275895449](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895449); the focused SQLite/stdlib suite also passed in [run 40275895487](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895487).
+- [x] Runtime-wide active-operation admission and connection-quota assertions passed in [run 40275895449](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895449); the separate subprocess resource guard passed in [run 40275895416](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895416).
+- [x] Process timeout/reaping, aggregate output cap, stdout flood, stderr flood, and normal exit/stream semantics passed on Linux and Windows in [SEC-05 run 40275895425](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895425).
+- [x] Windows descendant containment passed at process creation: `windows_job_object_terminates_descendant_after_parent_exits`, `windows_job_object_terminates_descendant_on_timeout`, and `windows_job_object_immediate_descendant_spawn_stress` passed in [run 40275895425](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895425); the full Windows `one-core` suite reported 238 passed.
+- [x] Denial side-effect regression and process failure cleanup/recovery assertions listed above passed in the final-pin focused jobs.
+- [ ] No unresolved critical security finding / complete threat review: not checked. The complete threat review remains open, non-Linux Unix mount identity is best-effort `st_dev`, and arbitrary heap/caller-retained output memory is not fully accounted. No full OS sandbox claim.
+- [x] No required source tests were deleted or weakened in this continuation. The SEC-05 harness received an explicit GNU x86_64 linker dependency; Android harness fixes added the native ADB symlink and diagnostics. Existing strict implementation-format checks remain enabled.
+
+### Governance and auditability
+
+- [x] PR #80 head, lab pin, and final-SHA workflow checkout agree on `990c4e80f657aa2ac0409cfaf3bbf522856bc889`.
+- [x] Historical SHA `73bd504ac81a14737b321817b94c7bc2fbb17a15` results are separated from the final-pin results.
+- [x] Official completion ledger, Definition of Done, session checkpoint, independent evidence index, PR #80 body, and issue #81 were updated.
+- [x] Release gate remains fail-closed; [run 40275895403](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895403) reported NOT PASSED and did not promote points. It ran before all matrix jobs completed, so its pending-run findings are historical for that evaluation.
+- [x] Current records do not claim Android runtime success or complete sandbox security beyond the tests performed.
+- [ ] Overall E3 + E4 acceptance remains OPEN until Android API 35 runtime completes and the full threat-review item is resolved or explicitly accepted under the project's formal review process.
+
+**Current status:** E3 **NOT ACCEPTED** (Android runtime pending); E4 focused regressions pass but full E4 acceptance remains **NOT ACCEPTED** (full threat review/residuals remain open). Do not mark **PASS GREEN LOCKED** yet.
