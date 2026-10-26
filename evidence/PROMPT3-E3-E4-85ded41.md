@@ -25,13 +25,13 @@
 
 | Android API 35 runtime — macOS ARM64 host, `ANDROID_I_WANT_MY_TCG=yes` retry | [40221042296](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40221042296) | FAIL — hosted virtualization unavailable | SDK/NDK installation and backend contract tests passed, but boot failed with `HVF error: HV_UNSUPPORTED` and `qemu-system-aarch64-headless: failed to initialize HVF`. Despite `ANDROID_I_WANT_MY_TCG=yes` and `-accel off`, emulator still passed `-enable-hvf`; the ELF execution step was skipped. This is a runner/emulator capability blocker, not an Android runtime PASS. Need a supported virtualization host or physical API 35 arm64-v8a device. |\n\n## E4 disposition and residual risks
 
-The candidate has tested no-follow descriptor-relative Unix file operations, Windows reparse/junction checks, SQLite query/resource bounds, capability policy denial, and bounded subprocess lifecycle/output. However, these do not close all mandatory E4 criteria.
+The candidate has tested no-follow descriptor-relative Unix file operations, project-root confinement, Windows reparse/junction checks, SQLite query/resource bounds, capability policy denial, and bounded subprocess lifecycle/output. However, these do not close all mandatory E4 criteria.
 
-Open security design gaps:
-1. Explicit project-root descriptor anchoring/confinement is not consistently implemented across supported platforms.
-2. Mount-boundary enforcement has not been proven by implementation and adversarial tests.
-3. Runtime-wide quotas across concurrent operations are not implemented/proven; per-invocation timeout and output caps are not equivalent.
-4. Non-Unix/non-Windows fallback filesystem paths do not provide equivalent no-follow guarantees.
+Open security design gaps (candidate source SHA `43c7987220d858f6f6a9be4222ead2db5311f29a`):
+1. **Project-root confinement is now implemented in the candidate**: paths are constrained beneath the canonical current working directory; Unix opens walk from a pinned root descriptor using descriptor-relative `openat` + `O_NOFOLLOW`, and Windows verifies the opened handle's final path remains under the root. Outside-root read/write denial regression tests passed in the Unix E4 suite [run 40252707835](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40252707835). Limitation: the root is the process current working directory at adapter invocation, not an explicit per-project root passed through the request API.
+2. **Mount-boundary enforcement remains partial**: Unix traversal rejects a different `st_dev` from the root, but same-device bind mounts are not proven to be rejected. Do not claim full mount-ID confinement.
+3. Runtime-wide quotas across concurrent operations are not implemented/proven; per-invocation timeout, output caps, and SQLite limits are not equivalent to a shared runtime-wide quota.
+4. Non-Unix/non-Windows fallback filesystem operations now fail closed rather than following symlinks, but fallback-platform behavior still needs a dedicated compile/runtime regression and metadata contract review.
 5. The complete threat review and end-to-end failure/recovery matrix remain incomplete.
 
 These are release-gate blockers, not documentation-only findings. Do not claim a complete OS sandbox. Keep E4 unaccepted until implementation and regression evidence close these requirements or the approved contract explicitly changes them.
@@ -41,7 +41,7 @@ These are release-gate blockers, not documentation-only findings. Do not claim a
 - Latest branch HEAD `25dfbb6aa5bffd7049bf7228f0da190cb2520177` requires a refreshed exact-SHA matrix; do not treat parent-SHA results as current release acceptance.
 
 - E3: **NOT ACCEPTED** pending actual Android API 35 `arm64-v8a` ELF execution and asserted output.
-- E4: **NOT ACCEPTED** pending the open root/mount/quota/fallback security requirements above.
+- E4: **NOT ACCEPTED**. Root confinement is implemented and tested, but full mount-ID boundaries, runtime-wide quotas, fallback-platform acceptance, and complete threat review remain open.
 - Overall Prompt 3: **NOT PASSED**. No `PASS GREEN LOCKED` claim.
 - Implementation subtotal remains 91/100 provisional; weighted verified total remains 64/100 as in the fixed-weight ledger. E3 stays 0/8 verified and E4 stays 0/6 verified. No weights were changed.
 - Do not merge PR #80 or PR #83, publish a release, or start Prompt 4 without the required authorization and evidence closure.
