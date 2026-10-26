@@ -142,6 +142,7 @@ jobs:
           tag.id=default
           tag.display=Default
           hw.cpu.arch=arm64
+          hw.cpu.model=cortex-a57
           hw.cpu.ncore=2
           hw.ramSize=2048
           vm.heapSize=256
