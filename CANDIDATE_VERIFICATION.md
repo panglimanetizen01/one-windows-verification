@@ -838,3 +838,11 @@ Frozen candidate checkpoint — source SHA 7fe9ce3adbf83f6b5b2c427d163df44df43b1
 - **Access:** the gate run [40324100070](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40324100070) successfully queried the canonical repository's Actions run list with the configured source token. This proves that query works; protected release logs and release-run evidence remain a separate requirement.
 - **Fresh exact-SHA matrix for this pin:** [gate run 40324908922](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40324908922) and the workflows triggered alongside it were tied to the immediately preceding source SHA `d603fffcb091185edcba6dfe68b8496335fe9b92`; they are superseded for final acceptance by the total-row correction. New runs triggered by pin `7fe9ce3adbf83f6b5b2c427d163df44df43b1c24` must complete successfully before any final-SHA verification acceptance.
 - **Open acceptance:** E1 full-row API scope; E2 protected `one-release` run with independently configured trusted publisher; E3 real API 35 `arm64-v8a` ELF execution with expected output and exit code 0; E4 full row acceptance on the frozen SHA; and E6 final forensic audit remain open. No release was published, PR #80 remains unmerged, and the main branch was not changed.
+
+
+## Final candidate pin update — c26e28789fb090ad8a684c6c6853ec2a88e3f9ca
+
+- Candidate source SHA is now `c26e28789fb090ad8a684c6c6853ec2a88e3f9ca` after adding the in-scope E1 CI trigger correction so verification/ledger checkpoint changes also start the hosted E1 acceptance lab.
+- `7fe9ce3adbf83f6b5b2c427d163df44df43b1c24` and earlier exact-SHA runs are historical for this candidate. The lab's `CANONICAL_COMMIT.txt` now pins `c26e28789fb090ad8a684c6c6853ec2a88e3f9ca`; the required matrix, including the newly-triggered canonical E1 lab, must finish on this exact SHA before final acceptance.
+- The E4 scoped threat-review artifact remains in the candidate branch; implementation is 92/100 provisional and verified remains 64/100 until legitimate row acceptance.
+- No code behavior was changed by the trigger correction. No score was changed in this update. The gate remains NOT PASSED until exact-SHA workflows, the protected release evidence, and all Definition of Done items pass.
