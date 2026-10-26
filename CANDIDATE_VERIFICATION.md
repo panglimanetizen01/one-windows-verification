@@ -427,3 +427,31 @@ This closes the synthetic candidate-bundle integrity checks for the current exac
   - No current-source-SHA run found for Android AArch64 native runtime verification.
   - Canonical release workflow evidence query fails because `CANONICAL_READ_TOKEN` lacks Actions: read access to the private canonical repository; anonymous fallback returns HTTP 404.
 - Conclusion: gate failure is an acceptance/evidence result, not a failed ledger unit test. Do not change points or checkboxes to hide these blockers.
+
+
+## Exact-source E3/E4 revalidation — 2026-10-26
+
+Canonical candidate source SHA: `68883f000caa7143ee93886753b9a7bf3ce9a448`. The lab's `CANONICAL_COMMIT.txt` was checked against the candidate branch HEAD and matches this SHA. Evidence below is credited only where the workflow log checks out and prints this exact source SHA.
+
+### Completed exact-source evidence
+
+- Linux distro verification: **PASS**, Ubuntu 24.04 and Debian 12 — [run 40262677674](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262677674).
+- Cross-platform verification (Ubuntu and Windows Server 2025): [run 40262677696](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262677696) — status must be confirmed from the completed run; it was still running at the time this section was written.
+- E4 adversarial filesystem/resource regression: **PASS** — [run 40262677927](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262677927). The Unix job checked out exact SHA `68883f000caa7143ee93886753b9a7bf3ce9a448` and executed passing assertions for final-component symlink denial, parent symlink denial, Linux `/proc` mount-boundary denial, concurrent parent-directory/symlink swap safety, SQLite query/value/parameter/row/output bounds, query timeout, capability scope, and adapter non-invocation on denial. The Windows job checked out the same source SHA and passed the directory-junction/reparse-point escape regression.
+- SEC-05 subprocess timeout/output-bound verification: **PASS** — [run 40262718117](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262718117), Linux and Windows jobs completed successfully on the canonical pin.
+- E4 subprocess resource guard: **PASS** — [run 40262718153](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262718153).
+- Exact-SHA candidate artifact integrity: **PASS** — [run 40262718176](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262718176).
+- Android AArch64 device artifact build: **PASS for build only** — [run 40262754847](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262754847). This does not satisfy Android runtime acceptance.
+- Focused standard-library/database verification: **PASS** — [run 40262536335](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262536335).
+- Cargo lockfile bootstrap evidence: **PASS** — [run 40262536336](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262536336).
+
+### Android API 35 runtime — still OPEN
+
+- The Linux x86_64 TCG attempt [40262251273](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262251273) failed before guest boot because the emulator rejects an `arm64` AVD on an `x86_64` host. The native ELF execution assertion did not run.
+- The ARM64 Linux-host attempt [40262536303](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262536303) failed during SDK setup because Google's SDK manager reported `Failed to find package 'emulator'` for that host. No guest boot or ELF execution occurred.
+- Exact-source macOS TCG workaround run [40262902149](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262902149) was queued when this section was written. It must complete and show API 35, ABI `arm64-v8a`, actual ELF execution, exit code 0, and `ONE_NATIVE_BACKEND_OK` before runtime acceptance can be credited.
+
+### Gate and residual status
+
+- Fixed-weight ledger gate [40262754834](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40262754834) failed closed. Besides evidence that was still running at evaluation time, it reported that `CANONICAL_READ_TOKEN` lacks Actions: read permission for the private canonical repository; the anonymous API fallback returned 404. This requires correcting the repository secret's permission outside a source-code assertion change. Do not weaken the gate or infer a protected release PASS.
+- E3/E4 are **not declared PASS GREEN LOCKED**. The Windows cross-platform run and Android API 35 runtime must be confirmed, the exact-source evidence matrix must be refreshed after those results, and the protected canonical release evidence query must be accessible. Fixed ledger weights/scores remain unchanged until a valid gate evaluation supports a change.
