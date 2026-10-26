@@ -284,7 +284,7 @@ jobs:
           "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-community -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect "${accel_args[@]}" -no-metrics -verbose >"$log" 2>&1 &
           pid=$!
           trap 'kill "$pid" 2>/dev/null || true' EXIT
-          adb start-server
+          /usr/bin/adb start-server
           booted=0
           for _ in $(seq 1 300); do
             if ! kill -0 "$pid" 2>/dev/null; then tail -n 300 "$log"; exit 1; fi
