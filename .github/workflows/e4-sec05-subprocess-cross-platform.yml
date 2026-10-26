@@ -79,9 +79,8 @@ jobs:
       - name: Run complete one-core test suite
         working-directory: source
         run: cargo test --locked -p one-core
-      - name: Report formatting for changed subprocess implementation (non-blocking diagnostic)
+      - name: Check formatting for changed subprocess implementation
         if: always()
-        continue-on-error: true
         working-directory: source
         run: rustfmt --edition 2024 --check crates/one-core/src/interop.rs
       - name: Report whole-repository formatting (non-blocking diagnostic)
@@ -177,9 +176,8 @@ jobs:
       - name: Run complete one-core test suite
         working-directory: source
         run: cargo test --locked -p one-core
-      - name: Report formatting for changed subprocess implementation (non-blocking diagnostic)
+      - name: Check formatting for changed subprocess implementation
         if: always()
-        continue-on-error: true
         working-directory: source
         run: rustfmt --edition 2024 --check crates/one-core/src/interop.rs
       - name: Report whole-repository formatting (non-blocking diagnostic)
