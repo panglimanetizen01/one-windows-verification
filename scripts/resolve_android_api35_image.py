@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 """Resolve the official Android API 35 default arm64-v8a image archive from SDK metadata."""
-# The workflow verifies the returned digest before extracting the image.
-# This helper only selects an official API-level and ABI-matched package.
-# Package selection does not claim that the emulator booted or the ELF executed.
 
 from __future__ import annotations
 
@@ -24,28 +21,26 @@ def value(node: ET.Element, name: str) -> str:
     return item.text.strip() if item is not None and item.text else ""
 
 
+def revision_tuple(node: ET.Element) -> tuple[int, ...]:
+    revision = child(node, "revision")
+    if revision is None:
+        return (0,)
+    parts = [value(revision, key) for key in ("major", "minor", "micro", "preview")]
+    return tuple(int(part) if part.isdigit() else 0 for part in parts)
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         raise SystemExit("usage: resolve_android_api35_image.py REPOSITORY_XML OUTPUT_FILE")
 
     root = ET.parse(sys.argv[1]).getroot()
+    target_path = "system-images;android-35;default;arm64-v8a"
     matches: list[tuple[tuple[int, ...], str, str, str]] = []
+
+    # Current repository2-1.xml metadata uses remotePackage path attributes.
     for node in root.iter():
-        if local(node.tag) != "system-image":
+        if local(node.tag) != "remotePackage" or node.get("path") != target_path:
             continue
-        if (
-            value(node, "api-level"),
-            value(node, "abi"),
-            value(node, "tag-id"),
-        ) != ("35", "arm64-v8a", "default"):
-            continue
-
-        revision_text = value(node, "revision")
-        try:
-            revision = tuple(int(part) for part in revision_text.split("."))
-        except ValueError:
-            continue
-
         archives = child(node, "archives")
         if archives is None:
             continue
@@ -55,20 +50,18 @@ def main() -> int:
                 continue
             url = value(complete, "url")
             checksum = child(complete, "checksum")
-            if url and checksum is not None and checksum.text:
-                matches.append(
-                    (
-                        revision,
-                        url,
-                        checksum.get("type", "").lower(),
-                        checksum.text.strip(),
-                    )
-                )
+            if not url or checksum is None or not checksum.text:
+                continue
+            digest = checksum.text.strip()
+            algorithm = checksum.get("type", "").lower()
+            if not algorithm:
+                algorithm = "sha1" if len(digest) == 40 else "sha256" if len(digest) == 64 else ""
+            matches.append((revision_tuple(node), url, algorithm, digest))
 
     if not matches:
         raise SystemExit(
             "Official repository metadata has no Android API 35 default "
-            "arm64-v8a system image with a digest"
+            "arm64-v8a system image archive with a digest"
         )
 
     _, url, algorithm, digest = max(matches)
@@ -78,7 +71,7 @@ def main() -> int:
     full_url = (
         url
         if url.startswith("https://")
-        else "https://dl.google.com/android/repository/sys-img/android/" + url
+        else "https://dl.google.com/android/repository/" + url.lstrip("/")
     )
     Path(sys.argv[2]).write_text(
         f"{algorithm} {digest} {full_url}\n",
