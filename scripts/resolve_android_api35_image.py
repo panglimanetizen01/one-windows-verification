@@ -68,11 +68,12 @@ def main() -> int:
     if algorithm not in ("sha1", "sha256") or not digest:
         raise SystemExit(f"Unsupported official system-image digest type: {algorithm!r}")
 
-    full_url = (
-        url
-        if url.startswith("https://")
-        else "https://dl.google.com/android/repository/" + url.lstrip("/")
-    )
+    if url.startswith("https://"):
+        full_url = url
+    elif url.startswith("sys-img/"):
+        full_url = "https://dl.google.com/android/repository/" + url.lstrip("/")
+    else:
+        full_url = "https://dl.google.com/android/repository/sys-img/android/" + url.lstrip("/")
     Path(sys.argv[2]).write_text(
         f"{algorithm} {digest} {full_url}\n",
         encoding="utf-8",
