@@ -53,8 +53,268 @@ jobs:
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android35-clang' -print -quit)"
           test -x "$clang"
           test "$(basename "$clang")" = "aarch64-linux-android35-clang"
-          api_macro="$("$clang" -dM -E -x c /dev/null | sed -n 's/^#define __ANDROID_API__ //p')"
-          test "$api_macro" = "35"
+          "$clang" -dM -E -x c /dev/null | grep -E '^#define __ANDROID_API__ 35          "$clang" -### -c -x c /dev/null 2>&1 | tee "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
+          grep -Eiq "android35" "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
+          cat > source/crates/one-core/tests/android_device_artifact.rs <<'RS'
+          use one_core::{analyze, lower, parse, NativeAndroidAarch64Backend};
+          use std::{fs, path::PathBuf};
+          #[test]
+          fn build_android_device_artifact() {
+              let source = "tampilkan \"ONE_NATIVE_BACKEND_OK\"\n";
+              let parsed = parse(source).expect("parse");
+              let typed = analyze(&parsed).expect("analyze");
+              let ir = lower(&typed).expect("lower");
+              let out = PathBuf::from(std::env::var("ONE_ANDROID_ARTIFACT_OUT").expect("artifact output path"));
+              NativeAndroidAarch64Backend::new().build(&ir, &out).expect("Android AArch64 build");
+              let bytes = fs::read(&out).expect("read artifact");
+              assert!(bytes.len() > 20);
+              assert_eq!(&bytes[0..4], b"\x7fELF");
+              assert_eq!(bytes[4], 2);
+              assert_eq!(bytes[5], 1);
+              assert_eq!(u16::from_le_bytes([bytes[18], bytes[19]]), 183);
+          }
+          RS
+          export ONE_ANDROID_CLANG="$clang"
+          export ONE_ANDROID_ARTIFACT_OUT="$RUNNER_TEMP/one-android-aarch64"
+          (cd source && cargo test --locked -p one-core --test android_device_artifact -- --nocapture)
+          file "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-FILE.txt"
+          readelf -h "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-HEADER.txt"
+          readelf -l "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-PROGRAM-HEADERS.txt"
+          readelf -d "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-DEPENDENCIES.txt"
+          grep -Eq 'Class:[[:space:]]+ELF64' "$RUNNER_TEMP/ELF-HEADER.txt"
+          grep -Eq 'Data:[[:space:]]+2.s complement, little endian' "$RUNNER_TEMP/ELF-HEADER.txt"
+          grep -Eq 'Machine:[[:space:]]+AArch64' "$RUNNER_TEMP/ELF-HEADER.txt"
+          grep -Fq '/system/bin/linker64' "$RUNNER_TEMP/ELF-PROGRAM-HEADERS.txt"
+          mkdir -p "$RUNNER_TEMP/one-android-aarch64-artifact"
+          cp "$ONE_ANDROID_ARTIFACT_OUT" "$RUNNER_TEMP/one-android-aarch64-artifact/one-android-aarch64"
+          cp "$RUNNER_TEMP/ELF-FILE.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
+          cp "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
+          cp "$RUNNER_TEMP/ELF-HEADER.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
+          cp "$RUNNER_TEMP/ELF-PROGRAM-HEADERS.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
+          cp "$RUNNER_TEMP/ELF-DEPENDENCIES.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
+          sha256sum "$RUNNER_TEMP/one-android-aarch64-artifact/one-android-aarch64" | tee "$RUNNER_TEMP/one-android-aarch64-artifact/ELF-SHA256.txt"
+          printf 'source_sha=%s\n' "$ONE_CANDIDATE_SHA" > "$RUNNER_TEMP/one-android-aarch64-artifact/SOURCE.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: one-api35-aarch64-runtime-elf-${{ steps.target.outputs.sha }}
+          path: ${{ runner.temp }}/one-android-aarch64-artifact/
+          if-no-files-found: error
+          retention-days: 7
+
+  run-api35:
+    name: Execute ELF on Android API 35 arm64-v8a
+    needs: build-elf
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve canonical source SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact ONE source for source-SHA evidence
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.target.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          persist-credentials: false
+          path: source
+      - name: Verify source pin and install native host prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
+          test "$(uname -m)" = "aarch64"
+          sudo apt-get update
+          sudo apt-get install -y adb unzip curl libstdc++6 libpulse0 libnss3 libx11-6 libxcb1 libxkbcommon0 libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 libxdamage1 libxfixes3 libxrender1 libxext6 libx11-xcb1 libgl1 libasound2t64
+          adb version
+          uname -a
+      - uses: actions/download-artifact@v4
+        with:
+          name: one-api35-aarch64-runtime-elf-${{ steps.target.outputs.sha }}
+          path: ${{ runner.temp }}/one-android-aarch64-artifact
+      - name: Verify artifact provenance and ELF metadata
+        shell: bash
+        env:
+          ONE_CANDIDATE_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/one-android-aarch64-artifact"
+          grep -Fx "source_sha=$ONE_CANDIDATE_SHA" SOURCE.txt
+          sha256sum -c ELF-SHA256.txt
+          grep -Eq 'Class:[[:space:]]+ELF64' ELF-HEADER.txt
+          grep -Eq 'Data:[[:space:]]+2.s complement, little endian' ELF-HEADER.txt
+          grep -Eq 'Machine:[[:space:]]+AArch64' ELF-HEADER.txt
+          grep -Fq '/system/bin/linker64' ELF-PROGRAM-HEADERS.txt
+          file one-android-aarch64
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-35
+      - name: Install API 35 arm64-v8a system image and pinned ARM64 emulator
+        timeout-minutes: 30
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/android-emulator-aarch64.zip"
+          curl --fail --location --retry 3 --output "$archive" "https://github.com/Changqing-JING/android-emulator-aarch64-linux/releases/download/v2.12.0-19097-g85fa07f04ef/sdk-repo-linux_aarch64-emulator-standalone-0.zip"
+          echo "67ce4f576687b067d9b36668405b86b9749745d67d31037616aac12c49c63a65  $archive" | sha256sum --check
+          mkdir -p "$ANDROID_HOME/emulator" "$RUNNER_TEMP/emulator-unpack"
+          unzip -q "$archive" -d "$RUNNER_TEMP/emulator-unpack"
+          if [ -f "$RUNNER_TEMP/emulator-unpack/emulator" ] && [ -x "$RUNNER_TEMP/emulator-unpack/emulator" ]; then
+            cp -a "$RUNNER_TEMP/emulator-unpack/." "$ANDROID_HOME/emulator/"
+          elif [ -f "$RUNNER_TEMP/emulator-unpack/emulator/emulator" ] && [ -x "$RUNNER_TEMP/emulator-unpack/emulator/emulator" ]; then
+            cp -a "$RUNNER_TEMP/emulator-unpack/emulator/." "$ANDROID_HOME/emulator/"
+          else
+            found="$(find "$RUNNER_TEMP/emulator-unpack" -type f -name emulator -perm -u+x -print -quit)"
+            test -n "$found"
+            cp -a "$(dirname "$found")/." "$ANDROID_HOME/emulator/"
+          fi
+          file "$ANDROID_HOME/emulator/emulator" | tee "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
+          grep -qi 'aarch64\|arm64' "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
+          "$ANDROID_HOME/emulator/emulator" -version | tee "$RUNNER_TEMP/EMULATOR-VERSION.txt"
+          # The stock SDK manager on Linux ARM64 omits its host-emulator package, and
+          # refuses to install the API 35 image because that package is a dependency.
+          # Fetch the official image directly from Google's published repository metadata,
+          # verify its published digest, then install its package contents into the SDK tree.
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install "platform-tools" "platforms;android-35"
+          repo_xml="$RUNNER_TEMP/android-system-images.xml"
+          curl --fail --location --retry 3 --output "$repo_xml" "https://dl.google.com/android/repository/sys-img/android/sys-img2-5.xml"
+          python3 scripts/resolve_android_api35_image.py "$repo_xml" "$RUNNER_TEMP/android-system-image-download.txt"
+          read -r digest_algorithm digest image_url < "$RUNNER_TEMP/android-system-image-download.txt"
+          image_archive="$RUNNER_TEMP/android-api35-arm64-system-image.zip"
+          curl --fail --location --retry 3 --output "$image_archive" "$image_url"
+          case "$digest_algorithm" in
+            sha1) echo "$digest  $image_archive" | sha1sum --check ;;
+            sha256) echo "$digest  $image_archive" | sha256sum --check ;;
+            *) echo "Unsupported system-image digest algorithm: $digest_algorithm" >&2; exit 1 ;;
+          esac
+          image_parent="$ANDROID_HOME/system-images/android-35/default"
+          mkdir -p "$image_parent"
+          unzip -q -o "$image_archive" -d "$image_parent"
+          test -f "$image_parent/arm64-v8a/source.properties"
+          grep -Fqx AndroidVersion.ApiLevel=35 "$image_parent/arm64-v8a/source.properties"
+          echo "Pinned unofficial ARM64 emulator and digest-verified official API 35 arm64-v8a system image installed."
+      - name: Create API 35 AVD and probe KVM
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -c /dev/kvm ] && [ -r /dev/kvm ] && [ -w /dev/kvm ]; then
+            echo "ONE_KVM_AVAILABLE=true" >> "$GITHUB_ENV"
+            ls -l /dev/kvm
+          else
+            echo "ONE_KVM_AVAILABLE=false" >> "$GITHUB_ENV"
+            echo "KVM unavailable; the workflow will still attempt the emulator's software path."
+          fi
+          avd_name="one-api35-arm64-community"
+          avd_home="$HOME/.android/avd"
+          avd_dir="$avd_home/$avd_name.avd"
+          mkdir -p "$avd_dir"
+          echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_HOME=$HOME/.android" >> "$GITHUB_ENV"
+          export ANDROID_AVD_HOME="$avd_home"
+          export ANDROID_SDK_HOME="$HOME/.android"
+          cat > "$avd_home/$avd_name.ini" <<EOF
+          avd.ini.encoding=UTF-8
+          path=$avd_dir
+          path.rel=avd/$avd_name.avd
+          target=android-35
+          EOF
+          cat > "$avd_dir/config.ini" <<EOF
+          AvdId=$avd_name
+          avd.ini.displayname=ONE API 35 arm64-v8a community
+          abi.type=arm64-v8a
+          image.sysdir.1=system-images/android-35/default/arm64-v8a/
+          tag.id=default
+          tag.display=Default
+          hw.cpu.arch=arm64
+          hw.cpu.ncore=2
+          hw.ramSize=2048
+          vm.heapSize=256
+          hw.lcd.width=1080
+          hw.lcd.height=1920
+          hw.lcd.density=420
+          hw.keyboard=yes
+          hw.gpu.enabled=yes
+          hw.gpu.mode=swiftshader_indirect
+          hw.audioInput=no
+          hw.audioOutput=no
+          hw.camera.back=none
+          hw.camera.front=none
+          hw.sensors.orientation=yes
+          hw.sensors.proximity=no
+          hw.sdCard=no
+          disk.dataPartition.size=2G
+          fastboot.forceColdBoot=yes
+          snapshot.present=no
+          EOF
+          test -f "$avd_home/$avd_name.ini"
+          test -f "$avd_dir/config.ini"
+          grep -Fqx 'abi.type=arm64-v8a' "$avd_dir/config.ini"
+          grep -Fqx 'image.sysdir.1=system-images/android-35/default/arm64-v8a/' "$avd_dir/config.ini"
+          echo "Created explicit API 35 arm64-v8a AVD config without requiring SDK manager's unavailable emulator package."
+      - name: Boot API 35 arm64-v8a and execute actual ONE ELF
+        timeout-minutes: 55
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ANDROID_HOME="${ANDROID_HOME:-$HOME/.android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          test -x "$ANDROID_HOME/platform-tools/adb"
+          test -f "$ANDROID_HOME/platforms/android-35/android.jar"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          log="$RUNNER_TEMP/one-android-api35-community.log"
+          accel_args=(-accel off)
+          if [ "${ONE_KVM_AVAILABLE:-false}" = "true" ]; then accel_args=(-accel on); fi
+          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-community -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect "${accel_args[@]}" -no-metrics -verbose >"$log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          adb start-server
+          booted=0
+          for _ in $(seq 1 300); do
+            if ! kill -0 "$pid" 2>/dev/null; then tail -n 300 "$log"; exit 1; fi
+            if adb devices | tr -d '\r' | grep -q '^emulator-5554[[:space:]]\+device$'; then
+              sdk="$(adb -s emulator-5554 shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r' || true)"
+              abi="$(adb -s emulator-5554 shell getprop ro.product.cpu.abi 2>/dev/null | tr -d '\r' || true)"
+              ready="$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+              if [ "$sdk" = "35" ] && [ "$abi" = "arm64-v8a" ] && [ "$ready" = "1" ]; then booted=1; break; fi
+            fi
+            sleep 10
+          done
+          if [ "$booted" != "1" ]; then tail -n 300 "$log"; adb devices -l || true; exit 1; fi
+          cd "$RUNNER_TEMP/one-android-aarch64-artifact"
+          remote="/data/local/tmp/one-native-backend-${{ steps.target.outputs.sha }}"
+          adb -s emulator-5554 push one-android-aarch64 "$remote"
+          adb -s emulator-5554 shell chmod 700 "$remote"
+          set +e
+          output="$(adb -s emulator-5554 shell "$remote" 2>&1)"
+          rc=$?
+          set -e
+          printf 'ANDROID_API=35\nANDROID_ABI=arm64-v8a\nELF_SHA256=%s\nEXIT_CODE=%s\nOUTPUT_BEGIN\n%s\nOUTPUT_END\n' "$(cut -d' ' -f1 ELF-SHA256.txt)" "$rc" "$output" | tee "$RUNNER_TEMP/ANDROID-RUNTIME-RESULT.txt"
+          test "$rc" -eq 0
+          test "$(printf '%s' "$output" | tr -d '\r')" = "ONE_NATIVE_BACKEND_OK"
+          adb -s emulator-5554 shell rm -f "$remote"
+      - name: Upload runtime evidence and emulator logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-api35-aarch64-runtime-evidence-${{ steps.target.outputs.sha }}
+          path: |
+            ${{ runner.temp }}/one-android-api35-community.log
+            ${{ runner.temp }}/ANDROID-RUNTIME-RESULT.txt
+            ${{ runner.temp }}/EMULATOR-HOST-BINARY.txt
+            ${{ runner.temp }}/EMULATOR-VERSION.txt
+            ${{ runner.temp }}/one-android-aarch64-artifact/
+          if-no-files-found: warn
+          retention-days: 30
+
           "$clang" -### -c -x c /dev/null 2>&1 | tee "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
           grep -Eiq "android35" "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
           cat > source/crates/one-core/tests/android_device_artifact.rs <<'RS'
