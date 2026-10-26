@@ -48,7 +48,7 @@ jobs:
           set -euo pipefail
           test "$(git -C source rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools"
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools" "emulator"
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android24-clang' -print -quit)"
           test -x "$clang"
           cat > source/crates/one-core/tests/android_device_artifact.rs <<'RS'
@@ -82,6 +82,7 @@ jobs:
           grep -Eq 'Machine:[[:space:]]+AArch64' "$RUNNER_TEMP/ELF-HEADER.txt"
           grep -Fq '/system/bin/linker64' "$RUNNER_TEMP/ELF-PROGRAM-HEADERS.txt"
           mkdir -p "$RUNNER_TEMP/one-android-aarch64-artifact"
+          cp "$ANDROID_HOME/emulator/package.xml" "$RUNNER_TEMP/one-android-aarch64-artifact/EMULATOR-PACKAGE.XML"
           cp "$ONE_ANDROID_ARTIFACT_OUT" "$RUNNER_TEMP/one-android-aarch64-artifact/one-android-aarch64"
           cp "$RUNNER_TEMP/ELF-FILE.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
           cp "$RUNNER_TEMP/ELF-HEADER.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
@@ -155,8 +156,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager --install "platforms;android-35" "system-images;android-35;default;arm64-v8a"
           archive="$RUNNER_TEMP/android-emulator-aarch64.zip"
           curl --fail --location --retry 3 --output "$archive" "https://github.com/Changqing-JING/android-emulator-aarch64-linux/releases/download/v2.12.0-19097-g85fa07f04ef/sdk-repo-linux_aarch64-emulator-standalone-0.zip"
           echo "67ce4f576687b067d9b36668405b86b9749745d67d31037616aac12c49c63a65  $archive" | sha256sum --check
@@ -173,8 +172,12 @@ jobs:
           fi
           file "$ANDROID_HOME/emulator/emulator" | tee "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
           grep -qi 'aarch64\|arm64' "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
-          "$ANDROID_HOME/emulator/emulator" -version
-          echo "Pinned unofficial ARM64 emulator binary verified by SHA-256; isolated CI test only."
+          "$ANDROID_HOME/emulator/emulator" -version | tee "$RUNNER_TEMP/EMULATOR-VERSION.txt"
+          cp "$RUNNER_TEMP/one-android-aarch64-artifact/EMULATOR-PACKAGE.XML" "$ANDROID_HOME/emulator/package.xml"
+          sdkmanager --list_installed | grep -i 'emulator'
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install "platforms;android-35" "system-images;android-35;default;arm64-v8a"
+          echo "Pinned unofficial ARM64 emulator binary verified by SHA-256; official API 35 arm64-v8a image; isolated CI test only."
       - name: Create API 35 AVD and probe KVM
         timeout-minutes: 10
         shell: bash
@@ -237,6 +240,8 @@ jobs:
           path: |
             ${{ runner.temp }}/one-android-api35-community.log
             ${{ runner.temp }}/ANDROID-RUNTIME-RESULT.txt
+            ${{ runner.temp }}/EMULATOR-HOST-BINARY.txt
+            ${{ runner.temp }}/EMULATOR-VERSION.txt
             ${{ runner.temp }}/one-android-aarch64-artifact/
           if-no-files-found: warn
           retention-days: 30
