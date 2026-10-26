@@ -1,3 +1,4 @@
+# Exact candidate revalidation trigger 2026-10-26; acceptance logic unchanged.
 name: One Cross-Platform Verification
 # Exact-SHA revalidation for the current milestone candidate; do not credit stale SHA results.
 
