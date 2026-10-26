@@ -54,21 +54,31 @@ jobs:
           cargo --version
           uname -a
       - uses: dtolnay/rust-toolchain@stable
-      - name: Run descriptor-relative no-follow adversarial regressions
+      - name: Run Unix adversarial regressions with nonzero-test assertions
         working-directory: source
-        run: cargo test --locked -p one-core descriptor_relative_
-      - name: Run final-component mount-boundary no-truncation regression
-        working-directory: source
-        run: cargo test --locked -p one-core adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file -- --exact
-      - name: Run SQLite symlink and resource-limit regressions
-        working-directory: source
-        run: cargo test --locked -p one-core database::tests
-      - name: Run capability denial and root-scope policy regressions
-        working-directory: source
-        run: cargo test --locked -p one-core governance::tests
-      - name: Run capability-denial side-effect regression
-        working-directory: source
-        run: cargo test --locked -p one-core orchestrator::tests::denied_request_never_reaches_adapter_invocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_test() {
+            local expected="$1"
+            shift
+            local log
+            log="$(mktemp)"
+            set +e
+            cargo test --locked -p one-core "$@" 2>&1 | tee "$log"
+            local rc="${PIPESTATUS[0]}"
+            set -e
+            if [ "$rc" -ne 0 ]; then return "$rc"; fi
+            if ! grep -Eq "test result: ok\\. ${expected} passed; 0 failed" "$log"; then
+              echo "Expected ${expected} passing test(s); zero-match/filtered-only output is not PASS." >&2
+              return 1
+            fi
+          }
+          run_test 5 descriptor_relative_
+          run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file -- --exact --test-threads=1
+          run_test 11 database::tests
+          run_test 10 governance::tests
+          run_test 1 orchestrator::tests::denied_request_never_reaches_adapter_invocation -- --exact --test-threads=1
 
   windows-reparse-regression:
     name: Windows reparse-point and handle checks
@@ -102,6 +112,22 @@ jobs:
           if ($actual -ne $env:ONE_CANDIDATE_SHA) { throw "Unexpected source SHA: $actual (expected $env:ONE_CANDIDATE_SHA)" }
           Write-Output "source_sha=$actual"
       - uses: dtolnay/rust-toolchain@stable
-      - name: Run Windows reparse-point regression
+      - name: Run Windows filesystem regressions with nonzero-test assertions
         working-directory: source
-        run: cargo test --locked -p one-core filesystem_windows_reparse_tests
+        shell: pwsh
+        run: |
+          function Invoke-ExpectedTest {
+            param([string]$Filter, [int]$Expected)
+            $output = & cargo test --locked -p one-core $Filter -- --exact --test-threads=1 2>&1
+            $exitCode = $LASTEXITCODE
+            $output | ForEach-Object { Write-Output $_ }
+            if ($exitCode -ne 0) { throw "cargo test failed for $Filter with exit code $exitCode" }
+            if (($output -join "`n") -notmatch "test result: ok\. $Expected passed; 0 failed") {
+              throw "Expected $Expected passing test(s) for $Filter; zero-match/filtered-only output is not PASS"
+            }
+          }
+          Invoke-ExpectedTest "adapter::filesystem_windows_reparse_tests::filesystem_reader_rejects_directory_junction_escape" 1
+          Invoke-ExpectedTest "adapter::filesystem_adapter_reads_absolute_target_inside_project_root" 1
+          Invoke-ExpectedTest "adapter::filesystem_write_adapter_writes_text_target" 1
+          Invoke-ExpectedTest "adapter::filesystem_write_adapter_rejects_oversized_content" 1
+          Invoke-ExpectedTest "adapter::filesystem_adapters_reject_parent_directory_traversal" 1
