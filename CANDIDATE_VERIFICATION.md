@@ -598,3 +598,22 @@ This checkpoint is evidence-only: no DoD checkbox, ledger score, verified weight
   - Android cross-build/contract: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455150 — in progress.
   - Android device artifact build: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272455193 — in progress.
 - Do not promote E3/E4 ledger rows or the milestone status until these exact-SHA jobs finish, the API 35 guest boots, the actual ELF executes, and its output/exit code are asserted. The overall project release gate remains separate from this milestone and must not be marked green while out-of-scope ledger rows remain open.
+
+
+## E3/E4 candidate API35 contract regression fix — 2026-10-26
+
+- Exact candidate source SHA pinned in `CANONICAL_COMMIT.txt`: `0301dc88aeb1d97e0a8a80ec5479364b1fab6276`.
+- The exact-SHA Android contract test exposed one remaining stale API 24 expectation in `crates/one-core/tests/native_backend_android_aarch64.rs`; it was updated to API 35. The backend and target-definition regression tests now share the API 35 contract.
+- Lab pin commit: https://github.com/panglimanetizen01/one-windows-verification/commit/88d85e14028b78b609561cfde63a82a78912c424.
+- New exact-SHA matrix on source SHA `0301dc88aeb1d97e0a8a80ec5479364b1fab6276`:
+  - Linux distribution matrix: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632218 — pending.
+  - Cross-platform Linux/Windows: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632284 — pending.
+  - Candidate artifact integrity: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632201 — queued.
+  - Focused standard-library/database suite: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632333 — queued.
+  - SEC-05 subprocess: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632309 — queued.
+  - E4 adversarial filesystem/resource regression: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632226 — queued.
+  - E4 subprocess resource guard: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632199 — queued.
+  - Android API 35 `arm64-v8a` community-emulator runtime: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632297 — queued.
+  - Android cross-build/contract fallback: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632305 — queued.
+  - Android device artifact build: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272632296 — queued.
+- Previous source SHA `6302b6f1407648b273f1b73891800183c1c8c894` failed the Android backend contract test because the integration test still expected API 24; that failure is preserved and prompted the correction. Do not promote the milestone until the current exact-SHA matrix and actual API 35 runtime both pass.
