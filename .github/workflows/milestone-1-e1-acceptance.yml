@@ -63,7 +63,9 @@ jobs:
           choco install mingw -y --no-progress
           $env:Path += ";C:\tools\mingw64\bin;C:\tools\mingw\bin;C:\Program Files\LLVM\bin"
           "PATH=$env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Get-Command clang -ErrorAction SilentlyContinue
+          $clang = Get-Command clang -ErrorAction Stop
+          "ONE_WINDOWS_CLANG=$($clang.Source)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $clang.Source --version
           Get-Command x86_64-w64-mingw32-clang -ErrorAction SilentlyContinue
 
       - name: Install Android API 35 NDK toolchain
