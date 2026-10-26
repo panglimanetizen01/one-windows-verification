@@ -22,13 +22,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 25dfbb6aa5bffd7049bf7228f0da190cb2520177
+          ref: 6940514740beef7fa4a628c69c74064b82184b34
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
       - name: Verify exact source SHA
         working-directory: source
-        run: test "$(git rev-parse HEAD)" = "25dfbb6aa5bffd7049bf7228f0da190cb2520177"
+        run: test "$(git rev-parse HEAD)" = "6940514740beef7fa4a628c69c74064b82184b34"
 
       - uses: dtolnay/rust-toolchain@stable
         with:
