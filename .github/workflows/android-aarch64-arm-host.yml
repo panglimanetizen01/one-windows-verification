@@ -63,6 +63,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y adb curl file python3 unzip
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           # The Linux ARM64 SDK repository omits the emulator package and SDK Manager
           # consequently refuses the API 35 image. Install the official image by its
