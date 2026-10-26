@@ -887,3 +887,14 @@ Canonical candidate source SHA remains `c26e28789fb090ad8a684c6c6853ec2a88e3f9ca
 - **Canonical hosted workflows:** current-SHA runs [One CI 40325645795](https://github.com/panglimanetizen01/one/actions/runs/40325645795), [focused stdlib 40325645707](https://github.com/panglimanetizen01/one/actions/runs/40325645707), [E1 40325645817](https://github.com/panglimanetizen01/one/actions/runs/40325645817), [E2 40325645737](https://github.com/panglimanetizen01/one/actions/runs/40325645737), and [Linux distro 40325645679](https://github.com/panglimanetizen01/one/actions/runs/40325645679) report failure conclusions. Their accessible job summaries do not include step-level details, and the job-log endpoint was unavailable in prior checks; do not infer that source tests failed or passed without step/log evidence.
 - **Ledger unchanged:** implementation `92/100`, verified `64/100`, nine Definition of Done items unchecked. E1/E2/E3/E4/E6 remain unaccepted at full-row level; protected `one-release` provenance and the final forensic audit remain open. No fixed weights, acceptance criteria, scores, checkboxes, main branch, PR merge, or release state were changed.
 
+
+
+## Android runtime failure classification — 2026-10-26
+
+The native ARM64-host attempt [run 40343229772](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40343229772) has now completed with **FAILURE**. Its job log is available and identifies the concrete boot blocker: QEMU emitted `qemu-system-aarch64-headless: gic-version=host requires KVM`, then the emulator process exited with code 1. The actual ELF execution step was skipped, so this run is not runtime evidence and must not be counted as PASS. Source checkout at `c26e28789fb090ad8a684c6c6853ec2a88e3f9ca`, ARM64 host assertion, Android SDK/image installation, and backend contract tests passed before the boot failure.
+
+The separate Linux TCG workflow `.github/workflows/android-api35-tcg-runtime.yml` exists and is designed to exercise the Android guest without hardware acceleration, but it still needs a completed run whose exact-source ELF execution succeeds; no success is inferred from workflow existence.
+
+The latest ledger gate [run 40350762856](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40350762856) remains **NOT PASSED**. It passed verifier unit tests, then failed enforcement because the canonical Actions run-list request using `CANONICAL_READ_TOKEN` returned HTTP 403, public fallback returned HTTP 404, and E1/E2/E3/E4/E6 acceptance plus nine DoD items remain incomplete. Correct the lab repository secret/permissions through GitHub settings with an authorized account; never paste the token into chat and never bypass the fail-closed gate.
+
+No source SHA, score, fixed weight, acceptance criterion, main-branch state, PR merge state, or release state was changed by this reconciliation.
