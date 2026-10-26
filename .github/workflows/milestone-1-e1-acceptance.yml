@@ -5,6 +5,7 @@ on:
   push:
     branches: [verification]
     paths:
+      - "CANONICAL_COMMIT.txt"
       - ".github/workflows/milestone-1-e1-acceptance.yml"
   workflow_dispatch:
 
