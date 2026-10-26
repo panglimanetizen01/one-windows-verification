@@ -7,7 +7,7 @@
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
 **Current source SHA:** `b35c7323df72a24e9e6a0376e63b350a6ae8907d` (the canonical pin in `CANONICAL_COMMIT.txt`; verifier branch HEAD is a separate lab-documentation/workflow SHA)  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
-**Release gate:** **NOT PASSED** — latest ledger gate [40276785579](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40276785579) failed closed on lab verifier commit `5b1a9619173a1a158dbb3755ac74af003cda52a9`. Exact-pin Linux distro (Ubuntu 24.04 + Debian 12), Ubuntu/Windows Server 2025, E4 adversarial tests, candidate artifact integrity, and Android AArch64 build/contract jobs passed their scoped checks. **Android API 35 `arm64-v8a` runtime is now proven on source SHA `990c4e80f657aa2ac0409cfaf3bbf522856bc889`** by [run 40275895417](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895417): the macOS ARM64 software-emulation workflow verified the guest, ran the ignored native ELF integration test, and logged `1 passed; 0 failed; 0 ignored`, with the runtime test completed successfully. The API 35 community-emulator route [40275895444](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895444) still failed to boot; that failure is retained as historical evidence and is not conflated with the passing alternative. E3 runtime criterion is checked only for this exact pin and the successful route. Overall E3/E4 acceptance remains **NOT PASSED**: full threat review/residual-risk disposition remains open, and protected canonical release evidence is inaccessible with the current `CANONICAL_READ_TOKEN` Actions permissions. Do not label the milestone GREEN LOCKED.
+**Release gate:** **NOT PASSED** — latest gate run directly inspected in this audit is [40294023191](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40294023191), which checked source SHA `990c4e80f657aa2ac0409cfaf3bbf522856bc889`, failed closed, and used the old `CANONICAL_READ_TOKEN` secret reference. After that run, `.github/workflows/ledger-gate.yml` was updated at lab commit `a83c514b7d9fc970e5b61044735650e555b802a9` to use `secrets.ONE_REPO_TOKEN` for checkout and map it to the verifier's `CANONICAL_READ_TOKEN` environment variable. The current workflow file is confirmed to contain that mapping, but a post-change run log has not yet been retrieved in this audit, so Actions: read access remains UNPROVEN. Exact-pin Linux distro (Ubuntu 24.04 + Debian 12), Ubuntu/Windows Server 2025, E4 adversarial tests, candidate artifact integrity, and Android AArch64 build/contract jobs passed their scoped checks. **Android API 35 `arm64-v8a` runtime is now proven on source SHA `990c4e80f657aa2ac0409cfaf3bbf522856bc889`** by [run 40275895417](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895417): the macOS ARM64 software-emulation workflow verified the guest, ran the ignored native ELF integration test, and logged `1 passed; 0 failed; 0 ignored`, with the runtime test completed successfully. The API 35 community-emulator route [40275895444](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895444) still failed to boot; that failure is retained as historical evidence and is not conflated with the passing alternative. The successful runtime run is nevertheless tied to source SHA `990c4e80f657aa2ac0409cfaf3bbf522856bc889`; after the candidate advanced to `b35c7323df72a24e9e6a0376e63b350a6ae8907d`, it is historical for the final-SHA gate and must be revalidated or formally accepted under the project's exact-SHA rules. E3 runtime criterion is checked only for this exact pin and the successful route. Overall E3/E4 acceptance remains **NOT PASSED**: full threat review/residual-risk disposition remains open, and protected canonical release evidence is inaccessible with the current `CANONICAL_READ_TOKEN` Actions permissions. Do not label the milestone GREEN LOCKED.
 
 
 ## Latest exact-pin Android runtime acceptance — 2026-10-26
@@ -713,7 +713,7 @@ The exact-source Android build artifact is [artifact ID 12630660350](https://git
 **Status at this checkpoint:** E3 0/8 verified; E4 0/6 verified; global gate NOT PASSED. Do not check any row solely from a successful workflow/job or build artifact. Update this evidence index after the fresh matrix completes, preserving these intermediate results and failures.
 
 
-## Granular acceptance checklist — pinned source SHA 990c4e80
+## Historical granular acceptance checklist — source SHA 990c4e80 (superseded by candidate SHA b35c7323df72a24e9e6a0376e63b350a6ae8907d)
 
 Every checked item below is tied to source SHA `990c4e80f657aa2ac0409cfaf3bbf522856bc889`. Historical SHA `73bd504ac81a14737b321817b94c7bc2fbb17a15` evidence remains separately identified above and is not used as final-SHA proof.
 
@@ -727,7 +727,7 @@ Every checked item below is tied to source SHA `990c4e80f657aa2ac0409cfaf3bbf522
 - [ ] All platform acceptance tests are not yet complete because Android runtime is still open.
 - [ ] All required logs/reports/artifacts for the final matrix are not yet complete because the Android runtime result is outstanding.
 - [ ] Cross-platform verification is not yet complete as a whole until Android runtime acceptance passes, despite Linux/Windows jobs passing.
-- [x] Completed jobs above explicitly checkout and assert the pinned source SHA; the lab pin and PR #80 head both equal `990c4e80f657aa2ac0409cfaf3bbf522856bc889`.
+- [x] At this historical checkpoint, completed jobs explicitly checked out and asserted `990c4e80f657aa2ac0409cfaf3bbf522856bc889`. This was superseded by candidate SHA `b35c7323df72a24e9e6a0376e63b350a6ae8907d`; these runs are not current-SHA acceptance.
 
 ### E4 — Security and resource bounds
 
@@ -746,7 +746,7 @@ Every checked item below is tied to source SHA `990c4e80f657aa2ac0409cfaf3bbf522
 
 ### Governance and auditability
 
-- [x] PR #80 head, lab pin, and final-SHA workflow checkout agree on `990c4e80f657aa2ac0409cfaf3bbf522856bc889`.
+- [x] At the historical checkpoint, PR #80 head, lab pin, and final-SHA workflow checkout agreed on `990c4e80f657aa2ac0409cfaf3bbf522856bc889`. Current candidate/pin is now `b35c7323df72a24e9e6a0376e63b350a6ae8907d`; a fresh exact-SHA matrix is required.
 - [x] Historical SHA `73bd504ac81a14737b321817b94c7bc2fbb17a15` results are separated from the final-pin results.
 - [x] Official completion ledger, Definition of Done, session checkpoint, independent evidence index, PR #80 body, and issue #81 were updated.
 - [x] Release gate remains fail-closed; [run 40275895403](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895403) reported NOT PASSED and did not promote points. It ran before all matrix jobs completed, so its pending-run findings are historical for that evaluation.
