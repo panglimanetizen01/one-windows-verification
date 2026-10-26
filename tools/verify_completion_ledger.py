@@ -67,7 +67,12 @@ REQUIRED_MIRROR_WORKFLOWS = {
     "ONE Focused Standard Library and Database Verification",
     "ONE Cargo Lockfile Bootstrap Evidence",
     "ONE Candidate Artifact Integrity Verification",
-    "ONE Android AArch64 Native Runtime Verification (macOS TCG workaround)",
+    # This alternate is accepted only because it installs API 35 arm64-v8a,
+    # boots the guest, checks SDK/ABI/boot completion, and executes the exact-SHA ELF.
+    "ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback",
+    "ONE E4 adversarial filesystem and resource-bound regression",
+    "E4 subprocess resource guard",
+    "E4 SEC-05 subprocess timeout and output-limit verification",
 }
 
 
