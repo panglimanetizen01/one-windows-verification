@@ -41,7 +41,7 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.pin.outputs.sha }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          token: ${{ secrets.ONE_REPO_TOKEN }}
           path: one-source
 
       - name: Test ledger verifier
@@ -50,7 +50,7 @@ jobs:
       - name: Enforce fixed weights, exact-SHA workflow evidence, protected release, and Definition of Done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CANONICAL_READ_TOKEN: ${{ secrets.CANONICAL_READ_TOKEN }}
+          CANONICAL_READ_TOKEN: ${{ secrets.ONE_REPO_TOKEN }}
         run: |
           python tools/verify_completion_ledger.py \
             --ledger one-source/docs/verification/one-completion-ledger.md \
