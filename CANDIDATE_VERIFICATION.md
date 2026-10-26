@@ -472,3 +472,10 @@ The ONE source branch advanced from `68883f000caa7143ee93886753b9a7bf3ce9a448` t
 The candidate now opens the final file without `O_TRUNC`, verifies the opened handle is on the same filesystem mount as its parent, and truncates only after the boundary check passes. A Linux regression creates a file on `/dev/shm`, invokes the same mount-identity guard against the project directory, and asserts the file contents remain unchanged on denial.
 
 **All earlier E3/E4 runs and Android artifact metadata in this index are now preliminary evidence for the previous source SHA only.** The canonical pin is being advanced to `2da32ef96108579bac4752dc4ad75fa13c6f919e`; rerun Linux 24.04, Debian 12, Windows Server 2025, E4 adversarial, SEC-05, resource-budget tests, candidate artifact integrity, and Android API 35 `arm64-v8a` runtime on this exact SHA. Do not promote previous runs to final-source evidence.
+
+
+## Strict Clippy correction — source SHA 78b9436c318032b1c19a4e5c110142fffc58b4d5
+
+The first exact-source Linux distro run for the final-component mount fix, [40263804551](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40263804551), failed on both Ubuntu 24.04 and Debian 12 because the refactor left two unused `MetadataExt` imports in `open_read_target_in_project` and `open_write_target_in_project`. The imports are removed without changing the mount-boundary logic or regression assertions.
+
+Candidate source HEAD is now `78b9436c318032b1c19a4e5c110142fffc58b4d5`; the canonical pin is being advanced to this SHA. Results on `2da32ef96108579bac4752dc4ad75fa13c6f919e` and all earlier SHAs are preliminary only. Re-run the exact-source matrix and verify the new Linux mount-boundary regression passes on both required distributions.
