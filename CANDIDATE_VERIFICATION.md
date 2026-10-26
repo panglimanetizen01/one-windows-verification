@@ -532,3 +532,24 @@ The live candidate branch HEAD and `CANONICAL_COMMIT.txt` were checked and both 
 3. **Source-SHA freshness is per-job.** Runs with a different pinned source SHA are historical/preliminary and cannot be promoted to final acceptance after the source changes. Preserve the fixed ledger weights and keep the release gate `NOT PASSED` until all mandatory criteria and protected release evidence are actually verified.
 
 No E3/E4 `PASS GREEN LOCKED` claim is made by this evidence update.
+
+## E3/E4 exact-source checkpoint — 2026-10-26
+
+Canonical ONE candidate SHA: `99600e112e389ffa6712022f77c1203244566ae1`. This is the current candidate branch HEAD; the verifier pin `CANONICAL_COMMIT.txt` matches it. No merge or release is authorized.
+
+### E4 changes under verification
+The candidate adds the shared process-wide resource admission permit to filesystem read/write, DNS resolution, and HTTP GET adapters, in addition to the existing subprocess and SQLite paths. File writes now check the input length before making a second content allocation. The 8-operation shared cap and 4-query nested SQLite cap remain fail-closed; this does not claim a complete heap quota for caller-retained outputs.
+
+- [E4 adversarial filesystem/resource run 40266497090](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266497090): completed success on the canonical pin. Unix no-follow/SQLite/resource job and Windows reparse-point/handle job both passed.
+- [E4 SEC-05 subprocess run 40266497129](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266497129): Linux job passed; Windows job was still running at checkpoint time. Not counted as a full cross-platform PASS until the run concludes.
+- [Linux distro matrix 40266497077](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266497077): Ubuntu 24.04 and Debian 12 completed successfully on the canonical pin.
+- [Cross-platform matrix 40266497066](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266497066): Linux and Windows jobs were still running at checkpoint time.
+- [Candidate artifact integrity 40266497119](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266497119): still running; no PASS recorded yet.
+- [Android AArch64 cross-build/contract run 40266630223](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266630223): exact-source cross-build and contract tests were running; build success is not Android runtime acceptance.
+- [Android API 35 arm64-v8a community-emulator fallback 40266668439](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266668439): exact-source runtime attempt in progress. It uses the official API 35 arm64-v8a system image and a third-party Linux ARM64 emulator binary pinned by SHA-256; its provenance and runtime assertions must be checked in logs before any acceptance.
+- [Linux TCG fallback 40266630239](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40266630239): exact-source alternative attempt in progress. The earlier TCG run 40266497191 is not valid exact-source evidence because the workflow at that time checked out a hard-coded older SHA; that workflow is now corrected to resolve the canonical pin.
+
+Android API 35 runtime acceptance remains pending until a completed run proves system API 35, ABI `arm64-v8a`, execution of the actual source-built ELF, exit code 0, and exact output `ONE_NATIVE_BACKEND_OK`. Cross-builds, ELF headers, successful emulator setup, and boot-only checks do not substitute for this.
+
+This checkpoint is evidence-only: no DoD checkbox, ledger score, verified weight, or release gate is promoted. E3/E4 milestone remains unaccepted until every mandatory criterion has direct evidence.
+
