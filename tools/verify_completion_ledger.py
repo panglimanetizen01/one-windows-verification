@@ -62,6 +62,8 @@ def parse_ledger(text: str) -> tuple[list[dict], dict | None, list[str]]:
 
 
 REQUIRED_MIRROR_WORKFLOWS = {
+    "ONE Milestone 1 E1 Cross-Platform Acceptance Lab",
+    "ONE E1 Standard Library Windows Acceptance",
     "One Cross-Platform Verification",
     "ONE Linux Distro Verification",
     "ONE Focused Standard Library and Database Verification",
