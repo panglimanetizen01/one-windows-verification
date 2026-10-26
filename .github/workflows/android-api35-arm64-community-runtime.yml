@@ -185,10 +185,8 @@ jobs:
           if match is None:
               raise SystemExit("Could not parse the actual community emulator version")
           major, minor, micro = match.groups()
-          for _, namespace in ET.iterparse(package_path, events=("start-ns",)):
-              prefix, uri = namespace
-              if not re.fullmatch(r"ns\d*", prefix):
-                  ET.register_namespace(prefix, uri)
+          # Let ElementTree choose safe namespace prefixes. Registering generated
+          # ns0/ns1-style prefixes is rejected by Python's XML implementation.
           tree = ET.parse(package_path)
           root = tree.getroot()
           local = next((node for node in root.iter() if node.tag.endswith("localPackage") and node.attrib.get("path") == "emulator"), None)
