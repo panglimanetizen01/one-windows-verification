@@ -1,4 +1,4 @@
-# Revalidation after final-component mount-boundary fix 2026-10-26; acceptance logic unchanged.
+# Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
 name: ONE Candidate Artifact Integrity Verification
 
 on:
