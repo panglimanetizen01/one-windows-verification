@@ -119,15 +119,50 @@ jobs:
           set -euo pipefail
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           mkdir -p "$ANDROID_AVD_HOME"
-          avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
-          if [[ ! -x "$avdmanager" ]]; then
-            avdmanager="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -type f -name avdmanager -print -quit)"
-          fi
-          test -x "$avdmanager"
-          devices="$("$avdmanager" list device)"
-          device_id="$(printf '%s\n' "$devices" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
-          test -n "$device_id"
-          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-native --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
+          # This runner uses a pinned standalone ARM64 emulator, not the SDK
+          # manager's "emulator" package. avdmanager refuses to create an AVD
+          # unless that package is registered, so write the equivalent AVD files
+          # directly and validate the exact API/ABI paths before boot.
+          avd_name="one-api35-arm64-native"
+          avd_dir="$ANDROID_AVD_HOME/$avd_name.avd"
+          mkdir -p "$avd_dir"
+          cat > "$ANDROID_AVD_HOME/$avd_name.ini" <<EOF
+          avd.ini.encoding=UTF-8
+          path=$avd_dir
+          path.rel=avd/$avd_name.avd
+          target=android-35
+          EOF
+          cat > "$avd_dir/config.ini" <<EOF
+          AvdId=$avd_name
+          avd.ini.displayname=ONE API 35 arm64-v8a native ARM64
+          abi.type=arm64-v8a
+          image.sysdir.1=system-images/android-35/default/arm64-v8a/
+          tag.id=default
+          tag.display=Default
+          hw.cpu.arch=arm64
+          hw.cpu.ncore=2
+          hw.ramSize=2048
+          vm.heapSize=256
+          hw.lcd.width=1080
+          hw.lcd.height=1920
+          hw.lcd.density=420
+          hw.keyboard=yes
+          hw.gpu.enabled=yes
+          hw.gpu.mode=swiftshader_indirect
+          hw.audioInput=no
+          hw.audioOutput=no
+          hw.camera.back=none
+          hw.camera.front=none
+          hw.sensors.orientation=yes
+          hw.sensors.proximity=no
+          hw.sdCard=no
+          disk.dataPartition.size=2G
+          fastboot.forceColdBoot=yes
+          snapshot.present=no
+          EOF
+          test -f "$avd_dir/config.ini"
+          grep -Fqx 'abi.type=arm64-v8a' "$avd_dir/config.ini"
+          grep -Fqx 'image.sysdir.1=system-images/android-35/default/arm64-v8a/' "$avd_dir/config.ini"
           log="$RUNNER_TEMP/one-android-arm-host.log"
           "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-native -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect -accel off -no-metrics -verbose >"$log" 2>&1 &
           pid=$!
