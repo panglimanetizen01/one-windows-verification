@@ -52,6 +52,9 @@ jobs:
           sudo apt-get install -y clang lld mingw-w64 binutils-x86-64-linux-gnu
           command -v clang
           command -v x86_64-w64-mingw32-clang || true
+          # The candidate passes --target=x86_64-w64-windows-gnu itself; use
+          # the installed Clang driver when the distro lacks the named wrapper.
+          echo "ONE_WINDOWS_CLANG=$(command -v clang)" >> "$GITHUB_ENV"
 
       - name: Install Windows native cross-compiler
         if: runner.os == 'Windows'
