@@ -676,3 +676,27 @@ This checkpoint is evidence-only: no DoD checkbox, ledger score, verified weight
   - Android device artifact build: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900506 — in progress.
 - The API35 ELF build artifact from source SHA `0301dc8` (historical candidate, before the last test-only assertion fix) proved the compiler target `aarch64-unknown-linux-android35`, ELF64 little-endian AArch64, interpreter `/system/bin/linker64`, binary SHA-256 `28c1552a8fdd96e79c096611a36118347aef7849d38f0b84b09cfd75b62bf5f7`, and artifact ZIP SHA-256 `5205712efb18f265470f9fc2b75e802968a00ebc627a7c226d9cb5359bea5f89`. This is build/metadata evidence only; runtime acceptance is still pending.
 - Do not mark E3/E4 rows complete until the above runs finish on source SHA `73bd504`, the API35 guest reaches boot completion, and the actual ELF produces the expected output with exit code zero. The global project release gate remains separate and must stay blocked while out-of-scope rows remain open.
+
+
+## Final E3/E4 documentation checkpoint pin — 2026-10-26
+
+The current canonical source SHA is now `990c4e80f657aa2ac0409cfaf3bbf522856bc889`. It is the PR #80 head after the official completion ledger, Definition of Done, and session checkpoint were updated. `CANONICAL_COMMIT.txt` is pinned to this exact SHA. The earlier run matrix on `73bd504ac81a14737b321817b94c7bc2fbb17a15` is historical evidence for the code-bearing predecessor and is not promoted to final-SHA evidence.
+
+### Fresh exact-pin matrix status
+
+- Linux distro matrix [40275895385](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895385): Debian 12 passed; Ubuntu 24.04 was still running at the time of this checkpoint.
+- Cross-platform Ubuntu/Windows Server 2025 [40275895382](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895382): both jobs were running.
+- SEC-05 timeout/output/descendant-process checks [40275895425](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895425): Linux job passed after the harness added `binutils-x86-64-linux-gnu`; Windows job was still running.
+- E4 adversarial filesystem/resource suite [40275895449](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895449): both Unix and Windows jobs passed on the final pin.
+- E4 subprocess resource guard [40275895416](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895416): passed on the final pin.
+- Focused SQLite/stdlib/resource suite [40275895487](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895487): passed on the final pin.
+- Candidate artifact integrity [40275895457](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895457): still running.
+- Android API 35 cross-build/contract [40275895431](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895431): still running; build success alone is not runtime acceptance.
+- Android API 35 `arm64-v8a` community-emulator runtime [40275895444](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895444): ELF build job passed and the runtime job had reached the boot/execute step; no final guest boot/output/exit-code result was available at checkpoint time. Additional Android runtime alternatives [40275895468](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895468), [40275895447](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895447), [40275895378](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895378), and [40275895417](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895417) were queued or running; these remain separate attempts, not runtime passes.
+- Fixed-weight ledger gate [40275895403](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895403) was still running. It cannot authorize the global release while out-of-scope E1/E2/E6 rows remain open.
+
+### Android artifact facts on final pin
+
+The exact-source Android build artifact is [artifact ID 12630660350](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40275895444/artifacts/12630660350), ZIP SHA-256 `24de248930be0b6fa20a4ec1bc77b8aeb7db2b8ad81a61b26f8b0142bdb4c961`. Its `SOURCE.txt` matches `990c4e80f657aa2ac0409cfaf3bbf522856bc889`; compiler target is `aarch64-unknown-linux-android35`; ELF is 64-bit little-endian AArch64, interpreter `/system/bin/linker64`; binary SHA-256 `28c1552a8fdd96e79c096611a36118347aef7849d38f0b84b09cfd75b62bf5f7`. This is verified build/header/dependency evidence only. Android runtime acceptance remains unchecked until the actual ELF runs on a booted API 35 guest with ABI `arm64-v8a`, emits exactly `ONE_NATIVE_BACKEND_OK`, exits 0, and retains the runtime result and logs.
+
+**Status at this checkpoint:** E3 0/8 verified; E4 0/6 verified; global gate NOT PASSED. Do not check any row solely from a successful workflow/job or build artifact. Update this evidence index after the fresh matrix completes, preserving these intermediate results and failures.
