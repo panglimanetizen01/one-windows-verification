@@ -2,7 +2,7 @@
 
 **Canonical repository:** [panglimanetizen01/one](https://github.com/panglimanetizen01/one)  
 **PR:** [#80](https://github.com/panglimanetizen01/one/pull/80) — open, draft, unmerged  
-**Current source SHA:** `78b9436c318032b1c19a4e5c110142fffc58b4d5`  
+**Current source SHA:** `73bd504ac81a14737b321817b94c7bc2fbb17a15` (read from `CANONICAL_COMMIT.txt` on the verifier branch; verifier branch HEAD is a different SHA)  
 **Fixed-weight ledger:** [one-completion-ledger.md](https://github.com/panglimanetizen01/one/blob/milestone/100-ecosystem-20261023/docs/verification/one-completion-ledger.md)  
 **Release gate:** **NOT PASSED** — fixed-weight ledger remains 91/100 provisional implementation and 64/100 verified in the last recorded scoring; this is not a final acceptance score. The current independent verification pin is `78b9436c318032b1c19a4e5c110142fffc58b4d5`. Exact-SHA Linux distro (Ubuntu 24.04 + Debian 12), Ubuntu/Windows Server 2025, E4 Unix/Windows adversarial tests, artifact integrity, Android AArch64 build, and Android cross-build/contract jobs have passed their scoped checks. **Android API 35 arm64-v8a runtime execution is not yet proven**: run [40264206706](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264206706) remains queued. The latest ledger gate [40265232307](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40265232307) failed closed (latest rerun; the previous run [40265144750](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40265144750) also failed). Do not award full E3/E4 rows or mark the overall release accepted from scoped passes; the protected canonical release evidence/permission gap also remains unresolved.
 
@@ -22,6 +22,23 @@ Run [40265232307](https://github.com/panglimanetizen01/one-windows-verification/
 The ARM64-hosted runtime attempt [40273075912](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273075912) successfully built and provenance-checked an AArch64 ELF, installed the digest-verified official API 35 `arm64-v8a` system image, and installed a checksum-verified ARM64 emulator. Runtime failed before guest boot because the selected SDK `adb` executable was the wrong host architecture (`Exec format error`, exit 126). This is a host-tool selection defect, not an Android binary failure and not runtime acceptance.
 
 The workflow now explicitly checks and invokes Ubuntu's native `/usr/bin/adb`, and verifies its reported host architecture before the boot stage. Workflow-definition validation passed at [40273563333](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273563333). The exact-pin retry [40273563278](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273563278) is running against lab commit `80710d737fe0d4aabe1f4f15acd3e6a28475dbfc`. Runtime remains **NOT ACCEPTED** until API level 35 and ABI `arm64-v8a` are read from a booted guest and the actual ONE ELF produces the expected assertion/output with exit code 0. KVM is unavailable on this runner, so software-emulation boot remains a risk.
+
+## Current canonical source pin — `73bd504ac81a14737b321817b94c7bc2fbb17a15`
+
+The verifier's current `CANONICAL_COMMIT.txt` pins the ONE source commit above. The following runs explicitly checked out that source SHA in their logs; they are scoped passes, not blanket acceptance.
+
+| Gate | Run | Result on exact source pin |
+|---|---|---|
+| Linux distro matrix: Debian 12 + Ubuntu 24.04 | [40272900538](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900538) | Both jobs **SUCCESS**; logs explicitly checkout `73bd504ac81a14737b321817b94c7bc2fbb17a15` |
+| E4 adversarial filesystem / SQLite bounds | [40272900540](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900540) | Unix no-follow/SQLite and Windows reparse/handle jobs **SUCCESS**; scope limited to assertions executed |
+| E4 subprocess timeout/output bounds | [40272900575](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900575) | Linux and Windows jobs **SUCCESS**; subprocess baseline and SEC-05 guard only, not full descendant/race proof |
+| E4 subprocess resource guard | [40272900536](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900536) | **SUCCESS** for the resource guard audit only |
+| Focused standard-library/database regression | [40272900585](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900585) | **SUCCESS** |
+| Android API 35 cross-build/contract (no runtime claim) | [40272900641](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900641) | **SUCCESS** for cross-build/contract only |
+| Android API 35 AArch64 runtime | [40273563278](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273563278) | **IN PROGRESS** at index update; runtime not accepted |
+| Fixed-weight ledger gate | [40273632102](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273632102) | **IN PROGRESS** at index update; no acceptance credit until the gate completes |
+
+The Windows E1 and Cargo lockfile jobs also succeeded on this pin ([E1](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900587), [lockfile](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40272900633)). The runtime retry is fixing a host-architecture mismatch in the `adb` tool; previous runtime attempts did not boot Android or execute the ONE binary. Keep E3/E4 overall acceptance **NOT PASSED** until the remaining criteria, including actual API 35 guest execution, pass.
 
 ## Current pinned candidate — `78b9436c318032b1c19a4e5c110142fffc58b4d5`
 
