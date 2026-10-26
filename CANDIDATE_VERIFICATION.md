@@ -1,25 +1,35 @@
 # ONE v0.1 — Candidate Verification Index
 
-## Continuation checkpoint — exact candidate d8ee564637f9fae3a7e95ff12be02413574c462f — 2026-10-26
+## Continuation checkpoint — exact candidate d8ee564637f9fae3a7e95ff12be02413574c462f — refreshed 2026-10-26
 
-Canonical source: [panglimanetizen01/one@d8ee564637f9fae3a7e95ff12be02413574c462f](https://github.com/panglimanetizen01/one/commit/d8ee564637f9fae3a7e95ff12be02413574c462f). PR #80 remains open/draft/unmerged. The only source change since c26e28789fb090ad8a684c6c6853ec2a88e3f9ca raises the SEC-05 Windows descendant-containment regression test timeout from 2s to 10s: the prior Windows run timed out before its child-PID marker was written. Parent and child still sleep for 30s; the timeout and descendant-termination assertions remain active.
+Canonical source: [panglimanetizen01/one@d8ee564637f9fae3a7e95ff12be02413574c462f](https://github.com/panglimanetizen01/one/commit/d8ee564637f9fae3a7e95ff12be02413574c462f). PR #80 remains open/draft/unmerged. The only source change since c26e28789fb090ad8a684c6c6853ec2a88e3f9ca raises the SEC-05 Windows descendant-containment regression test timeout from 2s to 10s; parent and child still sleep for 30s and timeout/descendant-termination assertions remain active.
 
-### Fresh exact-SHA evidence
-- E4 adversarial filesystem/resource-bound regression [run 40360134649](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134649): Unix no-follow/SQLite bounds PASS; Windows reparse-point/handle checks PASS. Workflow completed successfully for this source SHA.
-- E4 subprocess resource guard [run 40360134455](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134455): PASS on this source SHA.
-- SEC-05 subprocess baseline [run 40360134485](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134485): Linux job passed; Windows job was still in progress at this checkpoint.
-- E1 standard-library contract/integration/lint [run 40360134377](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134377): in progress.
-- E1 cross-platform acceptance [run 40360134456](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134456): Ubuntu and Windows matrix in progress.
-- Cross-platform compatibility/package verification [run 40360134467](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134467): Linux build, release build, package metadata/SHA256 verification, artifact upload, AST regression, Clippy, tests, network runtime, and offline verification passed; Windows matrix remained in progress.
-- Android API 35 `arm64-v8a` native ARM64-host runtime [run 40360134381](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134381): exact source and Android backend contract tests passed; emulator boot was still in progress. No ELF runtime PASS is claimed.
-- Android API 35 Linux TCG [run 40360134479](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134479): image installation in progress; no runtime result yet.
-- Package/provenance synthetic-trust lab [run 40360134313](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134313): in progress. Synthetic trust does not establish protected production release acceptance.
+### Completed exact-SHA evidence (source d8ee564637f9fae3a7e95ff12be02413574c462f)
+- E1 standard-library Windows acceptance [run 40360134377](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134377): SUCCESS.
+- E1 cross-platform acceptance [run 40360134456](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134456): Ubuntu 24.04 and Windows Server 2025 jobs SUCCESS.
+- Cross-platform build/package verification [run 40360134467](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134467): Ubuntu and Windows jobs SUCCESS, including build, release build, package metadata/SHA256, artifact integrity, AST regression, Clippy, tests, network runtime, and offline verification.
+- E4 adversarial filesystem/resource-bound regression [run 40360134649](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134649): Unix no-follow/SQLite bounds and Windows reparse-point/handle checks SUCCESS.
+- E4 subprocess resource guard [run 40360134455](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134455): SUCCESS.
+- SEC-05 subprocess timeout/output-limit checks [run 40360134485](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134485): Windows and Linux jobs SUCCESS.
+- Focused standard-library/database regression [run 40360134353](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134353): SUCCESS.
+- Linux distribution verification [run 40360134902](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134902): SUCCESS.
+- Candidate artifact integrity [run 40360134487](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134487): SUCCESS.
+- Cargo lockfile bootstrap [run 40360134554](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134554): SUCCESS.
+- Package/provenance end-to-end lab [run 40360134313](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134313): SUCCESS with **synthetic trust only**; this does not prove production protected-environment authorization, production signing secret readiness, or a real release.
 
-### Gate and scoring integrity
-- Fresh gate [run 40360134537](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134537) read canonical source SHA `d8ee564637f9fae3a7e95ff12be02413574c462f` and returned NOT PASSED. It reported 92/100 implementation, 64/100 verified, and 9 unchecked Definition of Done items.
-- The gate's `CANONICAL_READ_TOKEN` received HTTP 403 on the canonical Actions run-list query; unauthenticated fallback is not accepted as proof of `Actions: read`. The independent evidence index did not yet name this new exact source SHA when that run executed; this checkpoint corrects that index reference.
-- No score, weight, acceptance criterion, protected environment, release, or PR merge was changed. In-progress jobs are not PASS evidence. Do not promote any E1–E6 row until its full acceptance criteria and the final gate pass on the exact candidate SHA.
+These passing runs prove their named test scopes only. They do not, by themselves, satisfy every acceptance item in ledger rows E1/E2/E4 or the overall DoD.
 
+### Android API 35 arm64-v8a runtime
+- Native ARM64 Linux-host attempt [run 40360134381](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134381): still in progress at last check, boot step only; no ELF execution proof.
+- macOS TCG workaround [run 40360134486](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134486): still in progress at last check; no ELF execution proof.
+- Community ARM64 emulator fallback [run 40360134549](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134549): build job passed, guest boot/ELF execution job still in progress at last check; no runtime PASS.
+- Linux TCG [run 40360134479](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134479), alternate Linux TCG [run 40360134577](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134577), macOS capability probe [run 40360134544](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134544), and software-emulation fallback [run 40360136564](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360136564) failed before proving guest ELF execution.
+- E3 remains unaccepted: there is still no evidence of actual API 35 `arm64-v8a` ELF execution exiting 0 and printing `ONE_NATIVE_BACKEND_OK`.
+
+### Gate and remaining hard blockers
+- Latest gate [run 40360473719](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360473719) checked source SHA `d8ee564637f9fae3a7e95ff12be02413574c462f` and returned **NOT PASSED**: implementation 92/100, verified 64/100, and 9 unchecked Definition of Done items. E1 verified 0/10, E2 0/8, E3 0/8, E4 0/6, and E6 0/4 remained unaccepted in the ledger gate.
+- The gate reports `CANONICAL_READ_TOKEN` HTTP 403 for the canonical repository Actions run-list query. The unauthenticated public fallback is not proof of `Actions: read`. It also cannot read the private/non-public canonical release workflow evidence (HTTP 404). This requires an authorized repository owner/admin to correct and verify the token's repository access and Actions: read permission; do not request the secret value in chat.
+- Do not change fixed weights, acceptance rules, or DoD checkboxes to manufacture a pass. Do not merge PR #80 or publish a release. No PASS GREEN LOCKED claim is justified until the runtime evidence, authorized Actions evidence, production release prerequisites, full ledger acceptance, and final gate all pass on the exact frozen source SHA.
 
 > **Fresh candidate reconciliation — 2026-10-26:** PR #80 is now at `2a7670c5166efee54426196f28a8152cbfe758b3` after formatting-only corrections in `crates/one-core/src/interop.rs` exposed by exact-SHA SEC-05 checks. All earlier matrix results remain tied to their recorded SHAs and are not current-SHA acceptance.
 
