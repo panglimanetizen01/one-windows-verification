@@ -186,7 +186,9 @@ jobs:
               raise SystemExit("Could not parse the actual community emulator version")
           major, minor, micro = match.groups()
           for _, namespace in ET.iterparse(package_path, events=("start-ns",)):
-              ET.register_namespace(namespace[0], namespace[1])
+              prefix, uri = namespace
+              if not re.fullmatch(r"ns\d*", prefix):
+                  ET.register_namespace(prefix, uri)
           tree = ET.parse(package_path)
           root = tree.getroot()
           local = next((node for node in root.iter() if node.tag.endswith("localPackage") and node.attrib.get("path") == "emulator"), None)
