@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-from verify_completion_ledger import REQUIRED_MIRROR_WORKFLOWS, verify
+from verify_completion_ledger import REQUIRED_ANDROID_RUNTIME_WORKFLOWS, REQUIRED_MIRROR_WORKFLOWS, verify
 
 SHA = "2ead9dba45db4ce4105deaa81720aacc8fcadd6c"
 WEIGHTS = {
@@ -36,7 +36,8 @@ class LedgerGateTests(unittest.TestCase):
     def test_required_mirror_matrix_covers_e3_runtime_and_e4_security(self):
         self.assertIn("ONE Milestone 1 E1 Cross-Platform Acceptance Lab", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("ONE E1 Standard Library Windows Acceptance", REQUIRED_MIRROR_WORKFLOWS)
-        self.assertIn("ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback", REQUIRED_MIRROR_WORKFLOWS)
+        self.assertIn("ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback", REQUIRED_ANDROID_RUNTIME_WORKFLOWS)
+        self.assertIn("ONE Android AArch64 runtime — native ARM64 Linux host", REQUIRED_ANDROID_RUNTIME_WORKFLOWS)
         self.assertIn("ONE E4 adversarial filesystem and resource-bound regression", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("E4 subprocess resource guard", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("E4 SEC-05 subprocess timeout and output-limit verification", REQUIRED_MIRROR_WORKFLOWS)
