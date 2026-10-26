@@ -58,17 +58,33 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Install NDK and Android API 35 AArch64 system image
+      - name: Install NDK, API 35 image, and ARM64-native emulator
         timeout-minutes: 30
         shell: bash
         run: |
           set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager --install "ndk;27.2.12479018" "emulator" "platform-tools" "system-images;android-35;default;arm64-v8a"
-          clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/clang' -print -quit)"
-          test -x "$clang"
-          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
-
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          # Google's SDK manager does not publish the emulator package for Linux ARM64.
+          # Install the pinned ARM64 host emulator separately; keep the official API image.
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools" "system-images;android-35;default;arm64-v8a"
+          archive="$RUNNER_TEMP/android-emulator-aarch64.zip"
+          curl --fail --location --retry 3 --retry-connrefused --output "$archive" "https://github.com/Changqing-JING/android-emulator-aarch64-linux/releases/download/v2.12.0-19097-g85fa07f04ef/sdk-repo-linux_aarch64-emulator-standalone-0.zip"
+          mkdir -p "$ANDROID_HOME/emulator" "$RUNNER_TEMP/emulator-unpack"
+          unzip -q "$archive" -d "$RUNNER_TEMP/emulator-unpack"
+          if [[ -x "$RUNNER_TEMP/emulator-unpack/emulator" ]]; then
+            cp -a "$RUNNER_TEMP/emulator-unpack/." "$ANDROID_HOME/emulator/"
+          elif [[ -x "$RUNNER_TEMP/emulator-unpack/emulator/emulator" ]]; then
+            cp -a "$RUNNER_TEMP/emulator-unpack/emulator/." "$ANDROID_HOME/emulator/"
+          else
+            found="$(find "$RUNNER_TEMP/emulator-unpack" -type f -name emulator -perm -u+x -print -quit)"
+            test -n "$found"
+            cp -a "$(dirname "$found")/." "$ANDROID_HOME/emulator/"
+          fi
+          file "$ANDROID_HOME/emulator/emulator"
+          "$ANDROID_HOME/emulator/emulator" -version
+          file -L "$ANDROID_HOME/platform-tools/adb"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          test -x "$ANDROID_HOME/platform-tools/adb"
       - name: Android backend contract tests
         working-directory: source
         run: cargo test --locked -p one-core --test native_backend_android_aarch64
