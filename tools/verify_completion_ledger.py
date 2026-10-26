@@ -153,17 +153,25 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
     )
     try:
         release_runs = github_json(release_url, source_token).get("workflow_runs", [])
+        print("Canonical Actions run-list query succeeded using the supplied source token.")
     except urllib.error.HTTPError as exc:
-        # The canonical repository is public. If a read-only source token lacks
-        # Actions permission (403), retry the public read without credentials.
-        # This only improves evidence visibility; it never turns missing release
-        # evidence into a pass.
         if exc.code != 403:
             return errors + [f"cannot query canonical release workflow evidence: {exc}"]
+        # A public unauthenticated read may reveal run metadata, but it does not
+        # prove that ONE_REPO_TOKEN has the required Actions: read permission.
+        errors.append(
+            "supplied source token received HTTP 403 for canonical Actions run-list query; "
+            "Actions: read is not proven (unauthenticated public fallback is visibility-only)"
+        )
+        print(
+            "WARNING: supplied source token received HTTP 403 for canonical Actions run-list query; "
+            "unauthenticated fallback does not prove Actions: read.",
+            file=sys.stderr,
+        )
         try:
             release_runs = github_json(release_url, "").get("workflow_runs", [])
         except (OSError, ValueError, urllib.error.HTTPError) as fallback_exc:
-            return errors + [f"cannot query canonical release workflow evidence: CANONICAL_READ_TOKEN must have Actions: read access to the private canonical repository; unauthenticated fallback is unavailable ({fallback_exc})"]
+            return errors + [f"cannot query canonical release workflow evidence via public fallback: {fallback_exc}"]
     except (OSError, ValueError) as exc:
         return errors + [f"cannot query canonical release workflow evidence: {exc}"]
 
