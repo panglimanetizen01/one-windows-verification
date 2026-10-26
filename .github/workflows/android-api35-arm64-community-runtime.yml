@@ -176,7 +176,7 @@ jobs:
           # Do not inject third-party metadata into the SDK package registry; sdkmanager
           # must keep its own package metadata and only install the official API 35 image.
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager --install "platforms;android-35" "system-images;android-35;default;arm64-v8a"
+          sdkmanager --install "platform-tools" "platforms;android-35" "system-images;android-35;default;arm64-v8a"
           echo "Pinned unofficial ARM64 emulator binary verified by SHA-256; official API 35 arm64-v8a image; isolated CI test only."
       - name: Create API 35 AVD and probe KVM
         timeout-minutes: 10
@@ -211,6 +211,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export ANDROID_HOME="${ANDROID_HOME:-$HOME/.android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          test -x "$ANDROID_HOME/platform-tools/adb"
+          test -f "$ANDROID_HOME/platforms/android-35/android.jar"
+          test -x "$ANDROID_HOME/emulator/emulator"
           log="$RUNNER_TEMP/one-android-api35-community.log"
           accel_args=(-accel off)
           if [ "${ONE_KVM_AVAILABLE:-false}" = "true" ]; then accel_args=(-accel on); fi
