@@ -6,6 +6,7 @@ on:
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/android-api35-arm64-community-runtime.yml'
+      - 'scripts/resolve_android_api35_image.py'
   workflow_dispatch:
 
 permissions:
@@ -180,52 +181,7 @@ jobs:
           sdkmanager --install "platform-tools" "platforms;android-35"
           repo_xml="$RUNNER_TEMP/android-system-images.xml"
           curl --fail --location --retry 3 --output "$repo_xml" "https://dl.google.com/android/repository/sys-img/android/sys-img2-5.xml"
-          python3 - "$repo_xml" "$RUNNER_TEMP/android-system-image-download.txt" <<'PY'
-          import sys
-          import xml.etree.ElementTree as ET
-
-          def local(tag):
-              return tag.rsplit("}", 1)[-1]
-
-          def child(node, name):
-              return next((item for item in list(node) if local(item.tag) == name), None)
-
-          def value(node, name):
-              item = child(node, name)
-              return item.text.strip() if item is not None and item.text else ""
-
-          root = ET.parse(sys.argv[1]).getroot()
-          matches = []
-          for node in root.iter():
-              if local(node.tag) != "system-image":
-                  continue
-              if (value(node, "api-level"), value(node, "abi"), value(node, "tag-id")) != ("35", "arm64-v8a", "default"):
-                  continue
-              revision = value(node, "revision")
-              archives = child(node, "archives")
-              if archives is None:
-                  continue
-              for archive in list(archives):
-                  complete = child(archive, "complete")
-                  if complete is None:
-                      continue
-                  url = value(complete, "url")
-                  checksum = child(complete, "checksum")
-                  if url and checksum is not None and checksum.text:
-                      matches.append((tuple(int(part) for part in revision.split(".")), url, checksum.get("type", "").lower(), checksum.text.strip()))
-          if not matches:
-              raise SystemExit("Official repository metadata has no Android API 35 default arm64-v8a system image with a digest")
-          _, url, algorithm, digest = max(matches)
-          if algorithm not in ("sha1", "sha256") or not digest:
-              raise SystemExit(f"Unsupported official system-image digest type: {algorithm!r}")
-          if url.startswith("https://"):
-              full_url = url
-          else:
-              full_url = "https://dl.google.com/android/repository/sys-img/android/" + url
-          with open(sys.argv[2], "w", encoding="utf-8") as output:
-              output.write(f"{algorithm} {digest} {full_url}\n")
-          print(f"Selected official API 35 arm64-v8a image: {full_url} ({algorithm})")
-          PY
+          python3 scripts/resolve_android_api35_image.py "$repo_xml" "$RUNNER_TEMP/android-system-image-download.txt"
           read -r digest_algorithm digest image_url < "$RUNNER_TEMP/android-system-image-download.txt"
           image_archive="$RUNNER_TEMP/android-api35-arm64-system-image.zip"
           curl --fail --location --retry 3 --output "$image_archive" "$image_url"
