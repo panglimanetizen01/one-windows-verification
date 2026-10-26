@@ -846,3 +846,26 @@ Frozen candidate checkpoint — source SHA 7fe9ce3adbf83f6b5b2c427d163df44df43b1
 - `7fe9ce3adbf83f6b5b2c427d163df44df43b1c24` and earlier exact-SHA runs are historical for this candidate. The lab's `CANONICAL_COMMIT.txt` now pins `c26e28789fb090ad8a684c6c6853ec2a88e3f9ca`; the required matrix, including the newly-triggered canonical E1 lab, must finish on this exact SHA before final acceptance.
 - The E4 scoped threat-review artifact remains in the candidate branch; implementation is 92/100 provisional and verified remains 64/100 until legitimate row acceptance.
 - No code behavior was changed by the trigger correction. No score was changed in this update. The gate remains NOT PASSED until exact-SHA workflows, the protected release evidence, and all Definition of Done items pass.
+
+
+## Exact-SHA execution continuation — candidate c26e28789fb090ad8a684c6c6853ec2a88e3f9ca
+
+Candidate ONE source SHA: `c26e28789fb090ad8a684c6c6853ec2a88e3f9ca`. The source pin was checked against PR #80 HEAD before these runs. Historical failures remain unchanged and are not rewritten.
+
+Completed exact-SHA evidence:
+
+- [Cross-platform verification, run 40325670295](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325670295): Ubuntu and Windows Server 2025 jobs both completed successfully.
+- [Linux distro verification, run 40325666931](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666931): Ubuntu 24.04 and Debian 12 jobs both completed successfully.
+- [E1 standard-library acceptance, run 40325666608](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666608): contract/integration/lint job completed successfully for its defined scope; this does not alone accept the entire E1 row.
+- [Focused standard-library/database regressions, run 40325666312](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666312): completed successfully for its focused scope.
+- [Cargo lockfile bootstrap, run 40325666316](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666316): completed successfully.
+- [Candidate artifact integrity, run 40325666405](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666405): exact-source Linux/Windows bundle inspection completed successfully.
+- [SEC-05 subprocess timeout/output-limit, run 40325666598](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666598): Linux and Windows jobs both completed successfully.
+- [E4 adversarial filesystem/resource-bound regressions, run 40325666570](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666570): Unix and Windows jobs both completed successfully for the implemented test scope.
+- [E4 subprocess resource guard, run 40325666499](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666499): completed successfully.
+
+Android runtime is still **OPEN / NOT ACCEPTED** at this checkpoint. The following exact-SHA attempts were still running when this entry was written: [community ARM64 emulator fallback, run 40325666409](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666409), [macOS TCG attempt, run 40325666426](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325666426), and [native ARM64 Linux host, run 40326438426](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40326438426). No build-only or emulator-boot-only result is accepted as runtime success; the required result is actual API 35 `arm64-v8a` execution of the exact-source ELF with exit code 0 and output `ONE_NATIVE_BACKEND_OK`.
+
+Gate run [40325704710](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325704710) was evaluated while several matrix jobs were queued/in progress. Its NOT PASSED result is retained as history and must not be described as a final post-matrix decision. Re-run the gate after the Android runtime and all other required exact-SHA workflows conclude.
+
+The source ledger's row sum is implementation `92/100`, verified `64/100`. E1/E2/E3/E4/E6 full-row verification is not inferred from these scoped workflow passes. No weights or acceptance criteria were changed. PR #80 remains open/draft/unmerged; no release was published.
