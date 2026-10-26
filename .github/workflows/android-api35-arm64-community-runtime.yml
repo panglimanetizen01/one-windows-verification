@@ -280,7 +280,7 @@ jobs:
           test -x "$ANDROID_HOME/emulator/emulator"
           log="$RUNNER_TEMP/one-android-api35-community.log"
           : > "$log"
-          ldd "$ANDROID_HOME/emulator/emulator" | tee "$RUNNER_TEMP/EMULATOR-LDD.txt"
+          (ldd "$ANDROID_HOME/emulator/emulator" || true) 2>&1 | tee "$RUNNER_TEMP/EMULATOR-LDD.txt"
           "$ANDROID_HOME/emulator/emulator" -accel-check > "$RUNNER_TEMP/EMULATOR-ACCEL-CHECK.txt" 2>&1 || true
           find "$ANDROID_HOME/system-images/android-35/default/arm64-v8a" -maxdepth 2 -type f -printf '%P %s bytes\\n' | sort | head -n 80 | tee "$RUNNER_TEMP/ANDROID-SYSTEM-IMAGE-FILES.txt"
           cat "$ANDROID_AVD_HOME/one-api35-arm64-community.avd/config.ini" | tee "$RUNNER_TEMP/AVD-CONFIG.txt"
@@ -297,7 +297,7 @@ jobs:
               tail -n 300 "$log" || true
               ps -ef | grep -E '[e]mulator|[q]emu' || true
               file "$ANDROID_HOME/emulator/emulator"
-              ldd "$ANDROID_HOME/emulator/emulator" || true
+              (ldd "$ANDROID_HOME/emulator/emulator" || true) 2>&1 | tee "$RUNNER_TEMP/EMULATOR-LDD-FAILURE.txt"
               find "$ANDROID_HOME" -maxdepth 4 -type f \( -name 'kernel*' -o -name 'ramdisk.img' -o -name 'system.img' \) | head -n 100 || true
               /usr/bin/adb devices -l || true
               exit 1
@@ -334,6 +334,7 @@ jobs:
             ${{ runner.temp }}/EMULATOR-HOST-BINARY.txt
             ${{ runner.temp }}/EMULATOR-VERSION.txt
             ${{ runner.temp }}/EMULATOR-LDD.txt
+            ${{ runner.temp }}/EMULATOR-LDD-FAILURE.txt
             ${{ runner.temp }}/EMULATOR-ACCEL-CHECK.txt
             ${{ runner.temp }}/ANDROID-SYSTEM-IMAGE-FILES.txt
             ${{ runner.temp }}/AVD-CONFIG.txt
