@@ -61,6 +61,14 @@ def parse_ledger(text: str) -> tuple[list[dict], dict | None, list[str]]:
 
 
 
+# Runtime workflow names changed as the lab moved from the community emulator
+# to a native ARM64-hosted API 35 emulator. Either workflow is eligible, but
+# the selected run must still be completed successfully on the exact pinned SHA.
+REQUIRED_ANDROID_RUNTIME_WORKFLOWS = {
+    "ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback",
+    "ONE Android AArch64 runtime — native ARM64 Linux host",
+}
+
 REQUIRED_MIRROR_WORKFLOWS = {
     "ONE Milestone 1 E1 Cross-Platform Acceptance Lab",
     "ONE E1 Standard Library Windows Acceptance",
@@ -69,9 +77,6 @@ REQUIRED_MIRROR_WORKFLOWS = {
     "ONE Focused Standard Library and Database Verification",
     "ONE Cargo Lockfile Bootstrap Evidence",
     "ONE Candidate Artifact Integrity Verification",
-    # This alternate is accepted only because it installs API 35 arm64-v8a,
-    # boots the guest, checks SDK/ABI/boot completion, and executes the exact-SHA ELF.
-    "ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback",
     "ONE E4 adversarial filesystem and resource-bound regression",
     "E4 subprocess resource guard",
     "E4 SEC-05 subprocess timeout and output-limit verification",
@@ -127,22 +132,29 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
         return [f"cannot query live independent workflow evidence: {exc}"]
 
     pin_cache: dict[str, str | None] = {}
-    for workflow_name in sorted(REQUIRED_MIRROR_WORKFLOWS):
+    required_groups = [
+        ({name}, name) for name in sorted(REQUIRED_MIRROR_WORKFLOWS)
+    ]
+    required_groups.append((
+        REQUIRED_ANDROID_RUNTIME_WORKFLOWS,
+        "Android API 35 AArch64 runtime (community fallback or native ARM64 host)",
+    ))
+    for accepted_names, label in required_groups:
         candidates = []
         for run in mirror_runs:
-            if run.get("name") != workflow_name:
+            if run.get("name") not in accepted_names:
                 continue
             pin = pin_at_mirror_commit(run.get("head_sha", ""), mirror_token, pin_cache)
             if pin == source_sha:
                 candidates.append(run)
         candidates.sort(key=lambda run: run.get("created_at", ""), reverse=True)
         if not candidates:
-            errors.append(f"no independent run found for current source SHA: {workflow_name}")
+            errors.append(f"no independent run found for current source SHA: {label}")
             continue
         latest = candidates[0]
         if latest.get("status") != "completed" or latest.get("conclusion") != "success":
             errors.append(
-                f"{workflow_name} for source SHA {source_sha} is "
+                f"{label} for source SHA {source_sha} is "
                 f"{latest.get('status')}/{latest.get('conclusion') or 'no conclusion'} "
                 f"(run {latest.get('id')}); only completed success is accepted"
             )
