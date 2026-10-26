@@ -34,6 +34,8 @@ def fixture(verified_overrides=None, unchecked=False):
 
 class LedgerGateTests(unittest.TestCase):
     def test_required_mirror_matrix_covers_e3_runtime_and_e4_security(self):
+        self.assertIn("ONE Milestone 1 E1 Cross-Platform Acceptance Lab", REQUIRED_MIRROR_WORKFLOWS)
+        self.assertIn("ONE E1 Standard Library Windows Acceptance", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("ONE E4 adversarial filesystem and resource-bound regression", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("E4 subprocess resource guard", REQUIRED_MIRROR_WORKFLOWS)
