@@ -5,6 +5,7 @@ on:
     branches: [verification]
     paths:
       - '.github/workflows/android-aarch64-arm-host.yml'
+      - 'CANONICAL_COMMIT.txt'
   pull_request:
     branches: [verification]
     paths:
