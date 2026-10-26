@@ -53,7 +53,8 @@ jobs:
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android35-clang' -print -quit)"
           test -x "$clang"
           test "$(basename "$clang")" = "aarch64-linux-android35-clang"
-          "$clang" -dM -E -x c /dev/null | grep -E '^#define __ANDROID_API__ 35          "$clang" -### -c -x c /dev/null 2>&1 | tee "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
+          "$clang" -dM -E -x c /dev/null | grep -F "__ANDROID_API__ 35"
+          "$clang" -### -c -x c /dev/null 2>&1 | tee "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
           grep -Eiq "android35" "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
           cat > source/crates/one-core/tests/android_device_artifact.rs <<'RS'
           use one_core::{analyze, lower, parse, NativeAndroidAarch64Backend};
