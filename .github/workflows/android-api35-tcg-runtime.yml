@@ -9,6 +9,7 @@ on:
   push:
     branches: [verification]
     paths:
+      - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/android-api35-tcg-runtime.yml'
 
 permissions:
