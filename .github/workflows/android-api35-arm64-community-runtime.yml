@@ -52,6 +52,11 @@ jobs:
           sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools" "emulator"
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android35-clang' -print -quit)"
           test -x "$clang"
+          test "$(basename "$clang")" = "aarch64-linux-android35-clang"
+          api_macro="$("$clang" -dM -E -x c /dev/null | sed -n 's/^#define __ANDROID_API__ //p')"
+          test "$api_macro" = "35"
+          "$clang" -### -c -x c /dev/null 2>&1 | tee "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
+          grep -Eiq "android35" "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt"
           cat > source/crates/one-core/tests/android_device_artifact.rs <<'RS'
           use one_core::{analyze, lower, parse, NativeAndroidAarch64Backend};
           use std::{fs, path::PathBuf};
@@ -75,7 +80,6 @@ jobs:
           export ONE_ANDROID_ARTIFACT_OUT="$RUNNER_TEMP/one-android-aarch64"
           (cd source && cargo test --locked -p one-core --test android_device_artifact -- --nocapture)
           file "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-FILE.txt"
-          grep -Fq 'for Android 35' "$RUNNER_TEMP/ELF-FILE.txt"
           readelf -h "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-HEADER.txt"
           readelf -l "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-PROGRAM-HEADERS.txt"
           readelf -d "$ONE_ANDROID_ARTIFACT_OUT" | tee "$RUNNER_TEMP/ELF-DEPENDENCIES.txt"
@@ -86,6 +90,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/one-android-aarch64-artifact"
           cp "$ONE_ANDROID_ARTIFACT_OUT" "$RUNNER_TEMP/one-android-aarch64-artifact/one-android-aarch64"
           cp "$RUNNER_TEMP/ELF-FILE.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
+          cp "$RUNNER_TEMP/ANDROID-CLANG-TARGET.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
           cp "$RUNNER_TEMP/ELF-HEADER.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
           cp "$RUNNER_TEMP/ELF-PROGRAM-HEADERS.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
           cp "$RUNNER_TEMP/ELF-DEPENDENCIES.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
