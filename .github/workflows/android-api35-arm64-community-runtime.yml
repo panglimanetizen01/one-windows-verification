@@ -192,10 +192,20 @@ jobs:
           fi
           avdmanager="$(find "$ANDROID_HOME/cmdline-tools" -type f -path "*/bin/avdmanager" -print -quit)"
           test -x "$avdmanager"
+          avd_home="$HOME/.android/avd"
+          mkdir -p "$avd_home"
+          echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_HOME=$HOME/.android" >> "$GITHUB_ENV"
+          export ANDROID_AVD_HOME="$avd_home"
+          export ANDROID_SDK_HOME="$HOME/.android"
           devices="$("$avdmanager" list device)"
           device_id="$(printf '%s\n' "$devices" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
           test -n "$device_id"
-          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-community --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
+          printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-community --package "system-images;android-35;default;arm64-v8a" --device "$device_id" --path "$avd_home/one-api35-arm64-community.avd"
+          test -f "$avd_home/one-api35-arm64-community.ini"
+          test -f "$avd_home/one-api35-arm64-community.avd/config.ini"
+          "$avdmanager" list avd
+          find "$avd_home/one-api35-arm64-community.avd" -maxdepth 2 -type f -print
       - name: Boot API 35 arm64-v8a and execute actual ONE ELF
         timeout-minutes: 55
         shell: bash
