@@ -115,7 +115,7 @@ jobs:
         run: cargo test --locked -p one-core --test native_backend_android_aarch64
 
       - name: Boot Android API 35 AArch64 on ARM64 host
-        timeout-minutes: 70
+        timeout-minutes: 25
         shell: bash
         run: |
           set -euo pipefail
@@ -168,12 +168,12 @@ jobs:
           log="$RUNNER_TEMP/one-android-arm-host.log"
           # The bundled ARM64 QEMU defaults to gic-version=host, which requires KVM.
           # This hosted runner has no KVM; explicitly select the TCG-compatible GIC version.
-          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-native -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect -accel off -no-metrics -verbose -qemu -cpu cortex-a57 -machine gic-version=3 >"$log" 2>&1 &
+          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-native -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect -accel off -no-metrics -verbose -qemu -cpu cortex-a57 -machine virt,gic-version=3 >"$log" 2>&1 &
           pid=$!
           trap 'kill "$pid" 2>/dev/null || true' EXIT
           adb start-server
           booted=0
-          for attempt in $(seq 1 360); do
+          for attempt in $(seq 1 120); do
             if ! kill -0 "$pid" 2>/dev/null; then tail -n 250 "$log"; exit 1; fi
             if adb devices | tr -d '\r' | grep -q '^emulator-5554[[:space:]]\+device$'; then
               [ "$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" = "1" ] && booted=1 && break
