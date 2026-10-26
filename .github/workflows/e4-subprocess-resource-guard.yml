@@ -1,3 +1,4 @@
+# Exact candidate revalidation trigger 2026-10-26; acceptance logic unchanged.
 name: E4 subprocess resource guard
 
 on:
