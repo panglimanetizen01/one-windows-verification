@@ -5,6 +5,7 @@ on:
   push:
     branches: [verification]
     paths:
+      - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/android-device-artifact.yml'
   pull_request:
     branches: [verification]
