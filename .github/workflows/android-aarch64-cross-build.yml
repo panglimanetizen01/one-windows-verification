@@ -13,29 +13,37 @@ permissions:
 
 jobs:
   android-aarch64-cross-build:
-    name: Android API 35 AArch64 compile and contract tests (no emulator claim)
-    runs-on: ubuntu-24.04-arm
+    name: Android API 35 AArch64 cross-build on x86_64 host (no emulator claim)
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve exact canonical source SHA
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout pinned ONE source
         uses: actions/checkout@v4
         with:
           repository: panglimanetizen01/one
-          ref: 744e5d6e0e89f6ba3b85902ead597bae95a9d36d
+          ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
-      - name: Verify immutable candidate and native ARM64 host
+      - name: Verify exact candidate and x86_64 cross-build host
         working-directory: source
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "744e5d6e0e89f6ba3b85902ead597bae95a9d36d"
-          test "$(uname -m)" = "aarch64"
+          test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
+          test "$(uname -m)" = "x86_64"
           printf 'candidate_sha=%s\nhost_arch=%s\n' "$(git rev-parse HEAD)" "$(uname -m)"
-
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.99.0
