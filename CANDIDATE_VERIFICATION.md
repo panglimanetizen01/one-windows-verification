@@ -869,3 +869,9 @@ Android runtime is still **OPEN / NOT ACCEPTED** at this checkpoint. The followi
 Gate run [40325704710](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40325704710) was evaluated while several matrix jobs were queued/in progress. Its NOT PASSED result is retained as history and must not be described as a final post-matrix decision. Re-run the gate after the Android runtime and all other required exact-SHA workflows conclude.
 
 The source ledger's row sum is implementation `92/100`, verified `64/100`. E1/E2/E3/E4/E6 full-row verification is not inferred from these scoped workflow passes. No weights or acceptance criteria were changed. PR #80 remains open/draft/unmerged; no release was published.
+
+
+## E1 cross-platform acceptance result — exact source SHA c26e28789fb090ad8a684c6c6853ec2a88e3f9ca
+
+The newly triggered E1 acceptance run [40346574861](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40346574861) completed successfully on both Ubuntu 24.04 and Windows Server 2025. Both job logs confirm checkout/assertion of exact ONE source SHA `c26e28789fb090ad8a684c6c6853ec2a88e3f9ca`; on both platforms the E1 standard-library integration regression suite, standard-library library unit suite, full workspace tests, workspace Clippy with warnings denied, and repository contract checker completed successfully. This is direct exact-SHA evidence for the workflow's declared scope. It does not by itself award full E1 ledger credit or close the other E1 API acceptance criteria. The earlier ledger-gate run [40346058660](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40346058660) queried before this E1 run had completed and therefore reported no completed matching E1 run; its historical failure is retained. A fresh gate evaluation is required to read the completed result.
+
