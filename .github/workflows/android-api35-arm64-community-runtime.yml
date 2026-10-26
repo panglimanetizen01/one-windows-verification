@@ -286,27 +286,27 @@ jobs:
           booted=0
           for _ in $(seq 1 300); do
             if ! kill -0 "$pid" 2>/dev/null; then tail -n 300 "$log"; exit 1; fi
-            if adb devices | tr -d '\r' | grep -q '^emulator-5554[[:space:]]\+device$'; then
-              sdk="$(adb -s emulator-5554 shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r' || true)"
-              abi="$(adb -s emulator-5554 shell getprop ro.product.cpu.abi 2>/dev/null | tr -d '\r' || true)"
-              ready="$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+            if /usr/bin/adb devices | tr -d '\r' | grep -q '^emulator-5554[[:space:]]\+device$'; then
+              sdk="$(/usr/bin/adb -s emulator-5554 shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r' || true)"
+              abi="$(/usr/bin/adb -s emulator-5554 shell getprop ro.product.cpu.abi 2>/dev/null | tr -d '\r' || true)"
+              ready="$(/usr/bin/adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
               if [ "$sdk" = "35" ] && [ "$abi" = "arm64-v8a" ] && [ "$ready" = "1" ]; then booted=1; break; fi
             fi
             sleep 10
           done
-          if [ "$booted" != "1" ]; then tail -n 300 "$log"; adb devices -l || true; exit 1; fi
+          if [ "$booted" != "1" ]; then tail -n 300 "$log"; /usr/bin/adb devices -l || true; exit 1; fi
           cd "$RUNNER_TEMP/one-android-aarch64-artifact"
           remote="/data/local/tmp/one-native-backend-${{ steps.target.outputs.sha }}"
-          adb -s emulator-5554 push one-android-aarch64 "$remote"
-          adb -s emulator-5554 shell chmod 700 "$remote"
+          /usr/bin/adb -s emulator-5554 push one-android-aarch64 "$remote"
+          /usr/bin/adb -s emulator-5554 shell chmod 700 "$remote"
           set +e
-          output="$(adb -s emulator-5554 shell "$remote" 2>&1)"
+          output="$(/usr/bin/adb -s emulator-5554 shell "$remote" 2>&1)"
           rc=$?
           set -e
           printf 'ANDROID_API=35\nANDROID_ABI=arm64-v8a\nELF_SHA256=%s\nEXIT_CODE=%s\nOUTPUT_BEGIN\n%s\nOUTPUT_END\n' "$(cut -d' ' -f1 ELF-SHA256.txt)" "$rc" "$output" | tee "$RUNNER_TEMP/ANDROID-RUNTIME-RESULT.txt"
           test "$rc" -eq 0
           test "$(printf '%s' "$output" | tr -d '\r')" = "ONE_NATIVE_BACKEND_OK"
-          adb -s emulator-5554 shell rm -f "$remote"
+          /usr/bin/adb -s emulator-5554 shell rm -f "$remote"
       - name: Upload runtime evidence and emulator logs
         if: always()
         uses: actions/upload-artifact@v4
