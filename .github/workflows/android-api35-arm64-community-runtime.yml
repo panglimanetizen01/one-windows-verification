@@ -161,9 +161,9 @@ jobs:
           echo "67ce4f576687b067d9b36668405b86b9749745d67d31037616aac12c49c63a65  $archive" | sha256sum --check
           mkdir -p "$ANDROID_HOME/emulator" "$RUNNER_TEMP/emulator-unpack"
           unzip -q "$archive" -d "$RUNNER_TEMP/emulator-unpack"
-          if [ -x "$RUNNER_TEMP/emulator-unpack/emulator" ]; then
+          if [ -f "$RUNNER_TEMP/emulator-unpack/emulator" ] && [ -x "$RUNNER_TEMP/emulator-unpack/emulator" ]; then
             cp -a "$RUNNER_TEMP/emulator-unpack/." "$ANDROID_HOME/emulator/"
-          elif [ -x "$RUNNER_TEMP/emulator-unpack/emulator/emulator" ]; then
+          elif [ -f "$RUNNER_TEMP/emulator-unpack/emulator/emulator" ] && [ -x "$RUNNER_TEMP/emulator-unpack/emulator/emulator" ]; then
             cp -a "$RUNNER_TEMP/emulator-unpack/emulator/." "$ANDROID_HOME/emulator/"
           else
             found="$(find "$RUNNER_TEMP/emulator-unpack" -type f -name emulator -perm -u+x -print -quit)"
