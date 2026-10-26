@@ -77,11 +77,11 @@ jobs:
               return 1
             fi
           }
-          run_test 5 descriptor_relative_ descriptor_relative_
-          run_test 1 final_component_mount_boundary_denial_does_not_truncate_file adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file -- --exact --test-threads=1
-          run_test 11 database::tests database::tests
-          run_test 10 governance::tests governance::tests
-          run_test 1 denied_request_never_reaches_adapter_invocation orchestrator::tests::denied_request_never_reaches_adapter_invocation -- --exact --test-threads=1
+          run_test 5 descriptor_relative_
+          run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file -- --exact --test-threads=1
+          run_test 11 database::tests
+          run_test 10 governance::tests
+          run_test 1 orchestrator::tests::denied_request_never_reaches_adapter_invocation -- --exact --test-threads=1
 
   windows-reparse-regression:
     name: Windows reparse-point and handle checks
