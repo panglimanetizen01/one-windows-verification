@@ -9,7 +9,7 @@
 
 ## Exact-SHA matrix results
 
-**Evidence boundary update (2026-10-26):** The results in the matrix below were executed against code-bearing SHA `85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd`. The canonical branch then received a documentation-only commit `a8e76ab6f3288c4391e059663e1815a361a54924` to correct the E3/E4 ledger and DoD. Until reruns pin that latest SHA, prior matrix results are historical evidence for the parent SHA, not exact-SHA evidence for the latest branch head. E3/E4 remain unaccepted.
+**Evidence boundary update (2026-10-26):** The results in the matrix below were executed against code-bearing SHA `85ded41bea3d7e2f64f0758e1bfacb376f0cb2cd`. The canonical branch then received documentation-only commits `a8e76ab6f3288c4391e059663e1815a361a54924` and `25dfbb6aa5bffd7049bf7228f0da190cb2520177` to correct the E3/E4 ledger and DoD. Results on earlier SHAs are historical until reruns against `25dfbb6aa5bffd7049bf7228f0da190cb2520177` complete. E3/E4 remain unaccepted.
 
 | Gate | Run | Result | Evidence boundary |
 |---|---|---|---|
@@ -38,7 +38,7 @@ These are release-gate blockers, not documentation-only findings. Do not claim a
 
 ## Status
 
-- Latest branch HEAD `a8e76ab6f3288c4391e059663e1815a361a54924` is not yet covered by a refreshed exact-SHA matrix; do not treat the parent-SHA matrix as current release acceptance.
+- Latest branch HEAD `25dfbb6aa5bffd7049bf7228f0da190cb2520177` requires a refreshed exact-SHA matrix; do not treat parent-SHA results as current release acceptance.
 
 - E3: **NOT ACCEPTED** pending actual Android API 35 `arm64-v8a` ELF execution and asserted output.
 - E4: **NOT ACCEPTED** pending the open root/mount/quota/fallback security requirements above.
