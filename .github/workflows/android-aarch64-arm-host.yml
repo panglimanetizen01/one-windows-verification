@@ -120,6 +120,10 @@ jobs:
           export ANDROID_AVD_HOME="$HOME/.android/avd"
           mkdir -p "$ANDROID_AVD_HOME"
           avdmanager="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
+          if [[ ! -x "$avdmanager" ]]; then
+            avdmanager="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -type f -name avdmanager -print -quit)"
+          fi
+          test -x "$avdmanager"
           devices="$("$avdmanager" list device)"
           device_id="$(printf '%s\n' "$devices" | sed -n 's/.*id: [0-9][0-9]* or "\([^"]*\)".*/\1/p' | grep -m1 '^pixel' || true)"
           test -n "$device_id"
