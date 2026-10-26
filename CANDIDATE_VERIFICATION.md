@@ -17,6 +17,12 @@ Run [40264131009](https://github.com/panglimanetizen01/one-windows-verification/
 
 Run [40265232307](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40265232307) checked out exact source SHA `78b9436c318032b1c19a4e5c110142fffc58b4d5`. Verifier unit tests passed, but the fail-closed gate returned **NOT PASSED**: 9 unchecked Definition of Done items; E3 verified 0/8 and E4 verified 0/6 in the ledger; Android API 35 runtime run [40264206706](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40264206706) remains queued; canonical release-workflow evidence cannot be read because `CANONICAL_READ_TOKEN` lacks required Actions read permission and anonymous fallback returns 404. Do not convert scoped CI passes into full row credit or weaken the gate to make it green.
 
+## Android API 35 runtime retry — 2026-10-26
+
+The ARM64-hosted runtime attempt [40273075912](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273075912) successfully built and provenance-checked an AArch64 ELF, installed the digest-verified official API 35 `arm64-v8a` system image, and installed a checksum-verified ARM64 emulator. Runtime failed before guest boot because the selected SDK `adb` executable was the wrong host architecture (`Exec format error`, exit 126). This is a host-tool selection defect, not an Android binary failure and not runtime acceptance.
+
+The workflow now explicitly checks and invokes Ubuntu's native `/usr/bin/adb`, and verifies its reported host architecture before the boot stage. Workflow-definition validation passed at [40273563333](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273563333). The exact-pin retry [40273563278](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40273563278) is running against lab commit `80710d737fe0d4aabe1f4f15acd3e6a28475dbfc`. Runtime remains **NOT ACCEPTED** until API level 35 and ABI `arm64-v8a` are read from a booted guest and the actual ONE ELF produces the expected assertion/output with exit code 0. KVM is unavailable on this runner, so software-emulation boot remains a risk.
+
 ## Current pinned candidate — `78b9436c318032b1c19a4e5c110142fffc58b4d5`
 
 This is the canonical source SHA in `CANONICAL_COMMIT.txt` at the current `verification` branch head. The verifier branch SHA and source SHA are different identifiers.
