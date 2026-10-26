@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Resolve the official Android API 35 default arm64-v8a image archive from SDK metadata."""
 # The workflow verifies the returned digest before extracting the image.
+# This helper only selects an official API-level and ABI-matched package.
 
 from __future__ import annotations
 
