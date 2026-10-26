@@ -42,6 +42,46 @@ jobs:
         shell: bash
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.source.outputs.sha }}"
+
+      - name: Install Linux native cross-compilers
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y clang lld mingw-w64 binutils-x86-64-linux-gnu
+          command -v clang
+          command -v x86_64-w64-mingw32-clang || true
+
+      - name: Install Windows native cross-compiler
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install mingw -y --no-progress
+          $env:Path += ";C:\tools\mingw64\bin;C:\tools\mingw\bin;C:\Program Files\LLVM\bin"
+          "PATH=$env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Get-Command clang -ErrorAction SilentlyContinue
+          Get-Command x86_64-w64-mingw32-clang -ErrorAction SilentlyContinue
+
+      - name: Install Android API 35 NDK toolchain
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Configure Android API 35 clang
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe"
+          else
+            clang="$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          fi
+          test -x "$clang"
+          echo "ONE_ANDROID_CLANG=$clang" >> "$GITHUB_ENV"
+          "$clang" --version
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
