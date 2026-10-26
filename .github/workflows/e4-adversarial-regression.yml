@@ -121,7 +121,7 @@ jobs:
         run: |
           function Invoke-ExpectedTest {
             param([string]$Filter)
-            $output = & cargo test --locked -p one-core -- $Filter --exact --test-threads=1 2>&1
+            $output = & cargo test --locked -p one-core -- $Filter --test-threads=1 2>&1
             $exitCode = $LASTEXITCODE
             $output | ForEach-Object { Write-Output $_ }
             if ($exitCode -ne 0) { throw "cargo test failed for $Filter with exit code $exitCode" }
@@ -132,9 +132,9 @@ jobs:
               throw "Expected the named test to execute exactly once and pass for $Filter. Filtered-only output is not PASS"
             }
           }
-          Invoke-ExpectedTest "adapter::filesystem_windows_reparse_tests::filesystem_reader_rejects_directory_junction_escape"
-          Invoke-ExpectedTest "adapter::tests::filesystem_adapter_reads_absolute_target_inside_project_root"
-          Invoke-ExpectedTest "adapter::tests::filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects"
-          Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_writes_text_target"
-          Invoke-ExpectedTest "adapter::tests::filesystem_write_adapter_rejects_oversized_content"
-          Invoke-ExpectedTest "adapter::tests::filesystem_adapters_reject_parent_directory_traversal"
+          Invoke-ExpectedTest "filesystem_reader_rejects_directory_junction_escape"
+          Invoke-ExpectedTest "filesystem_adapter_reads_absolute_target_inside_project_root"
+          Invoke-ExpectedTest "filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects"
+          Invoke-ExpectedTest "filesystem_write_adapter_writes_text_target"
+          Invoke-ExpectedTest "filesystem_write_adapter_rejects_oversized_content"
+          Invoke-ExpectedTest "filesystem_adapters_reject_parent_directory_traversal"
