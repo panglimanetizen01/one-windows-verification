@@ -194,7 +194,10 @@ jobs:
           mkdir -p "$image_parent"
           unzip -q -o "$image_archive" -d "$image_parent"
           test -f "$image_parent/arm64-v8a/source.properties"
-          grep -Eq '^AndroidVersion.ApiLevel=35
+          grep -Fqx AndroidVersion.ApiLevel=35 "$image_parent/arm64-v8a/source.properties"
+          echo "Pinned unofficial ARM64 emulator and digest-verified official API 35 arm64-v8a system image installed."
+      - name: Create API 35 AVD and probe KVM
+        timeout-minutes: 10
         shell: bash
         run: |
           set -euo pipefail
