@@ -49,7 +49,7 @@ jobs:
           set -euo pipefail
           test "$(git -C source rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools" "emulator"
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools"
           clang="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -path '*/bin/aarch64-linux-android35-clang' -print -quit)"
           test -x "$clang"
           test "$(basename "$clang")" = "aarch64-linux-android35-clang"
