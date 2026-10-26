@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-from verify_completion_ledger import verify
+from verify_completion_ledger import REQUIRED_MIRROR_WORKFLOWS, verify
 
 SHA = "2ead9dba45db4ce4105deaa81720aacc8fcadd6c"
 WEIGHTS = {
@@ -33,6 +33,12 @@ def fixture(verified_overrides=None, unchecked=False):
 
 
 class LedgerGateTests(unittest.TestCase):
+    def test_required_mirror_matrix_covers_e3_runtime_and_e4_security(self):
+        self.assertIn("ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback", REQUIRED_MIRROR_WORKFLOWS)
+        self.assertIn("ONE E4 adversarial filesystem and resource-bound regression", REQUIRED_MIRROR_WORKFLOWS)
+        self.assertIn("E4 subprocess resource guard", REQUIRED_MIRROR_WORKFLOWS)
+        self.assertIn("E4 SEC-05 subprocess timeout and output-limit verification", REQUIRED_MIRROR_WORKFLOWS)
+
     def test_full_exact_sha_acceptance_can_pass(self):
         ledger, dod, evidence = fixture()
         code, errors, summary = verify(ledger, dod, evidence, SHA)
