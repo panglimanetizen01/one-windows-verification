@@ -20,7 +20,9 @@ jobs:
   android-aarch64-arm-host:
     name: API 35 arm64-v8a ELF runtime on ARM64 host
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 35
+    # The Android boot step has a 70-minute timeout; the job-level timeout
+    # must exceed install (up to 30m) + boot + ELF build/execute.
+    timeout-minutes: 110
     steps:
       - uses: actions/checkout@v4
 
