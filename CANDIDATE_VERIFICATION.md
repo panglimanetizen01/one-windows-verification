@@ -773,3 +773,39 @@ Every checked item below is tied to source SHA `990c4e80f657aa2ac0409cfaf3bbf522
 - Newer E4 runs [subprocess resource guard 40318051774](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40318051774) and [adversarial filesystem/resource-bound regression 40318051897](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40318051897) completed successfully, with Unix and Windows jobs passing. This supports the E4 implementation/test behavior on the source those runs actually checked out, but it does not by itself satisfy E4's six ledger points or prove the candidate SHA now pinned is the same.
 - Android Linux TCG runtime [40318051835](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40318051835) failed at emulator boot; macOS TCG [40318051790](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40318051790) and community fallback [40318051803](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40318051803) were still in progress at the last query. Android cross-build/contract fallback [40318051755](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40318051755) succeeded, but cross-build is not runtime proof.
 - No ledger score or acceptance status is promoted by this note. Historical failures remain intact. Gate remains **NOT PASSED**.
+
+
+## Exact-SHA matrix reconciliation — candidate 2a7670c5166efee54426196f28a8152cbfe758b3
+
+All statuses below were checked live on 2026-10-26. The canonical ONE source pin remains `2a7670c5166efee54426196f28a8152cbfe758b3`; the lab commits only changed verification workflows, the evidence index, and pin-file newline formatting. The ONE source branch/PR was not changed.
+
+### Completed exact-SHA evidence
+
+- E1 full candidate cross-platform matrix: [run 40321188806](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321188806) — Ubuntu 24.04 and Windows Server 2025 both **success** after the Windows Clang override was configured.
+- E1 standard-library contract/integration/lint: [run 40321345683](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345683) — **success**.
+- Cross-platform candidate verification: [run 40321345494](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345494) — Ubuntu and Windows jobs **success**.
+- Linux distro verification: [run 40321345671](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345671) — Ubuntu 24.04 and Debian 12 **success**.
+- Candidate artifact integrity: [run 40321345614](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345614) — **success**.
+- Focused standard-library/database regressions: [run 40321345739](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345739) — **success**.
+- Cargo lockfile bootstrap: [run 40321345586](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345586) — **success**.
+- E4 adversarial filesystem/resource-bound regressions: [run 40321345484](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345484) — Unix and Windows jobs **success**.
+- E4 subprocess resource guard: [run 40321345794](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345794) — **success**.
+- E4 SEC-05 subprocess timeout/output limits: [run 40321345615](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345615) — Linux and Windows jobs **success**.
+- Android AArch64 cross-build/contract fallback: [run 40321345576](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345576) — **success**, but this is not runtime acceptance.
+- Synthetic-trust package provenance lab: [run 40321345885](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345885) — **success**, but synthetic trust is not protected canonical release provenance.
+
+### Android API 35 runtime — failures retained, no substitute credit
+
+- Linux TCG [run 40321345619](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345619) — **failure**: the stock Android emulator reports that ARM64 guest CPU architecture is unsupported by QEMU2 on the x86_64 host.
+- macOS HVF probe [run 40321345559](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345559) — **failure**: `HV_UNSUPPORTED`.
+- macOS software-emulation fallback [run 40321345669](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345669) — **failure**: the QEMU launch still selected HVF and exited with `HV_UNSUPPORTED`; this is infrastructure/accelerator failure, not an ELF execution result.
+- Native ARM64 Linux-host attempt [run 40321345556](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345556) — **failure** during API 35 image installation; no runtime execution occurred.
+- Community ARM64 emulator fallback [run 40321345654](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345654) — **still running** at this checkpoint. Its exact-source ELF build passed; runtime acceptance awaits successful API 35 boot, execution, exit code 0, and expected `ONE_NATIVE_BACKEND_OK` output.
+- macOS TCG workaround [run 40321345523](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321345523) — **still running** at this checkpoint; no runtime result is accepted until it completes with the required assertions.
+
+### Gate and score reconciliation
+
+- Latest gate [run 40321708009](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40321708009) correctly remains **failure**. It reads the current pin and live Actions run list, retains implementation `91/100` and verified `64/100`, and reports 9 unchecked Definition of Done items, E1/E2/E3/E4/E6 ledger verified points still `0`, and no protected canonical `ONE Package Provenance Release` run for this exact source SHA.
+- The gate was strengthened to require both `ONE Milestone 1 E1 Cross-Platform Acceptance Lab` and `ONE E1 Standard Library Windows Acceptance` in the exact-source workflow matrix. Added tests assert both names remain mandatory. Fixed weights and acceptance criteria were not changed.
+- No completed evidence listed above automatically awards ledger points. Row acceptance remains subject to each original criterion; full E1 scope, complete E4 threat/coverage requirements, Android runtime, protected release provenance, and E6 reconciliation remain distinct acceptance obligations.
+- No score was changed. Historical failed runs remain intact.
