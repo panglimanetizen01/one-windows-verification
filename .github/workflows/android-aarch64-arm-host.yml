@@ -64,9 +64,31 @@ jobs:
         run: |
           set -euo pipefail
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          # Google's SDK manager does not publish the emulator package for Linux ARM64.
-          # Install the pinned ARM64 host emulator separately; keep the official API image.
-          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35" "platform-tools" "system-images;android-35;default;arm64-v8a"
+          # The Linux ARM64 SDK repository omits the emulator package and SDK Manager
+          # consequently refuses the API 35 image. Install the official image by its
+          # published repository metadata and verify its published digest.
+          sdkmanager --install "ndk;27.2.12479018" "platforms;android-35"
+          mkdir -p "$ANDROID_HOME/platform-tools"
+          ln -sf /usr/bin/adb "$ANDROID_HOME/platform-tools/adb"
+          file -L /usr/bin/adb | tee "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+          grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
+          /usr/bin/adb version
+          repo_xml="$RUNNER_TEMP/android-system-images.xml"
+          curl --fail --location --retry 3 --retry-connrefused --output "$repo_xml" "https://dl.google.com/android/repository/sys-img/android/sys-img2-5.xml"
+          python3 scripts/resolve_android_api35_image.py "$repo_xml" "$RUNNER_TEMP/android-system-image-download.txt"
+          read -r digest_algorithm digest image_url < "$RUNNER_TEMP/android-system-image-download.txt"
+          image_archive="$RUNNER_TEMP/android-api35-arm64-system-image.zip"
+          curl --fail --location --retry 3 --retry-connrefused --output "$image_archive" "$image_url"
+          case "$digest_algorithm" in
+            sha1) echo "$digest  $image_archive" | sha1sum --check ;;
+            sha256) echo "$digest  $image_archive" | sha256sum --check ;;
+            *) echo "Unsupported system-image digest algorithm: $digest_algorithm" >&2; exit 1 ;;
+          esac
+          image_parent="$ANDROID_HOME/system-images/android-35/default"
+          mkdir -p "$image_parent"
+          unzip -q -o "$image_archive" -d "$image_parent"
+          test -f "$image_parent/arm64-v8a/source.properties"
+          grep -Fqx AndroidVersion.ApiLevel=35 "$image_parent/arm64-v8a/source.properties"
           archive="$RUNNER_TEMP/android-emulator-aarch64.zip"
           curl --fail --location --retry 3 --retry-connrefused --output "$archive" "https://github.com/Changqing-JING/android-emulator-aarch64-linux/releases/download/v2.12.0-19097-g85fa07f04ef/sdk-repo-linux_aarch64-emulator-standalone-0.zip"
           mkdir -p "$ANDROID_HOME/emulator" "$RUNNER_TEMP/emulator-unpack"
@@ -80,11 +102,10 @@ jobs:
             test -n "$found"
             cp -a "$(dirname "$found")/." "$ANDROID_HOME/emulator/"
           fi
-          file "$ANDROID_HOME/emulator/emulator"
+          file "$ANDROID_HOME/emulator/emulator" | tee "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
+          grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/EMULATOR-HOST-BINARY.txt"
           "$ANDROID_HOME/emulator/emulator" -version
-          file -L "$ANDROID_HOME/platform-tools/adb"
           test -x "$ANDROID_HOME/emulator/emulator"
-          test -x "$ANDROID_HOME/platform-tools/adb"
       - name: Android backend contract tests
         working-directory: source
         run: cargo test --locked -p one-core --test native_backend_android_aarch64
