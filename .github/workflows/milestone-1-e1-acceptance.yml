@@ -132,10 +132,10 @@ jobs:
         run: cargo --locked test -p one-core --test stdlib_builtins
       - name: E1 standard-library library unit suite
         working-directory: source
-        run: cargo --locked test -p one-core --lib
+        run: cargo --locked test -p one-core --lib -- --test-threads=1
       - name: Full workspace tests
         working-directory: source
-        run: cargo --locked test --workspace --all-targets
+        run: cargo --locked test --workspace --all-targets -- --test-threads=1
       - name: Workspace Clippy with warnings denied
         working-directory: source
         run: cargo --locked clippy --workspace --all-targets -- -D warnings
