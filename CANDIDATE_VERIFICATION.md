@@ -1,3 +1,11 @@
+## Exact-source continuation — 2026-10-27
+
+The current canonical ONE candidate is `f5c703ae339b17f6fdba8673131cfc8a28a1b295` on `milestone/100-ecosystem-20261023`. The independent pin `CANONICAL_COMMIT.txt` points to that exact source SHA.
+
+- **E1 Windows standard-library acceptance:** [run 40444641942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641942) completed successfully against this exact SHA. The job passed the complete `stdlib_builtins` integration suite, `one-core` library unit suite, repository contract checker, and warnings-denied Clippy. This includes the newly added source-level `tambah elemen daftar` and `hapus elemen daftar` regression.
+- **Remaining matrix:** cross-platform acceptance, Ubuntu/Linux distro, focused stdlib/database, artifact integrity, E4 regressions, SEC-05, Android API 35 runtime, and the fixed-weight gate are still pending/in progress for this exact SHA. They are not represented as PASS here.
+- **Disposition:** E1 has a successful Windows focused run but the complete E1 row remains partial until the full scope-defined API and exact-SHA acceptance requirements are met. E2 protected release and E6 final forensic reconciliation remain open. Scores and fixed weights are unchanged; final gate remains **NOT PASSED**.
+
 
 ## E1 Windows resource-admission test hardening — 2026-10-27
 
