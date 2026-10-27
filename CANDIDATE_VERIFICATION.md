@@ -1,5 +1,12 @@
 # ONE v0.1 — Candidate Verification Index
 
+## Latest evidence update — 2026-10-27 (exact source SHA d8ee564637f9fae3a7e95ff12be02413574c462f)
+
+- **Android API 35 AArch64 runtime: SUCCESS** — [run 40368564134](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40368564134). The workflow checked out the pinned canonical source SHA, built the native AArch64 ELF, kept the emulator alive through execution, and completed the guest run with exit code 0 and exact output `ONE_NATIVE_BACKEND_OK`. This supersedes the earlier checkpoint text below that said no successful runtime execution was available; prior failed emulator experiments remain historical failures, not passing evidence.
+- **Fixed-Weight Ledger Gate: NOT PASSED** — [run 40365813018, attempt 2](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40365813018). The live canonical Actions run-list query succeeded. The verifier still reports 92/100 implementation, 64/100 verified, 9 unchecked DoD items, E1 0/10, E2 0/8, E3 0/8, E4 0/6, E6 0/4, and no protected `ONE Package Provenance Release` run for the exact source SHA. Android runtime success does not by itself close E3's full acceptance row or the other rows.
+- No ledger weights, verified points, DoD checkboxes, source code, release configuration, or protected secrets were changed by this evidence-index update. E2 remains blocked pending an authorized protected release-path execution with the real independently configured trust material; no production release was published.
+
+
 ## Continuation checkpoint — exact candidate d8ee564637f9fae3a7e95ff12be02413574c462f — refreshed 2026-10-26
 
 Canonical source: [panglimanetizen01/one@d8ee564637f9fae3a7e95ff12be02413574c462f](https://github.com/panglimanetizen01/one/commit/d8ee564637f9fae3a7e95ff12be02413574c462f). PR #80 remains open/draft/unmerged. The only source change since c26e28789fb090ad8a684c6c6853ec2a88e3f9ca raises the SEC-05 Windows descendant-containment regression test timeout from 2s to 10s; parent and child still sleep for 30s and timeout/descendant-termination assertions remain active.
