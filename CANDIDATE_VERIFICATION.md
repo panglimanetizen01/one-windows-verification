@@ -18,6 +18,16 @@ This status refresh records outcomes observed after the initial pending-state no
 
 This index records exact-SHA evidence only. Scoped test success does not automatically award fixed-weight ledger points; E1, E2, and E6 remain open until their full row acceptance criteria and Definition of Done are satisfied.
 
+## Execution delta — 2026-10-27 (latest inspected runs)
+
+- [E1 cross-platform acceptance lab](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072841): rechecked current job metadata; Ubuntu 24.04 and Windows Server 2025 both completed with conclusion `success` for the canonical source SHA `0d0202a1405ae12aaaadf05c6916bacc70316126`. This confirms this lab run's matrix only; it does not independently satisfy the entire E1 row.
+- [Android native ARM64 host attempt](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40476757142): exact-source ELF build and upload passed, but the runtime job failed in emulator installation before Android backend contract tests or ELF execution. The actual log identifies missing bundled-library resolution for the standalone ARM64 QEMU binary (`libtcmalloc_minimal.so.4`, `libandroid-emu-tracing.so`, `libemugl_common.so`, `libandroid-emu-metrics.so`, `libglib2_linux-aarch64.so`, `libandroid-emu-curl.so`, `libandroid-emu-protos.so`, `libprotobuf.so.28.4.0`, and other emulator libraries). The failure was caused by the harness not adding the standalone emulator's shared-library directories to `LD_LIBRARY_PATH`; no ELF runtime result was produced.
+- [Android native ARM64 host fix attempt](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40477093827): a follow-up workflow commit `1dc968bf0894d1070cbd51d065e09ea408b8a078` now collects bundled `.so*` directories into `LD_LIBRARY_PATH` before running `ldd` and starting the emulator. At index update time, this run is **queued**; it is not runtime acceptance. Its install step now fails closed if unresolved shared libraries remain.
+- [Protected ONE package provenance release](https://github.com/panglimanetizen01/one/actions/runs/40467992667): latest attempt 4 failed in 2 seconds with runner ID `0`, empty runner name, and no job steps. This is concrete evidence that the job never reached workflow commands; it does not identify the secret/environment state and does not prove E2. The latest run metadata and job metadata were inspected; logs remain unavailable. Do not classify this as a code-level test failure or PASS.
+- [Fixed-weight ledger gate](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40476230235): current run checked out exact source SHA `0d0202a1405ae12aaaadf05c6916bacc70316126`; all seven verifier unit tests passed, then the gate correctly failed closed because seven DoD items remain unchecked, E1/E2/E6 have no full-row evidence, the latest Android runtime attempt failed before ELF execution, and the protected release job failed before starting.
+
+No ledger weights, acceptance criteria, scores, or Definition of Done checkboxes were changed by this evidence update.
+
 ## Completed PASS evidence for this SHA
 
 - [E4 adversarial filesystem/resource-bound regression](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072725) — Unix and Windows jobs passed.
