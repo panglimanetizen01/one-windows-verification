@@ -1,4 +1,9 @@
 
+## E4 exact-SHA acceptance reconciliation — 2026-10-27
+
+E4 was promoted to 6/6 verified in the canonical ledger using successful exact-SHA evidence for candidate `3cd146c7f30190619bc766cea8746a5fbc5778de`: adversarial filesystem/resource tests [40437159101](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40437159101), cross-platform SEC-05 subprocess timeout/output-limit and Windows descendant-containment checks [40437158976](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40437158976), and resource guard [40437158994](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40437158994). The threat review's residual limits remain explicit. The ledger/DoD reconciliation produced new candidate HEAD `467adaa5f310f60c3e10ca12f919a209e4591b03`; the pin is being advanced to this exact commit and the complete required matrix must pass again before final gate acceptance. E1/E2/E6 and protected release remain open.
+
+
 ## Ledger arithmetic reconciliation — 2026-10-27
 
 The canonical ledger's total row was corrected to match its unchanged fixed-weight rows: implementation remains 92/100 and verified row sum is 72/100 after E3 was accepted at 8/8. No row weight or criterion was changed. The resulting canonical candidate commit is `3cd146c7f30190619bc766cea8746a5fbc5778de`. The lab pin will be advanced to that exact commit and the required exact-SHA workflow matrix will run again. Previous candidate-SHA runs are not counted as proof for this new pin. E1, E2, E4, E6 and the protected-release requirement remain subject to their own evidence and acceptance.
