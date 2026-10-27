@@ -1,3 +1,20 @@
+## Follow-up status update — 2026-10-27
+
+Source candidate pin remains `f5c703ae339b17f6fdba8673131cfc8a28a1b295`. This update records subsequent workflow outcomes without awarding extra ledger points:
+
+- **PASS — Windows E1 standard-library acceptance:** [run 40444641942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641942).
+- **PASS — Android AArch64 cross-build and backend-contract fallback:** [run 40444642088](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642088). This is build/contract evidence only, not guest runtime evidence.
+- **FAIL — Android API 35 runtime using Linux QEMU TCG:** [run 40444641872](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641872). Emulator boot failed and the actual ELF execution step was skipped; do not count as Android runtime PASS.
+- **FAIL — canonical ONE hosted workflows on candidate SHA:** E1 test lab [run 40444639013](https://github.com/panglimanetizen01/one/actions/runs/40444639013), focused stdlib [run 40444639376](https://github.com/panglimanetizen01/one/actions/runs/40444639376), Linux distro [run 40444639097](https://github.com/panglimanetizen01/one/actions/runs/40444639097), One CI [run 40444639215](https://github.com/panglimanetizen01/one/actions/runs/40444639215), and E2 lab [run 40444639340](https://github.com/panglimanetizen01/one/actions/runs/40444639340). The current GitHub connector does not expose their job logs/steps, so root cause is unclassified; these failures receive no PASS credit and must not be called infrastructure-only without log evidence.
+- **Still running at the latest poll — SEC-05 Linux:** [run 40444641971](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641971), specifically native cross-compiler installation; Windows side passed.
+- **Still running at the latest poll — Android API 35 native ARM64 host:** [run 40444641879](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641879), actual guest boot/ELF runtime has not yet completed.
+- **Still running at the latest poll — Android API 35 community emulator fallback:** [run 40444642008](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642008), actual guest boot/ELF runtime has not yet completed.
+- **Gate remains FAIL:** [run 40445790570](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40445790570) did not pass. A fresh gate evaluation is triggered by this evidence-index update; this documentation update does not change source SHA or satisfy E1/E2/E6.
+
+E1 focused audit found 29 public Rust helper functions in `crates/one-core/src/stdlib.rs`; all but `display_value` have a direct call in the inspected unit or integration test files. This is a concrete test-coverage gap to address after the current exact-SHA jobs are reconciled. It does not by itself establish full E1 acceptance: the normative contract still requires stable signatures/errors, deterministic behavior, and supported-backend compatibility.
+
+Current fixed-weight score remains 92/100 implementation and 78/100 verified. E1 remains 0/10, E2 remains 0/8, E6 remains 0/4; no weights or checklist items are changed by this update. Protected `one-release` signing and independently configured trusted-publisher verification are still absent from the exact-SHA evidence.
+
 ## Latest completed-run reconciliation — 2026-10-27
 
 Candidate source SHA remains `f5c703ae339b17f6fdba8673131cfc8a28a1b295` (confirmed by `CANONICAL_COMMIT.txt`). These statuses supersede stale “in progress/queued” wording in the earlier evidence-delta paragraph below:
