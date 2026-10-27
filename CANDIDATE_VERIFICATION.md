@@ -1,3 +1,11 @@
+## Candidate pin reconciliation — 2026-10-27
+
+The current head of PR #80 / candidate branch `milestone/100-ecosystem-20261023` was verified through GitHub PR metadata as `e65454aceb60647b448a0124420fefc76d539f3e` (commit: `docs(stdlib): define map removal behavior`). The prior verifier pin `c656c0d1f0b6fe7507467f49c59fe199e24c5c89` is an ancestor/merge-base, not the current candidate branch HEAD. `CANONICAL_COMMIT.txt` has therefore been advanced to the observed PR head; the resulting pin commit is [4df3775](https://github.com/panglimanetizen01/one-windows-verification/commit/4df3775ad20485c8e37b4c9975b305a02cf0a81d). This is a selector correction, not a score award or acceptance claim. All acceptance evidence must be re-evaluated against the newly pinned exact SHA.
+
+The ledger gate run [40459014997](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459014997) produced executable log output and failed closed because E1 full-row acceptance is not recorded (0/10), E2 full-row acceptance is not recorded (0/8), E6 final forensic acceptance is not recorded (0/4), and no protected ONE Package Provenance Release run exists for the exact source SHA. These are the concrete outstanding acceptance requirements; no score, fixed weight, or DoD checkbox is changed here.
+
+---
+
 ## Canonical workflow rerun observation — 2026-10-27
 
 The independent verifier pin currently names candidate source SHA `c656c0d1f0b6fe7507467f49c59fe199e24c5c89` (confirmed from `CANONICAL_COMMIT.txt`). This supersedes the older `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9` evidence snapshot above for any claim about the current candidate; evidence tied to the older SHA is not silently carried forward.
