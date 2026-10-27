@@ -1,3 +1,28 @@
+## Latest completed-run reconciliation — 2026-10-27
+
+Candidate source SHA remains `f5c703ae339b17f6fdba8673131cfc8a28a1b295` (confirmed by `CANONICAL_COMMIT.txt`). These statuses supersede stale “in progress/queued” wording in the earlier evidence-delta paragraph below:
+
+- **PASS — Linux distro matrix:** [run 40444641979](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641979).
+- **PASS — focused standard library/database verification:** [run 40444642007](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642007).
+- **PASS — E4 adversarial filesystem/resource regression:** [run 40444642016](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642016).
+- **PASS — cross-platform Ubuntu/Windows E1 acceptance:** [run 40444642094](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642094).
+- **PASS — artifact integrity:** [run 40444641986](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641986).
+- **PASS — Cargo lockfile bootstrap:** [run 40444642107](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642107).
+- **PASS — synthetic-trust provenance lab only:** [run 40444641919](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641919). This does not replace a protected release with production trust configuration.
+- **Still in progress; no PASS credit yet — SEC-05:** [run 40444641971](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641971). The Windows job passed, but the Linux job is still installing its native cross-compilers and has not completed.
+- **Still in progress; no runtime PASS credit yet — Android API 35 AArch64 native-host run:** [run 40444641879](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641879); build job passed, runtime job is still booting the API 35 ARM64 emulator.
+- **Still in progress; no runtime PASS credit yet — Android API 35 community-emulator fallback:** [run 40444642008](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642008); actual API 35 ARM64 boot/ELF execution step has not completed.
+
+The fixed-weight gate run [40445598461](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40445598461) failed at 2026-10-27T03:42:30Z. Its snapshot preceded completion of the Linux distro, focused stdlib/database, E4 adversarial, artifact-integrity, and lockfile runs listed above, so that particular gate log has stale in-progress classifications for those runs. This reconciliation triggers a fresh gate evaluation; it does not itself award points or close acceptance rows.
+
+Open acceptance blockers remain:
+1. E1 is still 0/10 verified until the full scope-defined public reusable API and its complete row criteria are accepted; passing platform suites are necessary evidence but do not automatically satisfy full row scope.
+2. E2 is still 0/8 verified because no protected `ONE Package Provenance Release` run exists for this source SHA. The release workflow requires owner-configured `one-release` environment secrets `ONE_RELEASE_SIGNING_SEED` and `ONE_TRUSTED_PUBLISHERS`, plus a publisher ID already in that trusted store.
+3. E6 is still 0/4 verified until E1–E5, final-SHA freeze, evidence reconciliation, and protected provenance acceptance are complete.
+4. SEC-05 Linux and Android API 35 runtime jobs above remain in progress; their result must be rechecked before gate acceptance.
+
+Fixed weights remain unchanged. No unchecked DoD item is checked by this evidence-index update; final gate remains **NOT PASSED** pending the fresh gate result and closure of the blockers above.
+
 ## Exact-source evidence delta — 2026-10-27, candidate f5c703ae339b17f6fdba8673131cfc8a28a1b295
 
 The independent pin `CANONICAL_COMMIT.txt` points to exact ONE source SHA `f5c703ae339b17f6fdba8673131cfc8a28a1b295`. New completed evidence for that exact source:
