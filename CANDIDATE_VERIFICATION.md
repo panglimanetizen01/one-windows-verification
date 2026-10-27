@@ -1,5 +1,10 @@
 # ONE v0.1 — Candidate Verification Index
 
+
+## E3 acceptance reconciliation — 2026-10-27
+
+The ledger and Definition of Done in the canonical candidate branch now record E3 as VERIFIED (8/8) for source SHA `d8ee564637f9fae3a7e95ff12be02413574c462f`, based on the cross-platform acceptance run [40360134456](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134456), cross-platform build/package run [40360134467](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134467), Linux distribution run [40360134902](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134902), artifact integrity run [40360134487](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40360134487), and Android API 35 AArch64 runtime [40368564134](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40368564134). The canonical pin was checked at the mirror commits for both the cross-platform and Android evidence. This records E3 only; E1, E2, E4, E6 and final DoD reconciliation remain open until their own acceptance evidence is complete.
+
 ## Latest evidence update — 2026-10-27 (exact source SHA d8ee564637f9fae3a7e95ff12be02413574c462f)
 
 - **Android API 35 AArch64 runtime: SUCCESS** — [run 40368564134](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40368564134). The workflow checked out the pinned canonical source SHA, built the native AArch64 ELF, kept the emulator alive through execution, and completed the guest run with exit code 0 and exact output `ONE_NATIVE_BACKEND_OK`. This supersedes the earlier checkpoint text below that said no successful runtime execution was available; prior failed emulator experiments remain historical failures, not passing evidence.
