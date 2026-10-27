@@ -1,4 +1,9 @@
 
+## Ledger arithmetic reconciliation — 2026-10-27
+
+The canonical ledger's total row was corrected to match its unchanged fixed-weight rows: implementation remains 92/100 and verified row sum is 72/100 after E3 was accepted at 8/8. No row weight or criterion was changed. The resulting canonical candidate commit is `3cd146c7f30190619bc766cea8746a5fbc5778de`. The lab pin will be advanced to that exact commit and the required exact-SHA workflow matrix will run again. Previous candidate-SHA runs are not counted as proof for this new pin. E1, E2, E4, E6 and the protected-release requirement remain subject to their own evidence and acceptance.
+
+
 ## Candidate SHA realignment — 2026-10-27
 
 The canonical candidate branch `milestone/100-ecosystem-20261023` now has documentation reconciliation commit `55a4d12303e4470704b777a66aed7a9e3dc89e45` containing the evidence-backed E3 ledger and DoD acceptance. The lab pin still referenced its parent source revision, which meant the gate checked stale ledger contents. The pin is being advanced to this exact candidate commit so the gate reads the reconciled ledger. Because this changes the frozen SHA, all exact-SHA evidence must be rerun against `55a4d12303e4470704b777a66aed7a9e3dc89e45`; older run links remain historical and do not count as proof for the new pin. E1/E2/E4/E6 and protected release acceptance remain open unless their new evidence proves otherwise.
