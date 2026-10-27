@@ -13,7 +13,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-e1-acceptance-${{ github.ref_name }}
+  # Isolate candidate pins so an older exact-SHA run cannot block the current acceptance job.
+  group: one-e1-acceptance-${{ github.ref_name }}-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
