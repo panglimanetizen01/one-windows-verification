@@ -1,3 +1,8 @@
+
+## Candidate SHA realignment — 2026-10-27
+
+The canonical candidate branch `milestone/100-ecosystem-20261023` now has documentation reconciliation commit `55a4d12303e4470704b777a66aed7a9e3dc89e45` containing the evidence-backed E3 ledger and DoD acceptance. The lab pin still referenced its parent source revision, which meant the gate checked stale ledger contents. The pin is being advanced to this exact candidate commit so the gate reads the reconciled ledger. Because this changes the frozen SHA, all exact-SHA evidence must be rerun against `55a4d12303e4470704b777a66aed7a9e3dc89e45`; older run links remain historical and do not count as proof for the new pin. E1/E2/E4/E6 and protected release acceptance remain open unless their new evidence proves otherwise.
+
 # ONE v0.1 — Candidate Verification Index
 
 
