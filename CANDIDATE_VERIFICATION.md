@@ -1,3 +1,16 @@
+## Exact-source evidence delta — 2026-10-27, candidate f5c703ae339b17f6fdba8673131cfc8a28a1b295
+
+The independent pin `CANONICAL_COMMIT.txt` points to exact ONE source SHA `f5c703ae339b17f6fdba8673131cfc8a28a1b295`. New completed evidence for that exact source:
+
+- **E1 Windows standard-library acceptance: SUCCESS** — [run 40444641942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641942). Windows Server 2025 completed the standard-library integration suite, core library unit suite, full workspace tests, warnings-denied Clippy, and repository contract checker.
+- **E1 cross-platform acceptance: SUCCESS** — [run 40444642094](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642094). Both Ubuntu 24.04 and Windows Server 2025 jobs passed exact-SHA checks, standard-library integration and unit suites, full workspace tests, warnings-denied Clippy, and repository contract checks.
+- **Candidate artifact integrity: SUCCESS** — [run 40444641986](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641986).
+- **Cargo lockfile bootstrap: SUCCESS** — [run 40444642107](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642107).
+
+The following exact-SHA evidence remains incomplete at this update: Linux distribution verification [run 40444641979](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641979) is in progress; SEC-05 [run 40444641971](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641971), Android native ARM64 runtime [run 40444641879](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641879), and synthetic-trust-only provenance lab [run 40444641919](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641919) are in progress; subprocess resource guard [run 40444642033](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642033), adversarial E4 regression [run 40444642016](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642016), and focused stdlib/database verification [run 40444642007](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642007) are queued. Their results must not be inferred.
+
+The fixed-weight gate remains **NOT PASSED**: E1 0/10, E2 0/8, E6 0/4; seven Definition-of-Done items remain unchecked, and no protected `ONE Package Provenance Release` run exists for this exact source SHA. Synthetic trust evidence cannot substitute for the protected release path. The candidate source SHA and ledger weights have not been changed by this evidence-index update.
+
 ## Exact-source continuation — 2026-10-27
 
 The current canonical ONE candidate is `f5c703ae339b17f6fdba8673131cfc8a28a1b295` on `milestone/100-ecosystem-20261023`. The independent pin `CANONICAL_COMMIT.txt` points to that exact source SHA.
