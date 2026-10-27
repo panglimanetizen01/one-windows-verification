@@ -77,7 +77,9 @@ jobs:
           test -n "$device_id"
           printf 'no\n' | "$avdmanager" create avd --force --name one-api35-arm64-linux-tcg --package "system-images;android-35;default;arm64-v8a" --device "$device_id"
           log="$RUNNER_TEMP/one-android-linux-tcg.log"
-          "$ANDROID_HOME/emulator/emulator" -avd one-api35-arm64-linux-tcg -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect -accel off -no-metrics -verbose >"$log" 2>&1 &
+          # Force QEMU's software TCG accelerator through the emulator's QEMU argument boundary;
+          # -accel off alone did not establish that the guest was using the intended TCG path.
+          "$ANDROID_HOME/emulator/emulator" -feature -HVF -accel off -avd one-api35-arm64-linux-tcg -port 5554 -no-window -noaudio -no-boot-anim -camera-back none -no-snapshot -wipe-data -memory 4096 -cores 2 -gpu swiftshader_indirect -no-metrics -verbose -qemu -accel tcg >"$log" 2>&1 &
           pid=$!
           trap 'kill "$pid" 2>/dev/null || true' EXIT
           adb start-server
