@@ -113,6 +113,35 @@ def pin_at_mirror_commit(commit_sha: str, token: str, cache: dict[str, str | Non
     return pin
 
 
+def select_required_evidence_run(candidates: list[dict], accepted_names: set[str]) -> dict | None:
+    """Select the newest run for a required workflow or a valid alternative group.
+
+    Singleton groups remain fail-closed on their latest exact-SHA run. For an
+    explicitly documented alternative group (for example, community emulator
+    OR native ARM64 host), evaluate the latest run for each alternative and
+    accept the group if at least one alternative's latest run succeeded.
+    """
+    if not candidates:
+        return None
+    if len(accepted_names) == 1:
+        return max(candidates, key=lambda run: run.get("created_at", ""))
+
+    latest_by_name: dict[str, dict] = {}
+    for run in candidates:
+        name = run.get("name", "")
+        current = latest_by_name.get(name)
+        if current is None or run.get("created_at", "") > current.get("created_at", ""):
+            latest_by_name[name] = run
+
+    successful = [
+        run for run in latest_by_name.values()
+        if run.get("status") == "completed" and run.get("conclusion") == "success"
+    ]
+    if successful:
+        return max(successful, key=lambda run: run.get("created_at", ""))
+    return max(latest_by_name.values(), key=lambda run: run.get("created_at", ""))
+
+
 def check_live_workflow_evidence(source_sha: str) -> list[str]:
     errors: list[str] = []
     mirror_token = os.environ.get("GITHUB_TOKEN", "")
@@ -147,11 +176,11 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
             pin = pin_at_mirror_commit(run.get("head_sha", ""), mirror_token, pin_cache)
             if pin == source_sha:
                 candidates.append(run)
-        candidates.sort(key=lambda run: run.get("created_at", ""), reverse=True)
         if not candidates:
             errors.append(f"no independent run found for current source SHA: {label}")
             continue
-        latest = candidates[0]
+        latest = select_required_evidence_run(candidates, accepted_names)
+        assert latest is not None
         if latest.get("status") != "completed" or latest.get("conclusion") != "success":
             errors.append(
                 f"{label} for source SHA {source_sha} is "
