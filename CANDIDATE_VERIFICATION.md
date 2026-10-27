@@ -1,3 +1,19 @@
+## Canonical workflow rerun observation — 2026-10-27
+
+The independent verifier pin currently names candidate source SHA `c656c0d1f0b6fe7507467f49c59fe199e24c5c89` (confirmed from `CANONICAL_COMMIT.txt`). This supersedes the older `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9` evidence snapshot above for any claim about the current candidate; evidence tied to the older SHA is not silently carried forward.
+
+Rerun requests were accepted for canonical runs:
+- Standard Library Focused Verification: [40438771797](https://github.com/panglimanetizen01/one/actions/runs/40438771797)
+- Linux Distribution Conformance: [40438771688](https://github.com/panglimanetizen01/one/actions/runs/40438771688)
+- E1 Standard Library Test Lab: [40438771733](https://github.com/panglimanetizen01/one/actions/runs/40438771733)
+- One CI: [40438771646](https://github.com/panglimanetizen01/one/actions/runs/40438771646)
+
+The latest job metadata retrieved after these reruns reports failure conclusions and empty step arrays for the relevant jobs. Direct log retrieval returned `404 BlobNotFound`. Therefore these are **unclassified canonical workflow failures / evidence-access blocker**, not proven source-test failures and not passes. E2 run [40438771687](https://github.com/panglimanetizen01/one/actions/runs/40438771687) also reports failure; the connector's rerun action was blocked, and the protected release path remains unproven.
+
+No source code, score, fixed weight, or Definition of Done checkbox was changed by this evidence update. Older matrix evidence tied to `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9` does not establish final-SHA acceptance for `c656c0d1f0b6fe7507467f49c59fe199e24c5c89`. The fixed-weight ledger remains implementation **92/100**, verified **78/100**; the gate remains closed pending exact-SHA canonical evidence, full E1 scope, protected E2 release/provenance, and E6 reconciliation.
+
+---
+
 ## Fresh gate result after matrix completion — 2026-10-27 04:24 UTC
 
 The fresh gate [run 40449434345](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449434345) completed **NOT PASSED** after all required exact-SHA mirror jobs had concluded. This is no longer a stale pending-job failure. The verifier's explicit remaining blockers are:
