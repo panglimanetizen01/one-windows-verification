@@ -1148,3 +1148,21 @@ Fix committed to the lab workflow in [97b02dc](https://github.com/panglimanetize
 Correction to the earlier retry note: the workflow now separates the NDK build onto an x86_64 Ubuntu host and the runtime onto an ARM64 host. The build job in [run 40365397466](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40365397466), pinned to source SHA `d8ee564637f9fae3a7e95ff12be02413574c462f`, completed successfully. Its logs prove the ONE backend generated C containing `puts("ONE_NATIVE_BACKEND_OK");`, the generated C compiled with the API 35 NDK, and the resulting executable was identified as ELF64 AArch64 with interpreter `/system/bin/linker64`; the artifact upload also passed.
 
 The dependent ARM64 runtime job installed the API 35 image and emulator, passed Android backend contract tests, and entered the emulator boot step. At the latest check that boot step was still in progress; the ELF had not yet been executed on Android. Therefore E3 remains **not accepted** until the exact artifact runs on the API 35 `arm64-v8a` guest with exit code `0` and final output `ONE_NATIVE_BACKEND_OK`.
+
+
+## Exact-source matrix update — 2026-10-27 04:32 UTC
+
+Canonical ONE source SHA: `c656c0d1f0b6fe7507467f49c59fe199e24c5c89`. The independent verification pin is synchronized to this SHA. Results below belong to this candidate only:
+
+- [E1 cross-platform acceptance lab](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449737977) — completed success on Ubuntu 24.04 and Windows Server 2025.
+- [Windows E1 standard-library acceptance](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449737984) — completed success.
+- [Linux distribution verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449737988) — completed success.
+- [Cross-platform verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738072) — completed success.
+- [SEC-05 subprocess timeout/output cap](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738070) — completed success.
+- [E4 adversarial filesystem/resource-bound regressions](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449737975) — completed success.
+- [Focused standard-library/database verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449737961) — completed success.
+- [Android AArch64 device artifact build](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738040) and [x86_64-host cross-build/contract fallback](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738058) — completed success; these prove build/contract only, not guest runtime.
+- [Android API 35 Linux TCG runtime attempt](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738003) — failed during emulator boot; no ELF guest execution is claimed.
+- [Candidate artifact integrity](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738046), [native ARM64 Android runtime](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738071), and [community ARM64 emulator fallback](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449738029) were still in progress at this checkpoint.
+
+These completed successes are useful exact-SHA evidence, but they do not by themselves award full E1 row points or close E2/E6. The fixed-weight gate must be rerun after all required jobs finish. E2 still requires a protected canonical release/provenance run for this exact SHA using owner-configured signing and trusted-publisher secrets; no secret is recorded here. Do not change fixed weights or check DoD items without direct evidence.
