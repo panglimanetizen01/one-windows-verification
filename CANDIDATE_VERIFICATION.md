@@ -1,3 +1,28 @@
+## Fresh gate result after matrix completion — 2026-10-27 04:24 UTC
+
+The fresh gate [run 40449434345](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40449434345) completed **NOT PASSED** after all required exact-SHA mirror jobs had concluded. This is no longer a stale pending-job failure. The verifier's explicit remaining blockers are:
+
+1. Seven unchecked Definition of Done acceptance items.
+2. E1 full-row verified evidence remains 0/10. Exact-SHA standard-library suite passes on Linux and Windows, but the ledger requires the broader reusable API scope to be completed and formally accepted before full-row credit.
+3. E2 verified evidence remains 0/8. No protected `one-release` package provenance workflow run exists for source SHA `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9`. The independent artifact integrity and package/build checks are not a substitute for a protected release signed by an independently configured trusted publisher.
+4. E6 verified evidence remains 0/4 because the final forensic audit cannot close while E1/E2 and mandatory repository checks remain open.
+
+Completed exact-SHA mirror evidence:
+- E1 cross-platform acceptance [40446516694](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516694): Ubuntu and Windows pass.
+- E4 filesystem/resource bounds [40446516704](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516704): Unix and Windows pass.
+- SEC-05 subprocess limits [40446516581](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516581): Linux and Windows pass.
+- Linux distribution [40446516598](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516598): pass.
+- Artifact integrity [40446516592](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516592): pass.
+- Cross-platform build/package [40446516600](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516600): Ubuntu and Windows pass.
+- Android API 35 AArch64 runtime [40446516512](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516512): exact-source build and native ARM64 runtime pass.
+- macOS HVF probe [40446516741](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516741): fails before guest execution with `HV_UNSUPPORTED`; superseded for runtime coverage by the successful native ARM64 run, not counted as a pass.
+
+The canonical ONE repo's E1, focused stdlib, general CI, Linux distro, and E2 workflows remain failed on the exact source SHA after retry attempt 2; their logs are unavailable via the current GitHub connector and must be classified by the repository owner/maintainer using the Actions UI or repaired log access. They are not silently replaced by mirror tests.
+
+Fixed weights and scores unchanged: implementation **92/100**, verified **78/100**. No DoD boxes or ledger row scores were changed. No source SHA changed in this update. The gate must remain closed until the actual E1 scope, protected E2 release/provenance, canonical hosted-workflow failures, and E6 forensic reconciliation are resolved.
+
+---
+
 ## Completed exact-SHA matrix reconciliation — 2026-10-27 04:12 UTC
 
 Canonical source SHA: `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9`. This entry records results from jobs that completed after the preceding gate snapshot; it does not alter source code, ledger weights, score, or DoD checkboxes.
