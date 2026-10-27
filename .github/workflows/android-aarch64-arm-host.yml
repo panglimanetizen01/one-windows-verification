@@ -213,6 +213,7 @@ jobs:
           test -n "$emulator_lib_dirs"
           export LD_LIBRARY_PATH="$emulator_lib_dirs${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           printf 'LD_LIBRARY_PATH=%s\n' "$LD_LIBRARY_PATH" | tee "$RUNNER_TEMP/EMULATOR-LD-LIBRARY-PATH.txt"
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
           ldd "$qemu_bin" | tee "$RUNNER_TEMP/QEMU-LDD.txt"
           if grep -Fq 'not found' "$RUNNER_TEMP/QEMU-LDD.txt"; then
             echo "ARM64 QEMU has unresolved shared-library dependencies after adding bundled libraries" >&2
