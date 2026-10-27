@@ -190,6 +190,7 @@ jobs:
           grep -Fqx AndroidVersion.ApiLevel=35 "$image_parent/arm64-v8a/source.properties"
           archive="$RUNNER_TEMP/android-emulator-aarch64.zip"
           curl --fail --location --retry 3 --retry-connrefused --output "$archive" "https://github.com/Changqing-JING/android-emulator-aarch64-linux/releases/download/v2.12.0-19097-g85fa07f04ef/sdk-repo-linux_aarch64-emulator-standalone-0.zip"
+          echo "67ce4f576687b067d9b36668405b86b9749745d67d31037616aac12c49c63a65  $archive" | sha256sum --check --strict
           mkdir -p "$ANDROID_HOME/emulator" "$RUNNER_TEMP/emulator-unpack"
           unzip -q "$archive" -d "$RUNNER_TEMP/emulator-unpack"
           if [[ -f "$RUNNER_TEMP/emulator-unpack/emulator" && -x "$RUNNER_TEMP/emulator-unpack/emulator" ]]; then
