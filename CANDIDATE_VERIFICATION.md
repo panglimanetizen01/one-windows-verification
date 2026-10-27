@@ -1,3 +1,23 @@
+## Exact-SHA ecosystem matrix — candidate `e10b15053c7b4061deab1d0dd79b94722e92944a` — 2026-10-27
+
+Completed scoped PASS evidence on the pinned source SHA:
+- [E1 Ubuntu + Windows Server 2025 acceptance](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711761)
+- [Focused standard-library and database verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711473)
+- [Linux distribution verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711636)
+- [Cross-platform verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711617)
+- [Candidate artifact integrity](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711720)
+- [E4 adversarial filesystem/resource-bound regression](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711673)
+- [E4 SEC-05 subprocess timeout/output-limit checks](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711493)
+- [E4 subprocess resource guard](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711662)
+- [Cargo lockfile bootstrap](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711734)
+- [Package provenance end-to-end lab using synthetic trust only](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711683)
+
+Android API 35 `arm64-v8a` runtime execution is not yet accepted. The software-emulation attempt failed; the community emulator, native ARM64 Linux, and macOS TCG runtime paths remain in progress. Cross-builds do not substitute for executing the actual ELF and observing exit code 0 with exact output `ONE_NATIVE_BACKEND_OK`.
+
+These are scoped exact-SHA results, not blanket row acceptance. E1 remains open until the complete scope-defined standard-library row is accepted; E2 remains open because the protected `one-release` environment and production trusted publisher have not been exercised; E6 remains open until all criteria reconcile. Fixed weights and score values are unchanged.
+
+---
+
 ## Exact-SHA E1 public map-removal regression — 2026-10-27
 
 Candidate source SHA `e10b15053c7b4061deab1d0dd79b94722e92944a` adds explicit public API documentation for `one_core::stdlib::map_remove` and regression coverage for existing-key removal, missing-key no-op, wrong receiver type, and wrong key type. Evidence: [contract documentation commit](https://github.com/panglimanetizen01/one/commit/e50387c0be8ef9ccde9882468e274d2f883c7c3d), [regression test commit](https://github.com/panglimanetizen01/one/commit/e10b15053c7b4061deab1d0dd79b94722e92944a), and [exact-SHA Windows E1 run 40459711688](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711688). The run checked out the exact SHA; all 36 `stdlib_builtins` integration tests passed, including the new map-removal test, and all 241 `one-core` library tests passed. Clippy and repository contract checks were also run in that job.
