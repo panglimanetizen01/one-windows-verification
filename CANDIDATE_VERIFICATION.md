@@ -1,3 +1,20 @@
+## Reconciliation after completed matrix jobs — 2026-10-27 04:03 UTC
+
+This entry supersedes the prior “still running” status for jobs that have since concluded. Canonical ONE source SHA remains `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9`.
+
+- **PASS — E1 exact-SHA cross-platform acceptance:** [run 40446516694](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516694), Ubuntu 24.04 and Windows Server 2025 both successful.
+- **PASS — E4 adversarial filesystem/resource bounds:** [run 40446516704](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516704), Unix and Windows jobs successful.
+- **PASS — E4 SEC-05 subprocess timeout/output limit:** [run 40446516581](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516581), Windows and Linux jobs successful.
+- **PASS — Linux distro matrix:** [run 40446516598](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516598), completed successfully.
+- **FAIL — macOS ARM64 HVF Android runtime probe:** [run 40446516741](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516741) failed before ELF execution with `HVF error: HV_UNSUPPORTED` / `failed to initialize HVF: Invalid argument`. This is a runner virtualization limitation and is not Android runtime evidence. The independent native-ARM64 Linux-host and macOS TCG attempts remain in progress; neither is credited until actual API 35 guest ELF execution passes.
+- **Still pending, not credited:** exact-SHA artifact integrity [run 40446516592](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516592), cross-platform build/package [run 40446516600](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516600), native ARM64 runtime [run 40446516512](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516512), and macOS TCG fallback [run 40446516732](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40446516732).
+- **Canonical hosted workflows remain FAIL, cause unclassified:** retries (attempt 2) for E1 [40446485367](https://github.com/panglimanetizen01/one/actions/runs/40446485367), focused stdlib [40446485242](https://github.com/panglimanetizen01/one/actions/runs/40446485242), CI [40446485250](https://github.com/panglimanetizen01/one/actions/runs/40446485250), Linux distro [40446485354](https://github.com/panglimanetizen01/one/actions/runs/40446485354), and E2 [40446485332](https://github.com/panglimanetizen01/one/actions/runs/40446485332) all concluded failure again. GitHub exposes no step summaries for these jobs and the log endpoint returns BlobNotFound. Do not infer source-test failure or infrastructure-only failure without usable logs. Independent exact-SHA lab passes do not silently replace these mandatory canonical gates.
+- Latest gate [run 40447344398](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40447344398) correctly remains **NOT PASSED**: required artifact/cross-platform/Android jobs were incomplete at its snapshot, E1/E2/E6 full-row acceptance remains open, seven DoD items remain unchecked, and no protected release exists for this exact SHA.
+
+No points, weights, DoD checkboxes, or source code were changed. Score remains implementation 92/100, verified 78/100. The next gate evaluation must follow completion of the pending exact-SHA matrix; E2 still requires the authorized protected release path with the real trusted-publisher configuration.
+
+---
+
 ## Exact-SHA continuation update — 2026-10-27 04:00 UTC
 
 Canonical ONE source SHA remains `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9`. This is an evidence-only update; it does not change source code, ledger points, weights, or DoD acceptance.
