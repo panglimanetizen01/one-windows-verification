@@ -146,6 +146,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
           test "$(uname -m)" = "aarch64"
           uname -a
+          printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/ONE_SOURCE_SHA.txt"
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -319,4 +320,23 @@ jobs:
           test "$status" -eq 0
           test "$(printf "%s" "$output" | tr -d "\\r" | tail -n 1)" = "ONE_NATIVE_BACKEND_OK"
           "$adb" -s emulator-5554 shell rm -f "$remote"
+
+      - name: Upload Android API 35 runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-api35-arm64-runtime-evidence-${{ steps.target.outputs.sha }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/ONE_SOURCE_SHA.txt
+            ${{ runner.temp }}/one-android-arm-host.log
+            ${{ runner.temp }}/one-android-runtime-result.txt
+            ${{ runner.temp }}/one-android-runtime-elf.txt
+            ${{ runner.temp }}/one-android-elf/one-native-android-elf
+            ${{ runner.temp }}/one-android-elf/one-native-android-elf.sha256
+            ${{ runner.temp }}/QEMU-HOST-BINARY.txt
+            ${{ runner.temp }}/QEMU-LDD.txt
+            ${{ runner.temp }}/EMULATOR-HOST-BINARY.txt
+            ${{ runner.temp }}/EMULATOR-LD-LIBRARY-PATH.txt
 
