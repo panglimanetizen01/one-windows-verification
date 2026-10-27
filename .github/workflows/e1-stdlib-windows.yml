@@ -64,7 +64,7 @@ jobs:
         run: cargo --locked test -p one-core --test stdlib_builtins
       - name: Complete E1 standard-library library unit suite
         working-directory: source
-        run: cargo --locked test -p one-core --lib
+        run: cargo --locked test -p one-core --lib -- --test-threads=1
       - name: Workspace contract checker
         working-directory: source
         run: python tools/check_contract.py
