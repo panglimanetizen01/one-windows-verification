@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-from verify_completion_ledger import REQUIRED_ANDROID_RUNTIME_WORKFLOWS, REQUIRED_MIRROR_WORKFLOWS, verify
+from verify_completion_ledger import REQUIRED_ANDROID_RUNTIME_WORKFLOWS, REQUIRED_MIRROR_WORKFLOWS, select_required_evidence_run, verify
 
 SHA = "2ead9dba45db4ce4105deaa81720aacc8fcadd6c"
 WEIGHTS = {
@@ -41,6 +41,49 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("ONE E4 adversarial filesystem and resource-bound regression", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("E4 subprocess resource guard", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("E4 SEC-05 subprocess timeout and output-limit verification", REQUIRED_MIRROR_WORKFLOWS)
+
+    def test_android_alternative_accepts_latest_success_of_either_supported_runtime(self):
+        runs = [
+            {
+                "name": "ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback",
+                "created_at": "2026-10-27T02:30:00Z",
+                "status": "completed",
+                "conclusion": "failure",
+            },
+            {
+                "name": "ONE Android AArch64 runtime — native ARM64 Linux host",
+                "created_at": "2026-10-27T02:29:00Z",
+                "status": "completed",
+                "conclusion": "success",
+            },
+        ]
+        selected = select_required_evidence_run(runs, REQUIRED_ANDROID_RUNTIME_WORKFLOWS)
+        self.assertEqual(selected["name"], "ONE Android AArch64 runtime — native ARM64 Linux host")
+        self.assertEqual(selected["conclusion"], "success")
+
+    def test_android_alternative_does_not_reuse_stale_success_for_same_workflow(self):
+        runs = [
+            {
+                "name": "ONE Android AArch64 runtime — native ARM64 Linux host",
+                "created_at": "2026-10-27T02:20:00Z",
+                "status": "completed",
+                "conclusion": "success",
+            },
+            {
+                "name": "ONE Android AArch64 runtime — native ARM64 Linux host",
+                "created_at": "2026-10-27T02:30:00Z",
+                "status": "completed",
+                "conclusion": "failure",
+            },
+            {
+                "name": "ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback",
+                "created_at": "2026-10-27T02:29:00Z",
+                "status": "completed",
+                "conclusion": "failure",
+            },
+        ]
+        selected = select_required_evidence_run(runs, REQUIRED_ANDROID_RUNTIME_WORKFLOWS)
+        self.assertEqual(selected["conclusion"], "failure")
 
     def test_full_exact_sha_acceptance_can_pass(self):
         ledger, dod, evidence = fixture()
