@@ -1,6 +1,6 @@
 ## Follow-up status update — 2026-10-27
 
-Source candidate pin remains `f5c703ae339b17f6fdba8673131cfc8a28a1b295`. This update records subsequent workflow outcomes without awarding extra ledger points:
+Canonical source pin has advanced to `e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9` after adding direct unit coverage for the public `display_value` helper in [source commit](https://github.com/panglimanetizen01/one/commit/e6c0aaa5c14f0a2e00688956ebd1bc7c4716e7a9). This source change invalidates candidate-specific test evidence from the previous SHA `f5c703ae339b17f6fdba8673131cfc8a28a1b295`; all mandatory source-bound checks must be rerun against the new pin before acceptance. This update records subsequent workflow outcomes without awarding extra ledger points:
 
 - **PASS — Windows E1 standard-library acceptance:** [run 40444641942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444641942).
 - **PASS — Android AArch64 cross-build and backend-contract fallback:** [run 40444642088](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642088). This is build/contract evidence only, not guest runtime evidence.
@@ -11,7 +11,7 @@ Source candidate pin remains `f5c703ae339b17f6fdba8673131cfc8a28a1b295`. This up
 - **Still running at the latest poll — Android API 35 community emulator fallback:** [run 40444642008](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40444642008), actual guest boot/ELF runtime has not yet completed.
 - **Gate remains FAIL:** [run 40445790570](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40445790570) did not pass. A fresh gate evaluation is triggered by this evidence-index update; this documentation update does not change source SHA or satisfy E1/E2/E6.
 
-E1 focused audit found 29 public Rust helper functions in `crates/one-core/src/stdlib.rs`; all but `display_value` have a direct call in the inspected unit or integration test files. This is a concrete test-coverage gap to address after the current exact-SHA jobs are reconciled. It does not by itself establish full E1 acceptance: the normative contract still requires stable signatures/errors, deterministic behavior, and supported-backend compatibility.
+E1 focused audit found 29 public Rust helper functions in `crates/one-core/src/stdlib.rs`. The new candidate adds direct unit assertions for `display_value` across text, integer, booleans, nothing, nested list, and ordered mapping representations. These assertions are not yet verified by CI on the new SHA. This does not by itself establish full E1 acceptance: the normative contract still requires stable signatures/errors, deterministic behavior, and supported-backend compatibility.
 
 Current fixed-weight score remains 92/100 implementation and 78/100 verified. E1 remains 0/10, E2 remains 0/8, E6 remains 0/4; no weights or checklist items are changed by this update. Protected `one-release` signing and independently configured trusted-publisher verification are still absent from the exact-SHA evidence.
 
