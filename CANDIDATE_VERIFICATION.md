@@ -29,11 +29,11 @@ This index records exact-SHA evidence only. Scoped test success does not automat
 
 ## Still pending or blocked
 
-- [E1 cross-platform acceptance lab](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072841) — one platform passed; the other was still running at last check.
+- [E1 cross-platform acceptance lab](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072841) — Windows passed; Ubuntu remains in progress at `Install Linux native cross-compilers` on the latest refresh.
 - [Cross-platform verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072726) — **completed PASS** on both Windows Server 2025 and Ubuntu.
 - [Candidate artifact integrity](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072667) — **completed PASS** for exact-SHA Linux/Windows bundles.
-- [Android API 35 AArch64 runtime, community fallback](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072659) and [native ARM64 host](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072760) — runtime acceptance not yet concluded.
-- [Protected ONE package provenance release](https://github.com/panglimanetizen01/one/actions/runs/40467992667) — failed before runner allocation (runner ID 0, no steps); a rerun was requested but again failed before any steps. This is an infrastructure/runner failure, not a proven source test failure, and production trusted-publisher acceptance remains unproven.
+- [Android API 35 AArch64 runtime, community fallback](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072659) and [native ARM64 host](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072760) — runtime acceptance not yet concluded; the community job remains at emulator boot/ELF execution and has not yet recorded the required exit code/output.
+- [Protected ONE package provenance release](https://github.com/panglimanetizen01/one/actions/runs/40467992667) — the initial attempt failed before runner allocation and exposed no job logs through the available connector. A fresh job retry was accepted by GitHub at 2026-10-27 and is currently **queued** (job ID `122086729327` at latest status refresh); it has not executed and cannot be counted as PASS. Production trusted-publisher acceptance remains unproven.
 - [Fixed-weight ledger gate](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072703) — failed closed; implementation 92/100, verified 78/100; E1 0/10, E2 0/8, E6 0/4; seven Definition of Done items remain unchecked.
 
 The previous cumulative evidence notes are preserved in `CANDIDATE_VERIFICATION_ARCHIVE_20261027.md`. No score, fixed weight, or Definition of Done checkbox is altered by this index update.
