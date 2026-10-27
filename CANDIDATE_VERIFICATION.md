@@ -1,3 +1,11 @@
+## Exact-SHA E1 public map-removal regression — 2026-10-27
+
+Candidate source SHA `e10b15053c7b4061deab1d0dd79b94722e92944a` adds explicit public API documentation for `one_core::stdlib::map_remove` and regression coverage for existing-key removal, missing-key no-op, wrong receiver type, and wrong key type. Evidence: [contract documentation commit](https://github.com/panglimanetizen01/one/commit/e50387c0be8ef9ccde9882468e274d2f883c7c3d), [regression test commit](https://github.com/panglimanetizen01/one/commit/e10b15053c7b4061deab1d0dd79b94722e92944a), and [exact-SHA Windows E1 run 40459711688](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40459711688). The run checked out the exact SHA; all 36 `stdlib_builtins` integration tests passed, including the new map-removal test, and all 241 `one-core` library tests passed. Clippy and repository contract checks were also run in that job.
+
+This is scoped E1 regression evidence only. It does not establish full E1 row acceptance or authorize verified-point promotion; full standard-library scope and the global gate remain subject to their separate acceptance criteria. Fixed weights and ledger scores were not changed.
+
+---
+
 ## Candidate pin reconciliation — 2026-10-27
 
 The current head of PR #80 / candidate branch `milestone/100-ecosystem-20261023` was verified through GitHub PR metadata as `e65454aceb60647b448a0124420fefc76d539f3e` (commit: `docs(stdlib): define map removal behavior`). The prior verifier pin `c656c0d1f0b6fe7507467f49c59fe199e24c5c89` is an ancestor/merge-base, not the current candidate branch HEAD. `CANONICAL_COMMIT.txt` has therefore been advanced to the observed PR head; the resulting pin commit is [4df3775](https://github.com/panglimanetizen01/one-windows-verification/commit/4df3775ad20485c8e37b4c9975b305a02cf0a81d). This is a selector correction, not a score award or acceptance claim. All acceptance evidence must be re-evaluated against the newly pinned exact SHA.
