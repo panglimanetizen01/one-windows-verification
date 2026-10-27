@@ -207,9 +207,15 @@ jobs:
           test -x "$qemu_bin"
           file "$qemu_bin" | tee "$RUNNER_TEMP/QEMU-HOST-BINARY.txt"
           grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/QEMU-HOST-BINARY.txt"
+          # The standalone ARM64 emulator ships shared libraries outside system paths.
+          # Include bundled library directories before dependency validation and boot.
+          emulator_lib_dirs="$(find "$ANDROID_HOME/emulator" -type f -name '*.so*' -printf '%h\n' | sort -u | paste -sd: -)"
+          test -n "$emulator_lib_dirs"
+          export LD_LIBRARY_PATH="$emulator_lib_dirs${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          printf 'LD_LIBRARY_PATH=%s\n' "$LD_LIBRARY_PATH" | tee "$RUNNER_TEMP/EMULATOR-LD-LIBRARY-PATH.txt"
           ldd "$qemu_bin" | tee "$RUNNER_TEMP/QEMU-LDD.txt"
           if grep -Fq 'not found' "$RUNNER_TEMP/QEMU-LDD.txt"; then
-            echo "ARM64 QEMU has unresolved shared-library dependencies" >&2
+            echo "ARM64 QEMU has unresolved shared-library dependencies after adding bundled libraries" >&2
             exit 1
           fi
           "$ANDROID_HOME/emulator/emulator" -version
