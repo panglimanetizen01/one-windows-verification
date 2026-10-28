@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `28d1384588662cc93f405dc9dd5f3012183d249f`.
+Canonical ONE source SHA under verification: `72c4d3d079a11d41e3410408898e6fe3ddcc9d05`.
 
 
 
@@ -545,7 +545,7 @@ This is a coverage inventory, not a score promotion.
 The source branch advanced from `6d492006f9fa873fbd7d8ad61fa5833df707b1f6` to `28d1384588662cc93f405dc9dd5f3012183d249f` to relabel the old E4 reconciliation section as historical and add the current candidate evidence section. This is a documentation-only change; nevertheless, all prior workflow runs checked out the previous source SHA and are historical for the new pin. Do not count them as current-SHA acceptance. The new exact-SHA matrix must complete before the fixed-weight gate can accept this candidate. The verifier pin and README are being synchronized to `28d1384588662cc93f405dc9dd5f3012183d249f`. No ledger points or DoD items are changed by this pin update.
 
 
-## Current-pin matrix status — source SHA `28d1384588662cc93f405dc9dd5f3012183d249f`
+## Historical exact-SHA matrix — source SHA `28d1384588662cc93f405dc9dd5f3012183d249f` (superseded)
 
 This section records current-pin workflow state as observed on 2026-10-28; all links below checked out the exact canonical source SHA `28d1384588662cc93f405dc9dd5f3012183d249f`.
 
@@ -574,3 +574,8 @@ The fixed-weight gate cannot pass yet. E1/E2/E4/E6 remain 0 verified until their
 ### Android API 35 runtime completion — 2026-10-28T10:24Z
 
 The current-pin native ARM64 runtime [40669813305](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813305) has completed successfully on source SHA `28d1384588662cc93f405dc9dd5f3012183d249f`. The job verified Android API 35 and guest ABI `arm64-v8a`, executed the exact-source generated AArch64 ELF, recorded exit code `0` and output `ONE_NATIVE_BACKEND_OK`, and uploaded source-bound evidence artifact [12808866185](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813305/artifacts/12808866185). The matrix is now complete for the listed scoped workflows; the fixed-weight gate must be re-evaluated after this status update. This does not close E1/E2/E4/E6 or authorize a release.
+
+
+## Current candidate freeze — source SHA `72c4d3d079a11d41e3410408898e6fe3ddcc9d05`
+
+The canonical source advanced from `28d1384588662cc93f405dc9dd5f3012183d249f` to `72c4d3d079a11d41e3410408898e6fe3ddcc9d05` through a documentation-only acceptance record that provisionally accepts E4 at 6/6 within the declared Linux/Windows/Android scope and raises the ledger's provisional verified subtotal to 78/100. The prior matrix remains historical because it checked out `28d138...`; all required exact-SHA evidence must rerun against `72c4d3d079a11d41e3410408898e6fe3ddcc9d05` before the gate can accept the new ledger. The independent pin and README now target `72c4d3d079a11d41e3410408898e6fe3ddcc9d05`. The protected production release has not been dispatched, and E1/E2/E6 remain open.
