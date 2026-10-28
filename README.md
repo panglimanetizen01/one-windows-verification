@@ -4,7 +4,7 @@ Temporary public verification mirror for independent Linux and Windows verificat
 
 The canonical source repository remains private: `panglimanetizen01/one`.
 
-Current canonical verification target: `a9c9c85d6876e0c143ff7b874a3b8ee394e7cb78`.
+Current canonical verification target: `d739a05b547eedfa00a14631626d44f7b2ac4358`.
 
 This repository exists only to execute the canonical source snapshot on GitHub-hosted runners without requiring a paid GitHub upgrade.
 
