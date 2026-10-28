@@ -1,6 +1,18 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `c5ba60b16e0356753ffbd10d448b47dce64f01bb`.
+## Active candidate state — 2026-10-28 (authoritative; supersedes historical snapshots below)
+
+- Canonical source repository/branch: [panglimanetizen01/one](https://github.com/panglimanetizen01/one/tree/milestone/100-ecosystem-20261023).
+- Current source candidate: `e3dc049e76620de0a6d5cb0971067fcd436ab977` ([commit](https://github.com/panglimanetizen01/one/commit/e3dc049e76620de0a6d5cb0971067fcd436ab977)).
+- The source candidate advanced through documentation-only reconciliation after observed candidate `65d09e3f9ed8639ff0d22a948ada06c3def36c22`; prior workflow results do not apply to this SHA unless their job checkout explicitly proves it.
+- Canonical source workflows observed before the documentation commits (runs 40699615876, 40699615548, 40699615687, 40699616047, 40699615916, 40699615984) reported failure with null/empty steps and unavailable logs. These are unresolved infrastructure/evidence-access failures, not source-test results.
+- **Current exact-SHA matrix for `e3dc049e76620de0a6d5cb0971067fcd436ab977`: NOT YET VERIFIED.** No current-SHA test pass is claimed in this index at this time. Any automatic workflow started by this pin update must be inspected for exact checkout SHA, completed steps/logs, exit codes, and required artifacts before assigning credit.
+- Current ledger: 92/100 implementation points provisional; E3 0/8, E4 0/6, E5 0/4 verified for current candidate; carried-forward F/C ledger arithmetic 60/100 only. Final exact-SHA score **UNKNOWN / NOT RECONCILED**. DoD: 3 checked / 10 unchecked. Gate **NOT PASSED**.
+- E2 protected production provenance release remains unauthorized and has not been dispatched. No merge or release is authorized.
+
+---
+
+Canonical ONE source SHA under verification: `e3dc049e76620de0a6d5cb0971067fcd436ab977`.
 
 
 
