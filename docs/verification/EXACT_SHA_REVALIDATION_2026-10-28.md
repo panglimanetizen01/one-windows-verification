@@ -39,3 +39,13 @@ These are unsigned verification artifacts, not a protected production provenance
 The [fixed-weight ledger gate — run 40735752869](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40735752869) failed. Its captured log reported 10 unchecked Definition-of-Done items, full-row acceptance still unrecorded for E1–E6, several required runs still pending at the time of evaluation, and no protected `ONE Package Provenance Release` for this exact source SHA. The gate result is a real acceptance failure, not a runner-start failure.
 
 The newly completed PR-triggered runs above improve exact-SHA evidence for their tested scopes, but do not automatically reconcile the fixed-weight ledger, check Definition-of-Done items, close whole E1–E6 rows, or satisfy E2 protected production provenance. A new gate evaluation should occur only after the ledger and DoD are reconciled against verified evidence. No merge, release, protection bypass, or protected E2 dispatch is authorized by this note.
+
+
+## Follow-up check — 2026-10-29
+
+- [ONE E1 Standard Library Windows Acceptance — run 40735752836](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40735752836): **SUCCESS** for its defined Windows acceptance scope.
+- [ONE Milestone 1 E1 Cross-Platform Acceptance Lab — run 40735752814](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40735752814): **SUCCESS** for its defined cross-platform lab scope.
+- [Fixed-weight ledger gate — run 40735752869](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40735752869), attempt 3: **FAILURE**. Its latest captured evaluation still found 10 unchecked DoD items and no protected production provenance release for the exact source SHA. It is not a passing acceptance gate.
+- [Android AArch64 runtime — run 40736440037](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40736440037): still **IN PROGRESS** at the latest check; exact-source ELF build passed, but API 35 ARM64 boot/runtime step had not concluded. No runtime pass is claimed.
+
+These E1 workflow successes are evidence for their defined scopes only. They do not justify checking an entire fixed-weight row without matching row-level criteria, and they do not change the E2 provenance requirement. Keep the overall gate **NOT PASSED** until each DoD item and ledger row is reconciled with exact-SHA evidence.
