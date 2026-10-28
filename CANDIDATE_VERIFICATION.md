@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `a3582a749bf32e0bbd72ddc8ef4eeb5383fa8afc`.
+Canonical ONE source SHA under verification: `b8a6888e68c4432c044282be998de468f7a9c31e`.
 
 
 
@@ -607,3 +607,11 @@ The E4 score remains a provisional 6/6 scoped claim only; final gate acceptance 
 - This source change invalidates all prior exact-SHA evidence for final acceptance. The previous candidate SHA `0b52fb56795a822d35c34b8415c88ce68931dc7c` and its matrix results are historical only. The new matrix must complete on this exact SHA; do not promote any old result.
 - Prior candidate's Android API 35 ARM64-host runtime remained in progress and is not credited to the new SHA.
 - Gate remains NOT PASSED; E1/E2/E6 and protected production provenance are still open. Do not merge or publish.
+
+
+## Protected-release trigger hardening — 2026-10-28
+
+- New canonical source SHA: `b8a6888e68c4432c044282be998de468f7a9c31e`.
+- The previous candidate commit `a3582a749bf32e0bbd72ddc8ef4eeb5383fa8afc` unexpectedly auto-triggered `ONE Package Provenance Release` via its broad `crates/one-core/**` push path. Run [40685695955](https://github.com/panglimanetizen01/one/actions/runs/40685695955) ended FAILURE before any steps started (job steps unavailable/null; logs blob not found). No signing, artifact upload, or publication evidence exists; this is not a source test result and not a release PASS.
+- Changed `.github/workflows/package-provenance-release.yml` to manual `workflow_dispatch` only. Protected signing/publishing must be explicitly initiated after all exact-SHA gates pass, not as a side effect of committing candidate code. The protected `one-release` environment remains in the job.
+- This workflow change advances the canonical source SHA and invalidates all prior exact-SHA evidence. The full required matrix must rerun against `b8a6888e68c4432c044282be998de468f7a9c31e`. Keep gate NOT PASSED until the current matrix is terminal and E1/E2/E6 acceptance is recorded.
