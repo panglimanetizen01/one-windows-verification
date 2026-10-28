@@ -1,6 +1,18 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `45b9c1220059eb5755faf67ee49d0d2382e6ac7a`.
+Canonical ONE source SHA under verification: `53220eeb4bae9138b3a46b469004f8eac4a11420`.
+
+
+## Current candidate checkpoint — 2026-10-28T04:16Z
+
+- **Pinned canonical source SHA:** `53220eeb4bae9138b3a46b469004f8eac4a11420` ([source commit](https://github.com/panglimanetizen01/one/commit/53220eeb4bae9138b3a46b469004f8eac4a11420)). The pin update itself is the only verifier-side action after this source SHA was frozen.
+- **Ledger reconciliation:** E3/E4/E5 rows now conform to the six-column fixed-weight schema. Historical E3/E5 evidence is explicitly not credited to this candidate. Current recorded totals are **92/100 implementation** and **60/100 verified**; no weights changed.
+- **Current required acceptance:** E1 0/10, E2 0/8, E3 0/8 pending exact-SHA matrix, E4 0/6 pending complete threat review/current-SHA evidence, E5 0/4 pending exact-SHA docs/tooling evidence, E6 0/4. The ledger gate remains NOT PASSED until direct acceptance evidence is complete.
+- **Prior source-runner incidents:** E1 run [40630668456](https://github.com/panglimanetizen01/one/actions/runs/40630668456) and Linux distro run [40630668504](https://github.com/panglimanetizen01/one/actions/runs/40630668504) targeted previous source SHA `ea39f92b51f47f34d7edd5d283c68e9ca217cb64`; all four jobs reported runner ID `0`, empty runner name, and no steps. These are classified as infrastructure/job-start failures, not source-test results.
+- **Protected release:** no release has been dispatched or published. Synthetic trust tests are not production provenance acceptance; E2 stays open and no release is authorized.
+- **Fresh exact-SHA matrix:** pin change will trigger verification workflows. Until each required run reaches completed/success on this exact source SHA, pending/in-progress results earn no points.
+
+Historical notes below are preserved as archive and must not override this current checkpoint.
 
 ## Latest status refresh — 2026-10-27
 
