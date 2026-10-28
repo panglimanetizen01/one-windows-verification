@@ -1,0 +1,73 @@
+name: Repository Health and Repair Scan
+
+on:
+  push:
+    branches:
+      - health-repair/**
+    paths:
+      - 'tools/repository_health_scan.py'
+      - 'tests/test_repository_health_scan.py'
+      - 'CANONICAL_COMMIT.txt'
+      - 'CANDIDATE_VERIFICATION.md'
+      - '.github/workflows/repository-health-scan.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  read-only-integrity-scan:
+    name: Read-only repository integrity scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout verifier
+        uses: actions/checkout@v4
+        with:
+          path: verifier
+
+      - name: Read and validate canonical SHA pin
+        id: pin
+        shell: bash
+        working-directory: verifier
+        run: |
+          sha="$(tr -d '\r\n' < CANONICAL_COMMIT.txt)"
+          if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid canonical source SHA pin: $sha" >&2
+            exit 2
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "Scanning canonical source SHA $sha"
+
+      - name: Checkout exact canonical source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.pin.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: one-source
+
+      - name: Run scanner unit tests
+        working-directory: verifier
+        run: python -m unittest discover -s tests -p 'test_repository_health_scan.py' -v
+
+      - name: Run read-only integrity scan
+        id: scan
+        working-directory: verifier
+        run: |
+          python tools/repository_health_scan.py \
+            --source-root ../one-source \
+            --verifier-root . \
+            --json-out reports/health-report.json \
+            --markdown-out reports/health-report.md
+
+      - name: Upload diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-health-scan-${{ github.sha }}
+          path: |
+            verifier/reports/health-report.json
+            verifier/reports/health-report.md
+          if-no-files-found: warn
+          retention-days: 30
