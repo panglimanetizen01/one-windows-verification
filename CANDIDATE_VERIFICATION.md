@@ -12,6 +12,25 @@ Canonical ONE source SHA under verification: `1119c450eda1437d79d75304a1daefb93e
 - **E2 release provenance:** no protected production `ONE Package Provenance Release` run exists for this SHA. No release was dispatched or published; no release is authorized.
 - **Required next gate:** the pin change triggers fresh exact-SHA verification workflows. Wait for and inspect those run results; pending/in-progress runs earn no points. The overall gate remains **NOT PASSED** until all acceptance criteria and protected provenance requirements pass.
 
+## Exact-SHA matrix result refresh — 2026-10-28T05:46Z
+
+Canonical ONE source SHA remains `1119c450eda1437d79d75304a1daefb93e8a357f`. These are scoped results from workflows whose jobs checked out the current pin:
+
+- [E4 adversarial filesystem/resource-bound regression #40638898955](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638898955) — success.
+- [E4 SEC-05 subprocess timeout/output-limit #40638898978](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638898978) — success.
+- [Linux distro verification #40638899092](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899092) — success.
+- [E1 Standard Library Windows Acceptance #40638899155](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899155) — success for its defined Windows acceptance suite; this does not by itself close the full E1 ledger row.
+- [E1 cross-platform acceptance lab #40638899012](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899012) — success.
+- [Cross-platform verification #40638898957](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638898957) — success.
+- [Candidate artifact integrity #40638898937](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638898937) — success.
+- [Focused standard-library/database #40638899182](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899182) — success.
+- [E4 subprocess resource guard #40638899440](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899440) — success.
+- [Android API 35 AArch64 runtime #40638899009](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899009) — exact-source ELF build passed, but the native ARM64 guest-runtime job is still in progress at this checkpoint; no runtime PASS is claimed.
+
+The fixed-weight ledger gate [#40638928894](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638928894), including its post-matrix retry, remains **NOT PASSED**: 8 Definition-of-Done items unchecked; E1 0/10, E2 0/8, E4 0/6, E6 0/4; Android runtime pending; and no protected production `ONE Package Provenance Release` run exists for this source SHA. Verifier unit tests passed 7/7. No points or checklist items are promoted by this refresh.
+
+Canonical source Linux distro run [#40638875412](https://github.com/panglimanetizen01/one/actions/runs/40638875412) was retried; both jobs again failed before any steps were available (`steps: null`). Classify as an unresolved job-start/runner infrastructure failure, not as a source-test result. No root cause is established by available metadata.
+
 ## Pre-reconciliation candidate checkpoint — 2026-10-28T04:16Z (historical source SHA `53220eeb4bae9138b3a46b469004f8eac4a11420`)
 
 - **Pinned canonical source SHA:** `53220eeb4bae9138b3a46b469004f8eac4a11420` ([source commit](https://github.com/panglimanetizen01/one/commit/53220eeb4bae9138b3a46b469004f8eac4a11420)). The pin update itself is the only verifier-side action after this source SHA was frozen.
