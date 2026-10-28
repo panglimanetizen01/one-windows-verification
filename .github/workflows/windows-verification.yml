@@ -144,7 +144,7 @@ jobs:
         run: cargo --locked build --workspace --all-targets
       - name: Repository health scan and normative One fixture validation
         working-directory: source
-        run: python tools/one_health.py --check-one-source --json-out one-health-report.json --markdown-out one-health-report.md --quiet
+        run: python tools/one_health.py --check-one-source --expected-sha "${{ steps.canonical.outputs.ref }}" --json-out one-health-report.json --markdown-out one-health-report.md --quiet
       - name: Upload repository health report
         if: always()
         uses: actions/upload-artifact@v4
