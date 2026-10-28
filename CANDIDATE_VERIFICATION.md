@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `b8a6888e68c4432c044282be998de468f7a9c31e`.
+Canonical ONE source SHA under verification: `989523d406da22c5a6b1cf52fd64c42897ec1e66`.
 
 
 
@@ -637,3 +637,12 @@ Completed exact-SHA independent verifier results:
 The latest ledger gate retry [#40686025065, attempt 3](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40686025065) ran all seven verifier unit tests successfully but failed closed. Its source checkout and live workflow queries succeeded. The run still reported 92/100 implementation, 78/100 provisional verified, 18 ledger rows, 7 unchecked DoD items, E1 0/10, E2 0/8, E6 0/4, and no protected production release run for this exact SHA. It also reported that the evidence index did not contain the exact SHA even though the current branch index has been refreshed above; this retry reused the earlier workflow revision/index snapshot. The index update triggers a new gate run, whose output must be inspected before any conclusion.
 
 Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux distro) have repeatedly failed before any job steps, with no logs and runner ID 0 in available job metadata. These remain unresolved canonical-CI infrastructure/job-start failures; independent verifier PASS results are separately scoped and do not turn canonical CI green. No protected production release run exists. PR #80 remains open/draft/unmerged. Gate remains NOT PASSED until the new live ledger gate passes and all E1/E2/E6/DoD blockers have direct evidence. No merge or production release was performed.
+
+
+## Repository health scanner candidate checkpoint — 2026-10-28
+
+- Canonical source HEAD: 989523d406da22c5a6b1cf52fd64c42897ec1e66. This is a new candidate SHA; all prior matrix results, including those for b8a6888e68c4432c044282be998de468f7a9c31e, are historical for current-pin acceptance.
+- Added a standard-library-only repository health scanner, regression tests, CI integration, a Linux/Windows workflow, source-only One v0.1 fixture checks using one periksa, structured CI evidence classification, optional baseline comparison, and a narrowly guarded Markdown newline repair.
+- Canonical source workflow [One CI 40698556053](https://github.com/panglimanetizen01/one/actions/runs/40698556053) and health workflow [40698556180](https://github.com/panglimanetizen01/one/actions/runs/40698556180) failed before any steps were exposed; both health matrix jobs reported runner_id=0 and steps=[]. These runs provide no scanner test, build, or source-test result. Treat as unresolved job-start infrastructure failures, not as a scanner pass/fail.
+- The scanner tests and CLI fixture checks are therefore not yet confirmed as executed. A fresh independent exact-SHA matrix and ledger gate are required for this source SHA. No score or DoD status is promoted by adding the tool.
+- No merge, protected production release, or branch-protection bypass occurred. E1/E2/E6 and production provenance blockers remain unchanged until independently re-evaluated on this exact SHA.
