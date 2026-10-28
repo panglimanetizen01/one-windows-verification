@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `dd5655db8256e60048ee1a5226ba740318295e06`.
+Canonical ONE source SHA under verification: `6bca1254e1976213ad4ba220565d208b06317834`.
 
 
 
@@ -759,3 +759,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Added `tools/health_quality.py` plus `tools/test_health_quality.py` to validate a reviewed JSON ledger and calculate observed false-positive/miss shares and verified repair success rate. Empty or unreviewed data yields unavailable metrics, not a zero-error claim.
 - Added an empty schema example and a guide for adjudicating true/false positives, misses, and repair outcomes. Integrated the quality-ledger regression suite into both the source repository health workflow and the independent Linux/Windows verification workflow.
 - These metrics remain independent of the fixed-weight completion ledger and cannot authorize merge/release. The current pin is updated to the exact source SHA; all three health suites and One build/conformance checks must pass on this revision before the work can be considered validated.
+
+
+## Final quality-governance increment — exact source SHA `6bca1254e1976213ad4ba220565d208b06317834`
+
+- Added manual detector adjudication and verified-repair metrics in `tools/health_quality.py`, with schema example, guide, and regression tests. Both the source health workflow and independent Linux/Windows verification workflow now run the quality-ledger test suite.
+- Expanded detector fixtures with positive controls for valid TOML/JSON and intact exact-SHA/digest metadata; documented the limits of sample-based quality rates. Updated the health checklist to distinguish implemented scope from remaining work (full YAML schema validation, full log retrieval/interpretation, and higher-confidence workflow-overlap analysis remain open).
+- The exact-SHA pin has advanced to this source revision. The current matrix must complete the scanner, collector, and quality-ledger suites, workspace build, and normative One fixture checks on this SHA. Runner/job-start delays are infrastructure status, not a source test result.
