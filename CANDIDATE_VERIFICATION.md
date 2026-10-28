@@ -162,3 +162,29 @@ Verified complete PASS results from the current pinned source:
 - [Canonical One CI #40615809865](https://github.com/panglimanetizen01/one/actions/runs/40615809865) was retried once. The retry jobs `122580708943`, `122580709103`, and `122580709140` all completed failure with `runner_id=0`, empty runner names, and zero steps.
 - [Protected package provenance release #40615804347](https://github.com/panglimanetizen01/one/actions/runs/40615804347) was retried once as job `122580654236`; it also completed failure with `runner_id=0`, empty runner name, and zero steps. No signing, trust-store verification, or artifact upload executed. This is not E2 production acceptance and no release was published.
 - The independent exact-SHA matrix is strong current evidence, but it does not silently replace the canonical hosted-CI requirement. The final ledger must remain NOT PASSED while Android runtime, E1/E2/E6 full-row acceptance, and the required canonical/protected release execution are open.
+
+
+## Exact-SHA regression results — 2026-10-28, candidate `06c3e740d8c886d7d1a14493831ed41e09e2d3b9`
+
+The following completed jobs have been checked against their actual latest-attempt job conclusions and are **PASS for the named checks only**:
+
+- [E1 standard-library contract/integration/lint #40615864765](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864765): job `122578075833` success; new mapping-removal test passed, stdlib suite `38 passed, 0 failed`, workspace library tests `241 passed, 0 failed`, contract checker PASS.
+- [E1 cross-platform lab #40615864788](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864788): Ubuntu job `122578076357` and Windows Server 2025 job `122578076750` both success.
+- [Full cross-platform verification #40615864970](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864970): Ubuntu job `122578509383` and Windows job `122578509684` both success.
+- [Candidate artifact integrity #40615864879](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864879): job `122578075880` success.
+- [Linux distro matrix #40615864924](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864924): Ubuntu 24.04 job `122578076172` and Debian 12 job `122578076438` both success.
+- [Focused standard-library/database regressions #40615864973](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864973): job `122578076418` success.
+- [E4 adversarial filesystem/resource-bound checks #40615864798](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864798): Unix job `122578075387` and Windows job `122578075705` both success. The previously failing loopback test and quota-saturation test both passed after the test-only mutex fix.
+- [E4 SEC-05 timeout/output-limit #40615864837](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864837): Windows job `122578075736` and Linux job `122578076244` both success.
+- [E4 subprocess resource guard #40615864935](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864935): job `122578075979` success.
+- [Cargo lockfile bootstrap #40615864835](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864835): job `122578076311` success.
+- [Package determinism/signature/tamper lab #40615864922](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864922): job `122578076407` success using synthetic trust only; **not E2 production trust acceptance**.
+
+### Ledger and unresolved mandatory gates
+
+- Initial [ledger run #40615864847](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864847) failed closed while current-SHA required jobs were still queued/in progress, seven DoD items remained unchecked, E1/E2/E6 rows had no full-row acceptance evidence, and protected release had failed.
+- After the current-SHA matrix above completed, failed ledger job `122578075992` was explicitly re-run. New attempt job `122584057778` was queued at checkpoint; no conclusion is credited yet.
+- Android native ARM64-host runtime [#40615864980](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864980) built the exact-source ELF and produced artifact `12785500562` (SHA-256 `d811d99df589732bf9dce3c6d21a0e4b706e7e9f0b97ec15a6d24101555ff7ec`), but runtime job `122578974567` was still in the boot step; **no runtime PASS yet**.
+- Community ARM64 fallback [#40615865014](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615865014) built the exact-source ELF and produced artifact `12785401068` (SHA-256 `15de6713fe2a8ccaeb338860df16ac4dcf9e48d39976669ceb44c6c81ba5dc2f`), but runtime job `122579375110` was still booting API 35; **no runtime PASS yet**.
+- Protected package release [#40615804347](https://github.com/panglimanetizen01/one/actions/runs/40615804347), attempt 2, failed. Job `122580654236` has no step summaries; log retrieval returned `BlobNotFound`; no artifacts were produced. Run metadata confirms event `push`, candidate SHA `06c3e740d8c886d7d1a14493831ed41e09e2d3b9`, and attempt 2, but does not expose a root cause. Do not infer secret or environment failure from missing logs.
+- E1/E2/E6 full-row acceptance, all DoD checkboxes, production trusted-publisher verification, Android runtime execution, and final release remain open. Scores remain unchanged until the official ledger verifies all acceptance criteria.
