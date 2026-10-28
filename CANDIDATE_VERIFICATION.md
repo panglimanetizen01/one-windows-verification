@@ -1,5 +1,18 @@
 # Current exact-SHA acceptance evidence
 
+## Active scanner A–E verification state — 2026-10-28 (authoritative)
+
+- Canonical source: `panglimanetizen01/one`, branch `milestone/100-ecosystem-20261023`, PR [#80](https://github.com/panglimanetizen01/one/pull/80), open/draft/unmerged.
+- Current source HEAD: `07ca28bd55a75b5cbdbef78f95b75a0c24d3ef62` ([commit](https://github.com/panglimanetizen01/one/commit/07ca28bd55a75b5cbdbef78f95b75a0c24d3ef62)); `CANONICAL_COMMIT.txt` is synchronized to this candidate. A matching pin is a selector, not execution evidence.
+- Scanner A–E implementation: A integrity; B secret patterns/redaction, Python AST and JavaScript/TypeScript static checks, prompt-injection correlation and supply-chain indicators; C bounded source/sink correlation and CI triage; D allowlisted guarded Markdown newline repair only; E positive/negative regression tests plus separately adjudicated quality/repair ledger. Current `tools/test_one_health.py` contains 58 test methods; this is not proof they ran.
+- Current-SHA canonical runs: repository health `40726095975` (queued), One CI `40726095951` (queued), E1 lab `40726096032` (pending), Linux distro `40726096053` (queued), E2 lab `40726096015` (failed), focused stdlib `40726095947` (failed). The two completed failures have `steps: null`, `logs_url: null`, and no artifacts. Pending/queued runs are not yet results; inspect all six after completion.
+- Exact-SHA scanner matrix: **BLOCKED / NOT VERIFIED**. No test pass is claimed. If the remaining runs also fail before steps/logs, classify that as missing execution evidence, not source-test failure or pass; root cause must remain unknown unless logs establish it.
+- Ledger: 92/100 implementation points provisional; E3 0/8, E4 0/6, E5 0/4 verified. DoD 3 checked / 10 unchecked. Final completion score **UNKNOWN / NOT RECONCILED**. Gate **NOT PASSED**.
+- E2 protected production provenance remains unauthorized and undispatched. No merge, release, protection bypass, secret change, or trusted-publisher/environment modification is authorized.
+- Next: inspect the current-SHA run jobs/steps/logs/artifacts after completion, then obtain a genuinely executable, authorized path for the scanner regression suite and self-scan. Do not retry identical zero-step jobs without a changed condition or transient-failure diagnosis.
+
+---
+
 ## Active candidate state — 2026-10-28 (authoritative; supersedes historical snapshots below)
 
 - Canonical source repository/branch: [panglimanetizen01/one](https://github.com/panglimanetizen01/one/tree/milestone/100-ecosystem-20261023).
@@ -15,7 +28,7 @@
 
 ---
 
-Canonical ONE source SHA under verification: `678fe08ec706ca3ebdf5322684e056749a1c930f`.
+Canonical ONE source SHA under verification: `07ca28bd55a75b5cbdbef78f95b75a0c24d3ef62`.
 
 
 
