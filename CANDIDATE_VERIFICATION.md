@@ -50,3 +50,11 @@ No ledger weights, acceptance criteria, scores, or Definition of Done checkboxes
 - [Fixed-weight ledger gate](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40468072703) — failed closed; implementation 92/100, verified 78/100; E1 0/10, E2 0/8, E6 0/4; seven Definition of Done items remain unchecked.
 
 The previous cumulative evidence notes are preserved in `CANDIDATE_VERIFICATION_ARCHIVE_20261027.md`. No score, fixed weight, or Definition of Done checkbox is altered by this index update.
+
+
+## Android API 35 runtime acceptance update — 2026-10-27
+
+- [Native ARM64-host runtime workflow](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40477658242) completed with **success** on the verification harness commit `598ca10c148e6c0c47c362d6cfaa73603433a3b6`, with the canonical ONE source pinned and checked out at `0d0202a1405ae12aaaadf05c6916bacc70316126`.
+- Runtime job: [122100141841](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40477658242/job/122100141841). The log confirms the runner architecture was `aarch64`, the guest API level was checked as 35 and ABI as `arm64-v8a`, the backend-generated ELF was pushed and executed, **exit code 0**, and the final output line was exactly `ONE_NATIVE_BACKEND_OK`.
+- Evidence artifact: [one-api35-arm64-runtime-evidence-0d0202a1405ae12aaaadf05c6916bacc70316126](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40477658242) (artifact ID `12722651198`; SHA-256 of uploaded ZIP: `03c3a79a44ae6511d5550bb932398575ebfd686592b720e3153a3f0d6066f770`). Artifact includes the source SHA record, runtime result, ELF metadata/binary and emulator/QEMU diagnostics.
+- This closes the previously open Android runtime execution fact for this exact candidate SHA only. It does **not** by itself award the E1/E2/E6 ledger rows, check Definition of Done items, establish production trusted-publisher acceptance, or make final release PASS.
