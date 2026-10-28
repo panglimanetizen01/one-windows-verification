@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `1b950ebb3b9f4447229cec5055b9791520de87c5`.
+Canonical ONE source SHA under verification: `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`.
 
 
 
@@ -479,3 +479,13 @@ The Android native ARM64 Linux-host runtime job [40661955153](https://github.com
 The source repository's E1, Linux distro, and E2 workflow attempts failed before executing any step (`runner_id=0`, `steps=0`). The non-release failed jobs were retried, but their latest attempts still report job-start failures without executable steps; this is infrastructure-unresolved, not test PASS and not a code-level regression finding. The protected production provenance release workflow was not retried or manually dispatched.
 
 This refresh records observed workflow results only. It does not alter the fixed-weight ledger, award points, check Definition of Done items, or authorize merge/release. The next acceptance gate must re-evaluate live evidence against this source SHA and report any remaining failures.
+
+
+## Candidate re-freeze after base-branch reconciliation — 2026-10-28T09:20Z
+
+- **New exact candidate SHA:** `6d492006f9fa873fbd7d8ad61fa5833df707b1f6` ([merge commit](https://github.com/panglimanetizen01/one/commit/6d492006f9fa873fbd7d8ad61fa5833df707b1f6)).
+- The candidate now contains current `main` as its second parent (`d35db95153f6ddd79885494c72f5aee16c899751`); PR #80 is now GitHub-mergeable (draft/open; not merged). This reconciles the three newer base-branch commits rather than leaving the PR in a dirty/conflicted state.
+- The merge tree incorporates the main-branch direct-helper tests for `list_append` and `list_remove` (four tests: non-list rejection, remove-first duplicate behavior, absent-value no-op, and non-list removal rejection) and adds a matching direct-helper compatibility guard to `docs/spec/one-v0.1-stdlib.md`. The tests are present in the new source tree; hosted execution against this new SHA is still required.
+- **All previous candidate-specific workflow results for `1b950ebb3b9f4447229cec5055b9791520de87c5` are historical after this source SHA change.** They remain useful as diagnostic history, but they must not satisfy the exact-SHA gate for `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`.
+- User-supplied Termux test outcomes apply to the previous candidate lineage and have not yet been rerun against this merge SHA. Do not claim current-SHA local PASS based on them.
+- The independent verifier pin has been updated to `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`; current-pin CI and acceptance must run again. Fixed-weight ledger remains implementation 92/100, verified 72/100 until new exact-SHA evidence supports any legitimate change. E1/E2/E4/E6 remain open. No production release or merge authorization is implied by making the PR conflict-free.
