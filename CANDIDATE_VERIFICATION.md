@@ -288,3 +288,22 @@ The candidate remains pinned to ONE source SHA `1a84d522a2953044c250ebe43c22989d
 Canonical-repository E1 and Linux distro workflow runs `40633942687` and `40633942635` failed before executing any step (runner ID `0`) even after retries. They remain classified as runner-start infrastructure failures, not passing tests or source-test failures. The independent lab results above do not conceal or reclassify those canonical failures.
 
 The synthetic-trust provenance lab [40634065880](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065880) passed only its synthetic trust scope; it is **not** protected production release provenance and does not close E2. No protected source-bound release run is recorded for this candidate SHA. E1, E2, E4, and E6 remain open; no release is authorized.
+
+
+## Corrective outcome delta — 2026-10-28 (supersedes earlier pending wording)
+
+This dated delta preserves the earlier checkpoint as historical and records later completed results without rewriting prior run history.
+
+- Canonical source pin remains `1119c450eda1437d79d75304a1daefb93e8a357f`, as recorded in `CANONICAL_COMMIT.txt`.
+- Android API 35 AArch64 runtime run [40638899009](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899009) subsequently completed successfully, including the native ARM64-host guest runtime job. This supersedes the earlier statement in the 05:46Z checkpoint that the guest runtime was still in progress. It is runtime PASS only for this run's tested scope and pinned source SHA.
+- The post-runtime fixed-weight gate run [40640181816](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40640181816) and its failed-job retry both concluded **FAIL** at the acceptance gate. The exact-SHA source checkout was `1119c450eda1437d79d75304a1daefb93e8a357f`; verifier unit tests passed 7/7, but 8 DoD items remained unchecked and E1 0/10, E2 0/8, E4 0/6, E6 0/4. The Android runtime result is not a failure cause. Do not retry the gate again until relevant ledger/evidence or acceptance inputs change.
+- The canonical source E1 lab [40638875488](https://github.com/panglimanetizen01/one/actions/runs/40638875488) and Linux distro run [40638875412](https://github.com/panglimanetizen01/one/actions/runs/40638875412) remain blocked before executable steps (`steps: null`) on their recorded attempts. These are infrastructure/job-start failures, not source-test PASS or FAIL evidence.
+- The PR #80 description has been reconciled to the current candidate and the completed gate result. PR remains open/unmerged; no production release is authorized.
+- No score, weight, or DoD checkbox is changed by this delta. Implementation remains 92/100 and verified remains 72/100 as the last recorded baseline, not a newly recalculated score. E1/E2/E4/E6 remain open.
+
+### Next actions (no duplicate gate retry)
+
+1. Continue E1's contract-to-language-call crosswalk and fix only confirmed implementation/test gaps; run focused tests and required suite on the resulting source SHA.
+2. Continue E2 only through the authorized protected production provenance path.
+3. Complete E4 threat-control/evidence crosswalk and E6 forensic reconciliation.
+4. After a relevant acceptance input changes and is committed, run the gate against the exact pinned source and current verifier state; do not award points from workflow-green status alone.
