@@ -527,3 +527,14 @@ The earlier section dated `2026-10-28T05:45Z` is explicitly marked **historical/
 ## Current-state precedence rule
 
 For the current source pin and live status, use only the opening canonical SHA line, `CANONICAL_COMMIT.txt`, and the latest dated **Exact-SHA hosted evidence refresh** section. Any older checkpoint is historical even if its original heading used the word “Current”; those headings have been relabeled to prevent stale source SHAs or pending states from being mistaken for present acceptance. Historical logs remain available for forensic traceability and are not deleted.
+
+
+## E1 source-surface inventory audit — candidate `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`
+
+This is a coverage inventory, not a score promotion.
+
+- Parsed the normative source-level call table in `docs/spec/one-v0.1-stdlib.md`: 28 declared call rows; every call name appears in `crates/one-core/tests/stdlib_builtins.rs`.
+- The public `one_core::stdlib` module currently exports 29 helper functions. Its unit-test module includes direct regression coverage for display formatting; list append/remove including non-list rejection, first-duplicate removal and missing-value no-op; Unicode/text helpers; list/map helpers; checked integer helpers; JSON input/output size, depth, malformed input, deterministic ordering and integer boundaries; and strict UTC conversion.
+- Exact-SHA hosted independent E1 evidence: [cross-platform E1 contract lab 40664235337](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235337) passed on Ubuntu 24.04 and Windows Server 2025; [Windows E1 acceptance 40664235517](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235517) passed; [focused standard-library/database run 40664235556](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235556) passed. All three are pinned to source SHA `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`.
+- These results establish that the currently documented source-level slice and helper regressions execute successfully on the exact candidate. They do **not** establish completion of standard-library domains outside the explicitly documented subset. The source spec itself says this is a partial library slice; E1 remains 0/10 until the project’s required reusable-standard-library scope is explicitly reconciled and fully satisfied. Do not infer broader completion from all 28 current call names being tested.
+- Canonical source-repository CI remains independently blocked at job startup (zero steps / runner ID 0). The independent lab result is not mislabeled as canonical CI.
