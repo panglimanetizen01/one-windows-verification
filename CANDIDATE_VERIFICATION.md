@@ -407,3 +407,38 @@ The workflow's push trigger only covers the candidate branch when selected packa
 5. Successful fixed-weight gate on the frozen source SHA after all required source evidence is available.
 
 **Disposition:** E2 stays 7/8 implemented and 0/8 verified; DoD stays unchecked. This review awards no points, changes no source pin, and does not authorize merge or release.
+
+
+## E6 forensic reconciliation — 2026-10-28
+
+This pass reconciles the current candidate pin, fixed-weight ledger, DoD, E1/E2/E4 checkpoint findings, latest recorded gate result, and PR state. It is a consistency audit, not a release approval.
+
+### Cross-document state at audit time
+
+- Independent pin: `1119c450eda1437d79d75304a1daefb93e8a357f` in `CANONICAL_COMMIT.txt`.
+- PR #80: open and unmerged; candidate branch remains `milestone/100-ecosystem-20261023`. The PR metadata has been updated to reference this checkpoint.
+- Ledger baseline: implementation `92/100`, verified `72/100`, fixed row weights sum to 100. These are the last recorded ledger values, not a new PASS determination.
+- DoD: exactly 8 unchecked items remain at the current source branch head. They cover final SHA freeze/evidence synchronization, failure classification and hosted-CI equivalence, full E1, protected production E2, complete E4, and E6.
+- Acceptance rows still explicitly open: E1 `0/10`, E2 `0/8`, E4 `0/6`, E6 `0/4`. E3/E5 are numerically recorded as verified but explicitly provisional pending complete current-pin revalidation; do not treat those historical/scoped records as permission to close the global gate.
+- Latest recorded gate: run [40640181816](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40640181816) failed closed. Its verifier tests passed 7/7, but the gate reported 8 unchecked DoD items and the open E1/E2/E4/E6 rows. The documented instruction is not to retry without a relevant evidence/acceptance-input change.
+- The current E2 workflow review found the release workflow source controls, but no successful protected `ONE Package Provenance Release` run is recorded for the current source pin. No release was published or authorized.
+- E1 static crosswalk confirms 28 builtin names are present in both semantic registration and interpreter dispatch. This does not replace the complete executable API/platform acceptance sequence.
+- E4 current-pin scoped workflow results exist, but the one-to-one threat-claim matrix and explicit residual-limit disposition are still incomplete. E4 remains unaccepted.
+
+### Consistency findings
+
+1. The current pin and latest checkpoint statements agree on `1119c450eda1437d79d75304a1daefb93e8a357f`. Older SHAs and run links remain in the ledger/evidence index as historical records; they must not be relabeled as current-SHA results.
+2. The `92/100` implementation and `72/100` verified figures are retained as a baseline, not asserted to mean the global gate passed. The ledger and DoD both say the gate is NOT PASSED.
+3. The implementation/verified distinction for E4 is consistent: `6/6` implemented does not mean `6/6` accepted; verified remains `0/6`.
+4. E2 workflow-source inspection is correctly distinguished from a protected release execution. A verifier documentation commit does not trigger the source workflow's path-filtered push event.
+5. E6 cannot be marked complete while E1/E2/E4 acceptance is unresolved, the DoD has unchecked mandatory items, and the exact-SHA live gate is failed.
+
+### Required next actions, in dependency order
+
+1. Complete the remaining E1 public API contract and exact-SHA executable matrix; retain full logs and classify any job that fails before executable steps as infrastructure failure rather than a test pass.
+2. Obtain explicit authorization for the protected `one-release` execution; run it only against the intended frozen SHA and preserve artifact, provenance sidecar, checksums, and run metadata. Do not bypass environment protection or expose secrets.
+3. Finish the E4 claim → invariant → regression assertion → platform result matrix, including residual limitations and recovery behavior.
+4. Freeze the intended candidate SHA only after source changes are finished. Re-pin the independent lab and rerun every mandatory exact-SHA workflow; synchronize the evidence index, ledger notes, DoD, PR body, and artifact metadata to that SHA.
+5. Run the fixed-weight gate once the relevant evidence inputs above have changed; inspect the result and its job logs. Do not force a score or check a DoD item to manufacture a PASS.
+
+**Disposition:** E6 remains `0/4`; no score, weight, or DoD checkbox is changed by this audit. The milestone remains NOT PASSED. PR #80 remains open/unmerged; no release is authorized.
