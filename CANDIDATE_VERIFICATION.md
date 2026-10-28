@@ -3,16 +3,16 @@
 ## Active candidate state — 2026-10-28 (authoritative; supersedes historical snapshots below)
 
 - Canonical source repository/branch: [panglimanetizen01/one](https://github.com/panglimanetizen01/one/tree/milestone/100-ecosystem-20261023).
-- Current source candidate: `e3dc049e76620de0a6d5cb0971067fcd436ab977` ([commit](https://github.com/panglimanetizen01/one/commit/e3dc049e76620de0a6d5cb0971067fcd436ab977)).
-- The source candidate advanced through documentation-only reconciliation after observed candidate `65d09e3f9ed8639ff0d22a948ada06c3def36c22`; prior workflow results do not apply to this SHA unless their job checkout explicitly proves it.
-- **Current-SHA canonical source runs** for `e3dc049e76620de0a6d5cb0971067fcd436ab977`: Linux distro `40720032071`, focused stdlib `40720032249`, E1 lab `40720032176`, repository health `40720032659`, E2 lab `40720032356`, and One CI `40720032333`. All six runs completed with failure; every returned job had `steps: null` and `logs_url: null`. A log fetch for job `122928087534` returned `BlobNotFound`. These are unresolved job-start/log-evidence failures, not source-test failures or passes; the root cause is unknown.
-- **Current exact-SHA matrix: BLOCKED / NOT VERIFIED.** No executable test result or artifact is available from these zero-step jobs. Do not retry the same jobs without a changed condition or transient-failure diagnosis. No source-test conclusion is claimed.
+- Current source candidate: `b460ebcc11c5f8d30a322b60019d6854dc1fb5e2` ([commit](https://github.com/panglimanetizen01/one/commit/b460ebcc11c5f8d30a322b60019d6854dc1fb5e2)).
+- This candidate includes the targeted addition of user-documentation consistency and regression checks to `.github/workflows/release-check.yml`, reconciled from PR #85 without merging that PR. The current source SHA is authoritative; earlier candidate results are historical.
+- **Current-SHA canonical source runs** for `b460ebcc11c5f8d30a322b60019d6854dc1fb5e2`: repository health `40720884257`, One CI `40720884299`, E2 lab `40720884586`, E1 lab `40720884226`, Linux distro `40720884381`, and focused stdlib `40720886680`. All six completed with failure; every returned job had `steps: null` and `logs_url: null`. The previous exact-SHA candidate `e3dc049e76620de0a6d5cb0971067fcd436ab977` is historical after the release-check workflow change.
+- **Current exact-SHA matrix: BLOCKED / NOT VERIFIED.** The canonical jobs provide no executable test result. Do not retry identical zero-step jobs without a changed condition or transient-failure diagnosis. No source-test conclusion or root cause is established.
 - Current ledger: 92/100 implementation points provisional; E3 0/8, E4 0/6, E5 0/4 verified for current candidate; carried-forward F/C ledger arithmetic 60/100 only. Final exact-SHA score **UNKNOWN / NOT RECONCILED**. DoD: 3 checked / 10 unchecked. Gate **NOT PASSED**.
 - E2 protected production provenance release remains unauthorized and has not been dispatched. No merge or release is authorized.
 
 ---
 
-Canonical ONE source SHA under verification: `e3dc049e76620de0a6d5cb0971067fcd436ab977`.
+Canonical ONE source SHA under verification: `b460ebcc11c5f8d30a322b60019d6854dc1fb5e2`.
 
 
 
