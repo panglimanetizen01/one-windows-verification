@@ -1,12 +1,9 @@
 # Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
 name: ONE Android AArch64 Native Runtime Verification (macOS TCG workaround)
 
+# Manual diagnostic only: this macOS TCG probe is not one of the required accepted Android runtime paths.
+# Keep it out of automatic exact-SHA matrices to avoid duplicate long-running emulator boots.
 on:
-  push:
-    branches: [verification]
-    paths:
-      - 'CANONICAL_COMMIT.txt'
-      - '.github/workflows/android-aarch64-tcg-fallback-v2.yml'
   workflow_dispatch:
 
 permissions:
