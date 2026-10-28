@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `fcf0e90512849e13684413dea2f5b65abbea81d2`.
+Canonical ONE source SHA under verification: `2c9fe6b299ea04b2164f002c06bb6731c5ad60fd`.
 
 
 
@@ -772,3 +772,11 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 
 - Documented compatibility rules for the additive detector_coverage report field, CI correlations array, and the separate manual quality-ledger schema. Missing fields never imply a successful check; incompatible schema changes require a version change and migration note.
 - This documentation-only source update is still subject to exact-SHA policy. The current canonical pin targets this revision; the independent matrix has not yet completed because jobs remain queued with no runner assigned at the last observation.
+
+
+## Defensive security scanner increment — exact source SHA `2c9fe6b299ea04b2164f002c06bb6731c5ad60fd`
+
+- Added read-only static detectors for known high-signal credential patterns (provider tokens/private-key headers and likely hardcoded secrets), suspicious Python dynamic execution / `subprocess` shell use, and targeted GitHub Actions risks (network-to-shell pipes, broad `write-all` permissions, `pull_request_target`, and mutable action refs).
+- Credential values are never copied into finding evidence; the report records only a rule, a short SHA-256 fingerprint prefix, and a redaction marker. The detector uses heuristics and does not promise complete coverage or prove compromise.
+- Added positive/negative regression fixtures for secret redaction, environment-variable placeholders, suspicious code/workflow patterns, and detector coverage. Updated the detector governance and usage docs to require defense-in-depth and explicitly describe false-positive/false-negative boundaries.
+- This pin change triggers a fresh independent exact-SHA matrix. Do not count the security detector as verified until scanner tests pass on Linux and Windows and the build/normative fixture checks finish for this exact SHA.
