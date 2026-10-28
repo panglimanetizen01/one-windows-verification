@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `695fcfbe6b3350cf7c3ea661da0877f9c6876d1c`.
+Canonical ONE source SHA under verification: `dd5655db8256e60048ee1a5226ba740318295e06`.
 
 
 
@@ -752,3 +752,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Reports now expose per-detector status and finding counts in JSON and Markdown, distinguishing detectors that ran from those not applicable because input was absent or not requested. This is descriptive coverage, not a measured accuracy or repair-success rate.
 - Fixed collector correlation timing so metadata already collected still yields cautious findings when a later Actions API request fails; added a regression test for partial collection. Added revision/path/workflow/file-integrity fixtures and report table-order regression coverage.
 - This pin triggers a fresh cross-platform matrix for the exact current source. Prior runs for older pins were canceled or stale and do not certify this increment.
+
+
+## Manual detector-quality ledger and regression tests — exact source SHA `dd5655db8256e60048ee1a5226ba740318295e06`
+
+- Added `tools/health_quality.py` plus `tools/test_health_quality.py` to validate a reviewed JSON ledger and calculate observed false-positive/miss shares and verified repair success rate. Empty or unreviewed data yields unavailable metrics, not a zero-error claim.
+- Added an empty schema example and a guide for adjudicating true/false positives, misses, and repair outcomes. Integrated the quality-ledger regression suite into both the source repository health workflow and the independent Linux/Windows verification workflow.
+- These metrics remain independent of the fixed-weight completion ledger and cannot authorize merge/release. The current pin is updated to the exact source SHA; all three health suites and One build/conformance checks must pass on this revision before the work can be considered validated.
