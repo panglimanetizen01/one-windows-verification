@@ -3,17 +3,18 @@
 ## Active candidate state — 2026-10-28 (authoritative; supersedes historical snapshots below)
 
 - Canonical source repository/branch: [panglimanetizen01/one](https://github.com/panglimanetizen01/one/tree/milestone/100-ecosystem-20261023).
-- **Current source candidate:** `b07973b186dcf3941167b9367f6d0abba4523605` ([commit](https://github.com/panglimanetizen01/one/commit/b07973b186dcf3941167b9367f6d0abba4523605)).
+- **Current source candidate:** `a9c9c85d6876e0c143ff7b874a3b8ee394e7cb78` ([commit](https://github.com/panglimanetizen01/one/commit/a9c9c85d6876e0c143ff7b874a3b8ee394e7cb78)).
 - PR #80 remains open, draft, and unmerged; base branch is `main`. No merge or release authorization is inferred.
-- **Scanner A–E implementation state:** the canonical source contains repository integrity/contract checks, security detectors (secret redaction, AST correlation for obfuscated execution and sensitive-data egress, agent-instruction prompt-injection correlation, and dependency/action pin checks), baseline triage, allowlisted guarded Markdown repair, and adjudicated detector/repair quality metrics. Current code exposes 52 scanner tests and 5 quality-ledger tests, but test names/source presence are not execution evidence.
-- **Exact-SHA execution added:** the independent verifier now has a dedicated `health-scanner-verification.yml` workflow intended to run scanner/collector/quality regression suites and scan the exact source checkout on Ubuntu and Windows. It is an independent mirror, not canonical source CI. The first resulting runs must be inspected for checkout SHA, executed steps, exit codes, report artifacts, and findings.
-- **Canonical source CI:** latest observed runs for source SHA `b07973b186dcf3941167b9367f6d0abba4523605` (repository health `40723688227`, One CI `40723688332`, E1 `40723688229`, E2 `40723688287`, Linux distro `40723688199`, focused stdlib `40723688231`) all ended in failure with `steps: null`, `logs_url: null`, and no artifacts. This does not prove source tests failed or passed. Root cause is unknown; no identical retry is justified without a changed condition or diagnosis.
+- **Scanner A–E implementation state:** repository integrity/contract checks; security checks for secret redaction, AST correlation of obfuscated execution and sensitive-data egress, agent-instruction prompt-injection correlation, GitHub Action/Git dependency pinning; baseline triage; allowlisted guarded Markdown repair; and adjudicated detector/repair quality metrics. The current source tree contains **57 scanner regression tests** and **5 quality-ledger tests**. These counts describe test definitions, not test execution.
+- **Independent exact-SHA scanner workflow:** [health-scanner-verification.yml](https://github.com/panglimanetizen01/one-windows-verification/blob/verification/.github/workflows/health-scanner-verification.yml) checks out this exact source SHA on Ubuntu and Windows, runs scanner/collector/quality test suites, builds the ONE CLI, scans the ONE checkout with normative fixtures enabled, and uploads JSON/Markdown reports. It is an independent mirror, not canonical source CI. Execution status must be read from the actual run, steps, exit codes, and artifacts before credit.
+- **Canonical source CI evidence:** runs for previous candidate `b07973b186dcf3941167b9367f6d0abba4523605` (Repository Health `40723688227`, One CI `40723688332`, E1 `40723688229`, E2 `40723688287`, Linux distro `40723688199`, focused stdlib `40723688231`) failed with `steps: null`, `logs_url: null`, and no artifacts. They are historical after this source SHA advanced. These metadata do not prove source tests failed or passed; root cause is unknown.
 - **Acceptance:** implementation **92/100 provisional**; carried-forward foundation/core arithmetic **60/100 only**; final exact-SHA score **UNKNOWN / NOT RECONCILED**. Current verified points: E1 **0/10**, E2 **0/8**, E3 **0/8**, E4 **0/6**, E5 **0/4**, E6 **0/4**. Definition of Done: **3 checked / 10 unchecked**. Gate **NOT PASSED**.
 - E2 protected production provenance remains unauthorized and undispatched. No merge, production release, protection bypass, secret mutation, or trust-store mutation occurred.
 
 ---
 
-Canonical ONE source SHA under verification: `b07973b186dcf3941167b9367f6d0abba4523605`.
+Canonical ONE source SHA under verification: `a9c9c85d6876e0c143ff7b874a3b8ee394e7cb78`.
+
 
 
 
