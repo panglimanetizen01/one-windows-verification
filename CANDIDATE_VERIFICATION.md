@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `4dfd311abbb631b0668c66e02b452bd6f174c621`.
+Canonical ONE source SHA under verification: `ccf4ebbc5d155527e1c34d7f44ac68d4931c46a2`.
 
 
 
@@ -726,3 +726,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - The live exact-SHA collector now emits explicit correlation hints for failed runs with no job metadata, failed jobs with no visible steps/runner, failed steps requiring log review, and completed runs with no observed artifacts.
 - These are deliberately cautious classifications: runner/job-start anomalies remain blocked/unknown, and artifact absence is informational until compared with the workflow's declared artifact contract. No root cause is inferred and no source/release state is modified.
 - Added regression coverage for job-start failures, failed steps, and artifact absence. The independent exact-SHA matrix is triggered by this pin; do not claim PASS until Linux and Windows collector/scanner tests, build, and normative One fixture checks finish on this exact source SHA.
+
+
+## Internal Markdown anchor validation — exact source SHA `ccf4ebbc5d155527e1c34d7f44ac68d4931c46a2`
+
+- The health scanner now checks same-page and cross-file Markdown fragments against a conservative set of heading slugs (including duplicate-heading suffixes) and explicit HTML `id`/`name` anchors. Regression fixtures cover missing anchors and valid heading/HTML targets.
+- Updated the One README and detector documentation to describe the scanner's current scope and limits. The scanner remains developer tooling and does not alter One grammar or CLI behavior.
+- The canonical pin has advanced to this exact source SHA. The previous matrix for SHA `c4eea8c3e15295c80ccdbe3e8c0d0446fde78892` was still running at the last observation and cannot certify these subsequent changes. Validate scanner and collector suites, build, and normative One fixtures on this pinned SHA before crediting the increment.
