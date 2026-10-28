@@ -447,7 +447,35 @@ This pass reconciles the current candidate pin, fixed-weight ledger, DoD, E1/E2/
 ## Candidate pin refresh — 2026-10-28T09:08Z
 
 - **New canonical source SHA:** `1b950ebb3b9f4447229cec5055b9791520de87c5` ([commit](https://github.com/panglimanetizen01/one/commit/1b950ebb3b9f4447229cec5055b9791520de87c5)); source candidate branch `milestone/100-ecosystem-20261023` was fast-forwarded from the previous pin `1119c450eda1437d79d75304a1daefb93e8a357f`.
-- **User-supplied Android/Termux local results for this SHA lineage:** `cargo --locked test -p one-core --lib` PASS (251 tests); `cargo --locked test -p one-core --test native_backend_linux_windows` PASS (8 tests); subsequent `cargo --locked test --workspace` PASS (`WORKSPACE=0)); `cargo --locked clippy --workspace --all-targets --all-features -- -D warnings` PASS; `python tools/check_contract.py` PASS (91 required artifacts, 85 concrete indexed artifacts, fixture checks pass). These are user-reported local results; this verifier has not executed them.
+- **User-supplied Android/Termux local results for this SHA lineage:** `cargo --locked test -p one-core --lib` PASS (251 tests); `cargo --locked test -p one-core --test native_backend_linux_windows` PASS (8 tests); subsequent `cargo --locked test --workspace` PASS (`WORKSPACE=0`); `cargo --locked clippy --workspace --all-targets --all-features -- -D warnings` PASS; `python tools/check_contract.py` PASS (91 required artifacts, 85 concrete indexed artifacts, fixture checks pass). These are user-reported local results; this verifier has not executed them.
 - Fixes in this candidate lineage address descriptor-relative filesystem access on Android/Termux, host gating for a GNU x86_64 Linux linker integration test, and unique temp fixture paths. The user-reported first full-workspace attempt had two human-core failures; the later final run reported `HUMAN_CORE=0 WORKSPACE=0 CLIPPY=0 CONTRACT=0`. Preserve both facts; the earlier failure is superseded by the later local run, not erased.
 - Prior GitHub Actions runs listed above are bound to earlier source pins and are historical only. Do not carry their PASS results forward to `1b950ebb3b9f4447229cec5055b9791520de87c5`. Exact-SHA CI and verifier gate evidence must be regenerated for this pin.
 - Fixed-weight ledger and DoD scores are unchanged. E1, E2, E4, E6 remain open; E3/E5 remain provisional. This pin update awards no points. No protected production provenance release was dispatched; no merge or release is authorized.
+
+
+## Exact-SHA hosted evidence refresh — 2026-10-28T09:15Z
+
+Source SHA remains `1b950ebb3b9f4447229cec5055b9791520de87c5`; these workflow runs check out that exact source pin. They were pending when the prior ledger gate evaluated and are now completed:
+
+| Verification workflow | Run | Result |
+|---|---:|---|
+| E4 adversarial filesystem and resource-bound regression | [40661955051](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661955051) | PASS |
+| Android AArch64 cross-build and contract fallback x86_64 | [40661955036](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661955036) | PASS |
+| Candidate artifact integrity | [40661955029](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661955029) | PASS |
+| Cargo lockfile bootstrap | [40661955012](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661955012) | PASS |
+| Cross-platform verification | [40661955000](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661955000) | PASS |
+| Focused standard library/database | [40661954977](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954977) | PASS |
+| E4 subprocess resource guard | [40661954963](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954963) | PASS |
+| E1 Standard Library Windows acceptance | [40661954950](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954950) | PASS |
+| Android AArch64 artifact build | [40661954942](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954942) | PASS |
+| Package provenance end-to-end with synthetic trust only | [40661954916](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954916) | PASS (synthetic trust only; not production release evidence) |
+| E1 cross-platform acceptance lab | [40661954904](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954904) | PASS |
+| E4 SEC-05 subprocess timeout/output limits | [40661954893](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954893) | PASS |
+| Android AArch64 cross-build fallback | [40661954891](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954891) | PASS |
+| Linux distribution verification | [40661954885](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661954885) | PASS |
+
+The Android native ARM64 Linux-host runtime job [40661955153](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40661955153) was still in progress at this checkpoint and is not claimed as passed.
+
+The source repository's E1, Linux distro, and E2 workflow attempts failed before executing any step (`runner_id=0`, `steps=0`). The non-release failed jobs were retried, but their latest attempts still report job-start failures without executable steps; this is infrastructure-unresolved, not test PASS and not a code-level regression finding. The protected production provenance release workflow was not retried or manually dispatched.
+
+This refresh records observed workflow results only. It does not alter the fixed-weight ledger, award points, check Definition of Done items, or authorize merge/release. The next acceptance gate must re-evaluate live evidence against this source SHA and report any remaining failures.
