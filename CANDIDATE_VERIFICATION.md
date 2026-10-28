@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `6b10565abc3d6d33f605bbd83f7d8923af558fd2`.
+Canonical ONE source SHA under verification: `84cf0895808e61336c897558358a09557227dd4c`.
 
 
 
@@ -693,3 +693,9 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 
 - Exact-SHA run [#40707484018](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40707484018) surfaced a real Python `IndentationError` in `tools/test_one_health.py` at the CLI contract test definition. The new test was concatenated to the previous line; the source was corrected, and the detector-coverage test now creates a Python fixture before expecting the syntax detector to be listed.
 - The canonical source pin now targets `6b10565abc3d6d33f605bbd83f7d8923af558fd2` so the corrected tests must be exercised on the exact resulting SHA. Previous failures remain recorded; they are not overwritten as successes.
+
+
+## Detector catalogue documentation correction — exact SHA `84cf0895808e61336c897558358a09557227dd4c`
+
+- Removed a duplicate `ci-evidence` row from `docs/verification/health-detectors.md` and consolidated the exact-SHA live Actions collector and saved-evidence classifier into one detector entry.
+- The prior run [#40707791947](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40707791947) exercised source SHA `6b10565abc3d6d33f605bbd83f7d8923af558fd2`: Linux and Windows scanner/collector test steps, build, normative fixture scan, Linux AST/Clippy/tests/offline verification had passed at the latest observation; Windows Clippy was still in progress. This does not certify the later documentation-only SHA. The pin is advanced again so the latest exact revision receives independent validation.
