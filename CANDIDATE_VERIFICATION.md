@@ -29,7 +29,7 @@ Canonical ONE source SHA remains `1119c450eda1437d79d75304a1daefb93e8a357f`. The
 
 The fixed-weight ledger gate [#40638928894](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638928894), including its post-matrix retry, remains **NOT PASSED**: 8 Definition-of-Done items unchecked; E1 0/10, E2 0/8, E4 0/6, E6 0/4; Android runtime pending; and no protected production `ONE Package Provenance Release` run exists for this source SHA. Verifier unit tests passed 7/7. No points or checklist items are promoted by this refresh.
 
-Canonical source Linux distro run [#40638875412](https://github.com/panglimanetizen01/one/actions/runs/40638875412) was retried; both jobs again failed before any steps were available (`steps: null`). Classify as an unresolved job-start/runner infrastructure failure, not as a source-test result. No root cause is established by available metadata.
+Canonical source Linux distro run [#40638875412](https://github.com/panglimanetizen01/one/actions/runs/40638875412) was retried; both jobs again failed before any steps were available (`steps: null`). Classify as an unresolved job-start/runner infrastructure failure, not as a source-test result. No root cause is established by available metadata. Canonical E1 standard-library lab [#40638875488](https://github.com/panglimanetizen01/one/actions/runs/40638875488) was also retried; both Ubuntu and Windows jobs again failed with `steps: null`. The same infrastructure classification applies; no source-test result or root cause is available.
 
 ## Pre-reconciliation candidate checkpoint — 2026-10-28T04:16Z (historical source SHA `53220eeb4bae9138b3a46b469004f8eac4a11420`)
 
