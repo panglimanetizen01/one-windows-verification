@@ -255,3 +255,18 @@ The independent exact-SHA matrix remains separate and does execute tests. It has
 
 - Exact candidate pin advanced to `45b9c1220059eb5755faf67ee49d0d2382e6ac7a` after adding regression tests for empty-list display, list append order/empty/non-list inputs, and list removal with empty or absent values.
 - Prior exact-SHA evidence for earlier source revisions does not certify this revision. The pin update triggers fresh independent ledger verification; accept no score or gate until the resulting exact-SHA jobs are inspected.
+
+## Fresh exact-source matrix update — 2026-10-28T05:29Z
+
+The candidate remains pinned to ONE source SHA `1a84d522a2953044c250ebe43c22989d6ec07dfc`. The following independent lab workflows completed successfully against that pin:
+
+- [Cross-platform verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065845) — Ubuntu and Windows jobs passed.
+- [E1 cross-platform acceptance lab](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065819) and [E1 Windows acceptance](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065811) — scoped suites passed; this is not a claim that the broader E1 row is complete.
+- [Linux distro verification](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065997) — passed on the pinned source.
+- [Candidate artifact integrity](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065808) and [Cargo lockfile bootstrap](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065836) — passed their defined scopes.
+- [E4 adversarial filesystem/resource regressions](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065806), [SEC-05 subprocess timeout/output limits](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065919), and [subprocess resource guard](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065925) — passed their focused scopes. E4 remains unaccepted until the full threat review and full-row criteria are met.
+- [Android API 35 arm64-v8a runtime](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40636250386) — **completed successfully on the exact source SHA**. The job checked out source SHA `1a84d522a2953044c250ebe43c22989d6ec07dfc`, built the AArch64 ELF, booted an API 35 `arm64-v8a` environment, pushed and executed the ELF, and recorded exit code `0` with output `ONE_NATIVE_BACKEND_OK`. Evidence artifact [12794720830](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40636250386/artifacts/12794720830), uploaded archive digest `sha256:2c616f1082158a281c09a9ec1d78bddd54ffa70ac9226cf8c28025cc1f671c22`.
+
+Canonical-repository E1 and Linux distro workflow runs `40633942687` and `40633942635` failed before executing any step (runner ID `0`) even after retries. They remain classified as runner-start infrastructure failures, not passing tests or source-test failures. The independent lab results above do not conceal or reclassify those canonical failures.
+
+The synthetic-trust provenance lab [40634065880](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40634065880) passed only its synthetic trust scope; it is **not** protected production release provenance and does not close E2. No protected source-bound release run is recorded for this candidate SHA. E1, E2, E4, and E6 remain open; no release is authorized.
