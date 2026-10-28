@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `2c9fe6b299ea04b2164f002c06bb6731c5ad60fd`.
+Canonical ONE source SHA under verification: `c5ba60b16e0356753ffbd10d448b47dce64f01bb`.
 
 
 
@@ -780,3 +780,9 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Credential values are never copied into finding evidence; the report records only a rule, a short SHA-256 fingerprint prefix, and a redaction marker. The detector uses heuristics and does not promise complete coverage or prove compromise.
 - Added positive/negative regression fixtures for secret redaction, environment-variable placeholders, suspicious code/workflow patterns, and detector coverage. Updated the detector governance and usage docs to require defense-in-depth and explicitly describe false-positive/false-negative boundaries.
 - This pin change triggers a fresh independent exact-SHA matrix. Do not count the security detector as verified until scanner tests pass on Linux and Windows and the build/normative fixture checks finish for this exact SHA.
+
+
+## Security scanner user-facing documentation — exact source SHA `c5ba60b16e0356753ffbd10d448b47dce64f01bb`
+
+- The root README now lists the new security detectors and clearly states their redaction, heuristic, and defense-in-depth boundaries. No One language grammar or runtime behavior changed.
+- The prior matrix triggered for `2c9fe6b299ea04b2164f002c06bb6731c5ad60fd` does not certify this later README revision. The canonical pin is advanced to `c5ba60b16e0356753ffbd10d448b47dce64f01bb` for fresh exact-SHA validation.
