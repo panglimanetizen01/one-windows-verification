@@ -543,3 +543,29 @@ This is a coverage inventory, not a score promotion.
 ## Candidate SHA advance — E4 documentation consistency fix
 
 The source branch advanced from `6d492006f9fa873fbd7d8ad61fa5833df707b1f6` to `28d1384588662cc93f405dc9dd5f3012183d249f` to relabel the old E4 reconciliation section as historical and add the current candidate evidence section. This is a documentation-only change; nevertheless, all prior workflow runs checked out the previous source SHA and are historical for the new pin. Do not count them as current-SHA acceptance. The new exact-SHA matrix must complete before the fixed-weight gate can accept this candidate. The verifier pin and README are being synchronized to `28d1384588662cc93f405dc9dd5f3012183d249f`. No ledger points or DoD items are changed by this pin update.
+
+
+## Current-pin matrix status — source SHA `28d1384588662cc93f405dc9dd5f3012183d249f`
+
+This section records current-pin workflow state as observed on 2026-10-28; all links below checked out the exact canonical source SHA `28d1384588662cc93f405dc9dd5f3012183d249f`.
+
+| Required scoped workflow | Exact-SHA run | Observed result |
+|---|---:|---|
+| E1 cross-platform acceptance lab | [40669813386](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813386) | PASS — Ubuntu 24.04 and Windows Server 2025 |
+| E1 Windows standard-library acceptance | [40669813471](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813471) | PASS |
+| Focused standard library/database | [40669813400](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813400) | PASS |
+| Cross-platform Linux/Windows verification | [40669813367](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813367) | PASS |
+| Linux distribution conformance | [40669813433](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813433) | PASS |
+| Candidate artifact integrity | [40669813330](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813330) | PASS |
+| Cargo lockfile bootstrap | [40669813398](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813398) | PASS |
+| E4 adversarial filesystem/resource bounds | [40669813282](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813282) | PASS for scoped tests |
+| E4 SEC-05 subprocess timeout/output limit | [40669813337](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813337) | PASS for scoped tests |
+| E4 subprocess resource guard | [40669813307](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813307) | PASS for scoped tests |
+| Android AArch64 cross-build/contract fallback | [40669813340](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813340), [40669813341](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813341) | PASS |
+| Android AArch64 device artifact | [40669813366](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813366) | PASS |
+| Package provenance end-to-end lab | [40669813388](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813388) | PASS with synthetic trust only; not protected production release acceptance |
+| Android API 35 AArch64 runtime on native ARM64 host | [40669813305](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813305) | **IN PROGRESS** — build and backend contract steps passed; API 35 ARM64 guest boot/runtime step has not completed |
+
+Canonical source repository workflows on the same SHA again failed before any executable steps: One CI run [40669773277](https://github.com/panglimanetizen01/one/actions/runs/40669773277), E1 lab [40669773287](https://github.com/panglimanetizen01/one/actions/runs/40669773287), E2 lab [40669773308](https://github.com/panglimanetizen01/one/actions/runs/40669773308), focused stdlib [40669773269](https://github.com/panglimanetizen01/one/actions/runs/40669773269), and Linux distro [40669773366](https://github.com/panglimanetizen01/one/actions/runs/40669773366). Their jobs expose empty step lists; this is job-start infrastructure failure, not a source test outcome.
+
+The fixed-weight gate cannot pass yet. E1/E2/E4/E6 remain 0 verified until their complete row acceptance is recorded. E2 specifically requires the protected production release path and independently provisioned trusted-publisher material; synthetic trust is insufficient. Do not promote scores or mark DoD complete on the strength of this scoped matrix alone.
