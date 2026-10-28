@@ -489,3 +489,31 @@ This refresh records observed workflow results only. It does not alter the fixed
 - **All previous candidate-specific workflow results for `1b950ebb3b9f4447229cec5055b9791520de87c5` are historical after this source SHA change.** They remain useful as diagnostic history, but they must not satisfy the exact-SHA gate for `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`.
 - User-supplied Termux test outcomes apply to the previous candidate lineage and have not yet been rerun against this merge SHA. Do not claim current-SHA local PASS based on them.
 - The independent verifier pin has been updated to `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`; current-pin CI and acceptance must run again. Fixed-weight ledger remains implementation 92/100, verified 72/100 until new exact-SHA evidence supports any legitimate change. E1/E2/E4/E6 remain open. No production release or merge authorization is implied by making the PR conflict-free.
+
+
+## Exact-SHA hosted evidence refresh — candidate `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`
+
+Live runs below all checked out the exact pinned Project ONE source SHA `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`. These replace older-candidate results for current-pin acceptance; older evidence is historical only.
+
+| Acceptance workflow | Exact-SHA run | Result |
+|---|---:|---|
+| E1 cross-platform acceptance lab | [40664235337](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235337) | PASS |
+| Linux distribution conformance | [40664235479](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235479) | PASS |
+| Focused standard library/database verification | [40664235556](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235556) | PASS |
+| E1 Windows standard-library acceptance | [40664235517](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235517) | PASS |
+| Cross-platform Linux/Windows verification | [40664235567](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235567) | PASS |
+| Candidate artifact integrity | [40664235386](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235386) | PASS |
+| Cargo lockfile bootstrap evidence | [40664235246](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235246) | PASS |
+| E4 adversarial filesystem/resource-bound regression | [40664235672](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235672) | PASS |
+| E4 subprocess resource guard | [40664235630](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235630) | PASS |
+| E4 SEC-05 timeout/output limits | [40664235569](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235569) | PASS |
+| Android AArch64 cross-build / contract fallback | [40664235293](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235293) | PASS |
+| Android AArch64 device artifact build | [40664235620](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235620) | PASS |
+| Android API 35 AArch64 runtime on ARM64 host | [40664235029](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235029) | PASS |
+| Package provenance end-to-end lab | [40664235475](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664235475) | PASS, synthetic trust only; not production publisher trust or release acceptance |
+
+The exact-SHA ledger gate run [40664244856](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40664244856) evaluated too early: its live workflow query saw several of the above runs still queued/in progress. A fresh gate evaluation is required after this evidence-index refresh and completion of the workflow matrix.
+
+The source repository's One CI, focused standard-library, E1 lab, Linux distro, and E2 package/provenance lab jobs repeatedly failed before any steps executed (runner ID 0 / zero executable steps). These are unresolved GitHub job-start/runner failures, not test failures and not PASS. They were retried as non-release jobs; no additional blind retries will be issued without a runner/workflow change. The protected production package-provenance release workflow remains failed/unproven and was not retried or manually dispatched.
+
+No score changes and no DoD items are checked by this evidence-index update. E1, E2, E4 and E6 ledger rows remain incomplete until their full acceptance definitions—not just individual green workflows—are satisfied. The candidate remains draft/open; no merge or production release authorization is implied.
