@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `ccf4ebbc5d155527e1c34d7f44ac68d4931c46a2`.
+Canonical ONE source SHA under verification: `52ace3d1fec95dc18198c66e1c44009c53d660b7`.
 
 
 
@@ -733,3 +733,9 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - The health scanner now checks same-page and cross-file Markdown fragments against a conservative set of heading slugs (including duplicate-heading suffixes) and explicit HTML `id`/`name` anchors. Regression fixtures cover missing anchors and valid heading/HTML targets.
 - Updated the One README and detector documentation to describe the scanner's current scope and limits. The scanner remains developer tooling and does not alter One grammar or CLI behavior.
 - The canonical pin has advanced to this exact source SHA. The previous matrix for SHA `c4eea8c3e15295c80ccdbe3e8c0d0446fde78892` was still running at the last observation and cannot certify these subsequent changes. Validate scanner and collector suites, build, and normative One fixtures on this pinned SHA before crediting the increment.
+
+
+## CI correlation surfaced in scanner report — exact source SHA `52ace3d1fec95dc18198c66e1c44009c53d660b7`
+
+- The scanner now reads the collector's `correlations` array and emits actionable findings for failed runs with no job metadata (blocked/unknown) and completed runs with no observed artifacts (informational/triaged). Existing job-level checks continue to cover missing visible steps and failed-step log review.
+- Regression tests exercise the new scanner findings in addition to collector correlation tests. The current independent run for prior pinned SHA `ccf4ebbc5d155527e1c34d7f44ac68d4931c46a2` was still pending/running at the last observation; it cannot certify this additional change. Pin advanced to `52ace3d1fec95dc18198c66e1c44009c53d660b7` for fresh exact-SHA Linux/Windows validation.
