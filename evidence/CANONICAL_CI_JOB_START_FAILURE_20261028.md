@@ -40,3 +40,8 @@ This means there is no retrievable job log from which to diagnose a test failure
 ## Current disposition
 
 The independent matrix has passed its documented scopes, but the fixed-weight ledger gate remains **NOT PASSED**. E1, E2, and E6 remain open; seven Definition-of-Done items were reported unchecked in the latest gate snapshot. This document is diagnostic evidence only and awards no ledger points.
+
+
+## Continuous follow-through
+
+This incident is now one input to the broader [Continuous Repository Health & Repair System plan](../docs/CONTINUOUS_REPOSITORY_HEALTH_AND_REPAIR_SYSTEM.md). The plan proposes reusable detectors for job-start/log anomalies, stale evidence, broken references, syntax, contract drift, overlapping configuration, documentation drift, and guarded repair verification. The scanner and repair automation are not yet implemented; this link is a roadmap, not a claim of automated remediation.
