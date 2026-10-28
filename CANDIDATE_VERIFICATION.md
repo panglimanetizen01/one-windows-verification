@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `92949a2dad3abfb4bcd75022ea2a3fe4d2a67089`.
+Canonical ONE source SHA under verification: `4dfd311abbb631b0668c66e02b452bd6f174c621`.
 
 
 
@@ -719,3 +719,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Added saved-evidence checks for expired CI artifacts, duplicate artifact names within one run, and unavailable artifact digests. Missing digests are informational because the collector does not download and hash artifact bytes; artifact presence is never treated as proof of correctness.
 - Added regression tests for these cases and made `artifact-integrity` appear in `detectors_run` only when an artifacts array is actually available. Detector governance and usage docs describe this boundary.
 - The exact-SHA pin has been advanced so the new artifact checks are validated against this revision. No source-language grammar or CLI semantics were changed.
+
+
+## CI metadata correlation increment — exact source SHA `4dfd311abbb631b0668c66e02b452bd6f174c621`
+
+- The live exact-SHA collector now emits explicit correlation hints for failed runs with no job metadata, failed jobs with no visible steps/runner, failed steps requiring log review, and completed runs with no observed artifacts.
+- These are deliberately cautious classifications: runner/job-start anomalies remain blocked/unknown, and artifact absence is informational until compared with the workflow's declared artifact contract. No root cause is inferred and no source/release state is modified.
+- Added regression coverage for job-start failures, failed steps, and artifact absence. The independent exact-SHA matrix is triggered by this pin; do not claim PASS until Linux and Windows collector/scanner tests, build, and normative One fixture checks finish on this exact source SHA.
