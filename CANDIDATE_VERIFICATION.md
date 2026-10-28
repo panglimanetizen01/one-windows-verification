@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `c60a6ef969dc83814797e52a105a44d889425421`.
+Canonical ONE source SHA under verification: `65d09e3f9ed8639ff0d22a948ada06c3def36c22`.
 
 
 
@@ -655,3 +655,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Canonical source runs [One CI 40699188585](https://github.com/panglimanetizen01/one/actions/runs/40699188585) and [Repository Health 40699188725](https://github.com/panglimanetizen01/one/actions/runs/40699188725) again failed before exposing any executable steps (runner_id=0, steps=[]). No source or scanner test outcome can be inferred from those runs.
 - The independent cross-platform verification workflow now runs the scanner regression tests and source-only normative One fixture checks on Ubuntu and Windows after building the exact pinned source. A fresh run must finish before any scanner result is claimed.
 - Current exact-SHA acceptance gate is not passed until all required jobs are terminal and the fixed-weight ledger/DoD plus protected production provenance are reconciled. No score or checklist item is promoted by the scanner work itself.
+
+
+## Scanner regression fix checkpoint — 2026-10-28
+
+- Current canonical source SHA: 65d09e3f9ed8639ff0d22a948ada06c3def36c22. The previous scanner test run on source SHA c60a6ef969dc83814797e52a105a44d889425421 executed successfully far enough to run 23 unit tests and exposed two scanner test defects: the workflow overlap detector missed list-form `- run:` commands, and a baseline-resolution assertion did not match the documented resolution wording.
+- Both defects were corrected in the current candidate: workflow command matching now accepts list-form steps, and resolution evidence explicitly asks reviewers to check detector coverage and evidence. The independent verifier is being rerun on this exact SHA.
+- This is a meaningful validation result: the scanner suite did execute on Ubuntu in the independent verifier. It did **not** pass on the prior SHA; the current SHA still needs a fresh full run. No acceptance ledger points are assigned based on a failing prior run.
