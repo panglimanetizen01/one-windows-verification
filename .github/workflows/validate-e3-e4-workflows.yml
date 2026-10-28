@@ -58,7 +58,7 @@ jobs:
             .github/workflows/android-native-verification.yml
           )
           for file in "${retired[@]}"; do
-            grep -q '^  workflow_dispatch: "$file"
+            grep -Fq "workflow_dispatch:" "$file"
             if grep -Eq '^  (push|pull_request):' "$file"; then
               echo "retired workflow still has automatic triggers: $file" >&2
               exit 1
