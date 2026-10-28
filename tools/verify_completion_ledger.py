@@ -336,7 +336,7 @@ def main() -> int:
         with open(summary_path, "a", encoding="utf-8") as report:
             report.write("## ONE fixed-weight completion ledger gate\n\n")
             report.write(f"- **Gate:** {summary['gate']}\n")
-            report.write(f"- **Pinned source SHA:** \`{summary['source_sha']}\`\n")
+            report.write(f"- **Pinned source SHA:** `{summary['source_sha']}`\n")
             report.write(f"- **Implementation:** {summary['implementation_points']}/100\n")
             report.write(f"- **Verified:** {summary['verified_points']}/100\n")
             report.write(f"- **Fixed-weight sum:** {summary['fixed_weight_total']}/100\n")
