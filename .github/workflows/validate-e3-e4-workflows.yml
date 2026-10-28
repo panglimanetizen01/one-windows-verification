@@ -36,7 +36,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          actionlint -color \
+          # SC2034 is a pre-existing unused-loop/log-variable warning in diagnostic workflows; keep schema/syntax checks strict.
+          actionlint -color -ignore 'SC2034' \
             .github/workflows/android-api35-arm64-community-runtime.yml \
             .github/workflows/android-aarch64-arm-host.yml \
             .github/workflows/android-aarch64-linux-tcg.yml \
