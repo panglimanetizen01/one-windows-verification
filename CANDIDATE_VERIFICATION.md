@@ -350,3 +350,29 @@ python tools/check_contract.py
 ```
 
 Each command's success must be captured as evidence; do not infer PASS from workflow creation/start, static inspection, or a different SHA.
+
+
+## E4 threat-review reconciliation — 2026-10-28
+
+Canonical source pin remains `1119c450eda1437d79d75304a1daefb93e8a357f`. This entry reconciles the threat review and current-pin workflow records; it does not claim complete sandboxing or award E4 points.
+
+### Current-pin scoped workflow evidence
+
+- [Filesystem/resource-bound adversarial regression, run 40638898955](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638898955) — successful, scoped to its configured tests.
+- [SEC-05 subprocess timeout/output limit, run 40638898978](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638898978) — successful, scoped to its configured tests.
+- [Subprocess resource guard, run 40638899440](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899440) — successful, scoped to its configured tests.
+- [Cross-platform verification, run 40638898957](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638898957) and [Linux distribution verification, run 40638899092](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899092) — configured matrices passed.
+
+These are bounded workflow outcomes. They do not independently prove every threat-review claim, nor do they replace a final frozen-SHA matrix after any future source change.
+
+### Threat-claim acceptance still required
+
+The source threat review itself lists these reconciliation targets: path traversal; symlink/reparse handling; mount-boundary detection; TOCTOU parent-swap races; capability denial before side effects; SQLite/query limits; shared operation quotas; subprocess descendant containment; timeout/output limits; and recovery after quota release. The current record explicitly retains Unix non-Linux mount-identity and caller-retained/intermediate-heap limitations.
+
+The available workflow names/results establish scoped regressions, but do not by themselves provide a one-to-one claim → implementation invariant → adversarial assertion → platform result matrix for every target above. In particular, a successful subprocess timeout/output-limit workflow is not, without its assertions, proof of descendant-tree termination on every supported platform; a passing mount-boundary regression is not proof of universal filesystem confinement; and operation quotas do not prove a universal process heap cap.
+
+### Disposition
+
+- E4 implementation remains recorded as 6/6, but verified remains 0/6; this is not an acceptance contradiction because implementation and verification are distinct ledger dimensions.
+- Do not check the E4 DoD item until the threat-review matrix is complete, all required platform tests pass against the final exact source SHA, residual limitations are accepted explicitly, and the fixed-weight gate validates the synchronized evidence.
+- No new source workflow was dispatched by this documentation update. No merge, protected release, or release authorization is implied.
