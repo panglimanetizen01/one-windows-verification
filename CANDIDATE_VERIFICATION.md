@@ -1,5 +1,19 @@
 # Current exact-SHA acceptance evidence
 
+## Active scanner A–E verification state — 2026-10-28 (authoritative)
+
+- Canonical source repository: `panglimanetizen01/one`, branch `milestone/100-ecosystem-20261023`, PR [#80](https://github.com/panglimanetizen01/one/pull/80) (open, draft, unmerged).
+- Current source HEAD: `678fe08ec706ca3ebdf5322684e056749a1c930f` ([commit](https://github.com/panglimanetizen01/one/commit/678fe08ec706ca3ebdf5322684e056749a1c930f)).
+- `CANONICAL_COMMIT.txt` must equal the SHA above. The pin identifies the candidate only; it does not prove execution or acceptance.
+- Scanner A–E implementation status: A integrity; B Python/JavaScript static security, secret-pattern coverage, prompt-injection correlation and supply-chain checks; C limited AST source/sink correlation plus CI triage; D allowlisted guarded Markdown newline repair only; E positive/negative regression corpus and separately adjudicated quality ledger. Implementation is present; current exact-SHA execution is **NOT VERIFIED**.
+- Regression suite contains 58 test methods in `tools/test_one_health.py` at this candidate. This is a source inventory, not evidence the methods executed.
+- Current-SHA canonical runs: Repository Health `40725572618`, One CI `40725572625`, E2 lab `40725572615`, E1 lab `40725572707`, focused stdlib `40725572626`, and Linux distro `40725572734`. All runs completed with failure; all returned jobs had `steps: null` and `logs_url: null`; artifact lists were empty. A step endpoint returned an empty list and the log endpoint returned `BlobNotFound`. This is an unresolved execution/evidence failure, not a source-test failure or pass. Root cause is unknown; do not repeat identical jobs without a changed condition or transient-failure diagnosis.
+- Ledger: 92/100 implementation points provisional; E3 0/8, E4 0/6, E5 0/4 verified. DoD 3 checked / 10 unchecked. Final exact-SHA completion score **UNKNOWN / NOT RECONCILED**. Gate **NOT PASSED**.
+- E2 protected production provenance remains unauthorized and undispatched. No merge, release, protection bypass, secret change, or trusted-publisher/environment modification is authorized.
+- Next: obtain an authorized execution path that produces job steps/logs/artifacts, run the complete scanner/collector/quality suite and self-scan on this exact source SHA, then inspect exact checkout and exit codes before any score change.
+
+---
+
 ## Active candidate state — 2026-10-28 (authoritative; supersedes historical snapshots below)
 
 - Canonical source repository/branch: [panglimanetizen01/one](https://github.com/panglimanetizen01/one/tree/milestone/100-ecosystem-20261023).
@@ -14,7 +28,7 @@
 
 ---
 
-Canonical ONE source SHA under verification: `a9c9c85d6876e0c143ff7b874a3b8ee394e7cb78`.
+Canonical ONE source SHA under verification: `678fe08ec706ca3ebdf5322684e056749a1c930f`.
 
 
 
