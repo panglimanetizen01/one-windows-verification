@@ -33,7 +33,7 @@ Canonical source Linux distro run [#40638875412](https://github.com/panglimaneti
 
 ## Pre-reconciliation candidate checkpoint — 2026-10-28T04:16Z (historical source SHA `53220eeb4bae9138b3a46b469004f8eac4a11420`)
 
-- **Pinned canonical source SHA:** `53220eeb4bae9138b3a46b469004f8eac4a11420` ([source commit](https://github.com/panglimanetizen01/one/commit/53220eeb4bae9138b3a46b469004f8eac4a11420)). The pin update itself is the only verifier-side action after this source SHA was frozen.
+- **Historical pinned canonical source SHA at this checkpoint:** `53220eeb4bae9138b3a46b469004f8eac4a11420` ([source commit](https://github.com/panglimanetizen01/one/commit/53220eeb4bae9138b3a46b469004f8eac4a11420)). The pin update itself is the only verifier-side action after this source SHA was frozen.
 - **Ledger reconciliation:** E3/E4/E5 rows now conform to the six-column fixed-weight schema. Historical E3/E5 evidence is explicitly not credited to this candidate. Current recorded totals are **92/100 implementation** and **60/100 verified**; no weights changed.
 - **Current required acceptance:** E1 0/10, E2 0/8, E3 0/8 pending exact-SHA matrix, E4 0/6 pending complete threat review/current-SHA evidence, E5 0/4 pending exact-SHA docs/tooling evidence, E6 0/4. The ledger gate remains NOT PASSED until direct acceptance evidence is complete.
 - **Prior source-runner incidents:** E1 run [40630668456](https://github.com/panglimanetizen01/one/actions/runs/40630668456) and Linux distro run [40630668504](https://github.com/panglimanetizen01/one/actions/runs/40630668504) targeted previous source SHA `ea39f92b51f47f34d7edd5d283c68e9ca217cb64`; all four jobs reported runner ID `0`, empty runner name, and no steps. These are classified as infrastructure/job-start failures, not source-test results.
@@ -106,7 +106,7 @@ The previous cumulative evidence notes are preserved in `CANDIDATE_VERIFICATION_
 - The fixed-weight ledger was rerun after the Android runtime completed: [run 40478102859, latest attempt](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40478102859). The live gate no longer lists Android runtime as an acceptance failure, but it remains NOT PASSED due to E1, E2, E6, seven unchecked DoD items, and the protected release workflow's failed conclusion.
 
 
-## Current candidate checkpoint — 2026-10-28T01:10Z
+## Historical candidate checkpoint — 2026-10-28T01:10Z (superseded; retained for audit trail)
 
 - Canonical ONE milestone branch HEAD is now `89bd3297b53e21ec37180559ea20fe95ebb8f63e` (commit [89bd329](https://github.com/panglimanetizen01/one/commit/89bd3297b53e21ec37180559ea20fe95ebb8f63e)). This is a documentation reconciliation commit that corrects the stale claim that no Android runtime PASS existed. It does not change runtime implementation and does not carry previous SHA acceptance automatically.
 - Independent verifier pin was updated to the exact new SHA in [verifier commit 7633aac](https://github.com/panglimanetizen01/one-windows-verification/commit/7633aac35978b12d6149e3bf79b18f70f2bbbcff). The push has launched the required exact-SHA matrix; at checkpoint capture:
@@ -153,7 +153,7 @@ These results advance E1 and the E3/E4 evidence on the exact candidate SHA, but 
 - The protected production provenance workflow's latest known run remains [#40467992667, attempt 7](https://github.com/panglimanetizen01/one/actions/runs/40467992667), pinned to older source SHA `0d0202a1405ae12aaaadf05c6916bacc70316126`; job `122568205344` had `runner_id=0`, empty runner name and `steps=[]`. There is no protected production release run for current SHA `89bd3297b53e21ec37180559ea20fe95ebb8f63e`. No workflow-dispatch was executed for the new SHA, and no source-path change was made solely to trigger the protected release workflow; production trusted-publisher acceptance remains open. No secret was read or disclosed, and no release was published.
 
 
-## Current candidate update — 2026-10-28
+## Historical candidate update — 2026-10-28 (superseded by the exact-SHA refreshes below)
 
 - Canonical milestone branch advanced from `89bd3297b53e21ec37180559ea20fe95ebb8f63e` to source SHA `fbb8824fc48717aef7605f2dee8da25dbe2acdb7` in [commit `fbb8824`](https://github.com/panglimanetizen01/one/commit/fbb8824fc48717aef7605f2dee8da25dbe2acdb7). This is a code-bearing E1 change, not a documentation-only commit.
 - Added the pure source-level built-in `hapus kunci pemetaan` through semantic registration/type checks and the canonical interpreter dispatch to `one_core::stdlib::map_remove`. The operation returns a new mapping, preserves its input, treats a missing key as a no-op, and rejects known receiver/key type mismatches with `E2043` (runtime invalid values remain `R3022`). Added end-to-end tests for deterministic JSON output, immutability, missing-key behavior, and invalid receiver/key types; updated the normative standard-library API contract.
@@ -522,3 +522,8 @@ No score changes and no DoD items are checked by this evidence-index update. E1,
 ## Documentation consistency correction — 2026-10-28
 
 The earlier section dated `2026-10-28T05:45Z` is explicitly marked **historical/superseded**. Its `1119c450...` pin describes that checkpoint only and must not be interpreted as the current candidate. The authoritative current source SHA is the value at the top of this document and in `CANONICAL_COMMIT.txt`: `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`. Historical workflow references remain preserved as audit history and are not current-SHA acceptance evidence.
+
+
+## Current-state precedence rule
+
+For the current source pin and live status, use only the opening canonical SHA line, `CANONICAL_COMMIT.txt`, and the latest dated **Exact-SHA hosted evidence refresh** section. Any older checkpoint is historical even if its original heading used the word “Current”; those headings have been relabeled to prevent stale source SHAs or pending states from being mistaken for present acceptance. Historical logs remain available for forensic traceability and are not deleted.
