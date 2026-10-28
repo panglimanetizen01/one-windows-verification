@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `52ace3d1fec95dc18198c66e1c44009c53d660b7`.
+Canonical ONE source SHA under verification: `1e5571d3d5a0ab128e4589563e0dfe8c5b5ac679`.
 
 
 
@@ -739,3 +739,9 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 
 - The scanner now reads the collector's `correlations` array and emits actionable findings for failed runs with no job metadata (blocked/unknown) and completed runs with no observed artifacts (informational/triaged). Existing job-level checks continue to cover missing visible steps and failed-step log review.
 - Regression tests exercise the new scanner findings in addition to collector correlation tests. The current independent run for prior pinned SHA `ccf4ebbc5d155527e1c34d7f44ac68d4931c46a2` was still pending/running at the last observation; it cannot certify this additional change. Pin advanced to `52ace3d1fec95dc18198c66e1c44009c53d660b7` for fresh exact-SHA Linux/Windows validation.
+
+
+## Expanded detector regression coverage — exact source SHA `1e5571d3d5a0ab128e4589563e0dfe8c5b5ac679`
+
+- Added regression fixtures for unreadable UTF-8 text files, duplicate workflow names, missing local workflow actions, exact checkout-SHA mismatch, and symlink escape (the latter explicitly skips when the OS does not permit symlink creation).
+- The exact-SHA matrix must now confirm these tests together with Markdown anchor, contract-drift, artifact-integrity, CI collector correlation, build, and normative One fixture checks. No test result is inferred from a source edit; the new pin triggers a fresh run.
