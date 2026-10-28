@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `be16e23a50ed5f5d325d3a42ed4a62e28538199c`.
+Canonical ONE source SHA under verification: `6b10565abc3d6d33f605bbd83f7d8923af558fd2`.
 
 
 
@@ -687,3 +687,9 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Exact source target advanced to `be16e23a50ed5f5d325d3a42ed4a62e28538199c` after adding static invariants for grammar ambiguity rejection, absence of a generic action production, bounded CLI recognition, explicit capability grants, stable/deterministic diagnostics, deterministic `.oneir`/`.onepkg` package boundaries, and non-expanding platform capability adapters.
 - Regression tests now cover missing normative contract documents and disappearance of required grammar invariants. This detector is text-presence based and does not replace parser/conformance tests or contract review.
 - Independent cross-platform verification has been triggered by updating `CANONICAL_COMMIT.txt`; await terminal results and inspect the collector test count, build, and normative fixture validation before treating this increment as verified.
+
+
+## Scanner test regression repair — 2026-10-28
+
+- Exact-SHA run [#40707484018](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40707484018) surfaced a real Python `IndentationError` in `tools/test_one_health.py` at the CLI contract test definition. The new test was concatenated to the previous line; the source was corrected, and the detector-coverage test now creates a Python fixture before expecting the syntax detector to be listed.
+- The canonical source pin now targets `6b10565abc3d6d33f605bbd83f7d8923af558fd2` so the corrected tests must be exercised on the exact resulting SHA. Previous failures remain recorded; they are not overwritten as successes.
