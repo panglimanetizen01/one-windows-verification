@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `6bca1254e1976213ad4ba220565d208b06317834`.
+Canonical ONE source SHA under verification: `fcf0e90512849e13684413dea2f5b65abbea81d2`.
 
 
 
@@ -766,3 +766,9 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Added manual detector adjudication and verified-repair metrics in `tools/health_quality.py`, with schema example, guide, and regression tests. Both the source health workflow and independent Linux/Windows verification workflow now run the quality-ledger test suite.
 - Expanded detector fixtures with positive controls for valid TOML/JSON and intact exact-SHA/digest metadata; documented the limits of sample-based quality rates. Updated the health checklist to distinguish implemented scope from remaining work (full YAML schema validation, full log retrieval/interpretation, and higher-confidence workflow-overlap analysis remain open).
 - The exact-SHA pin has advanced to this source revision. The current matrix must complete the scanner, collector, and quality-ledger suites, workspace build, and normative One fixture checks on this SHA. Runner/job-start delays are infrastructure status, not a source test result.
+
+
+## Schema compatibility policy — exact source SHA `fcf0e90512849e13684413dea2f5b65abbea81d2`
+
+- Documented compatibility rules for the additive detector_coverage report field, CI correlations array, and the separate manual quality-ledger schema. Missing fields never imply a successful check; incompatible schema changes require a version change and migration note.
+- This documentation-only source update is still subject to exact-SHA policy. The current canonical pin targets this revision; the independent matrix has not yet completed because jobs remain queued with no runner assigned at the last observation.
