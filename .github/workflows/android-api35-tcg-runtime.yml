@@ -1,16 +1,8 @@
 name: ONE Android API 35 AArch64 Runtime (Linux TCG)
 
+# Retired from automatic candidate verification: the x86_64 Android emulator cannot boot an arm64-v8a system image. Kept manual only for an explicit fail-fast diagnostic.
 on:
-  pull_request:
-    paths:
-      - 'CANONICAL_COMMIT.txt'
-      - '.github/workflows/android-api35-tcg-runtime.yml'
-      - 'evidence/triggers/prompt3-android-tcg-runtime.txt'
-  push:
-    branches: [verification]
-    paths:
-      - 'CANONICAL_COMMIT.txt'
-      - '.github/workflows/android-api35-tcg-runtime.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25,6 +17,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
+      - name: Fail fast — unsupported ARM64 guest on x86_64 host
+        shell: bash
+        timeout-minutes: 1
+        run: |
+          echo "::error::Retired workflow: Android QEMU2 on this x86_64 runner cannot boot the arm64-v8a system image. Use android-api35-arm64-community-runtime.yml or android-aarch64-arm-host.yml for actual Android API 35 ELF execution."
+          exit 1
       - name: Checkout verification harness
         uses: actions/checkout@v4
 

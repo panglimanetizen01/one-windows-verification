@@ -1,11 +1,7 @@
 name: ONE Android AArch64 runtime — software-emulation fallback
 
+# Retired from automatic candidate verification: superseded by android-aarch64-tcg-fallback-v2.yml; kept manual for historical comparison.
 on:
-  push:
-    branches: [verification]
-    paths:
-      - '.github/workflows/android-aarch64-tcg-fallback.yml'
-      - 'CANONICAL_COMMIT.txt'
   workflow_dispatch:
 
 permissions:

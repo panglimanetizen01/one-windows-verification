@@ -2,18 +2,8 @@ name: ONE Android AArch64 Native Runtime Verification (macOS HVF capability prob
 # Probe native macOS Hypervisor.Framework on the hosted ARM64 runner; fail with retained diagnostics if nested virtualization is unavailable.
 # Require actual AArch64 ELF execution on the pinned canonical source SHA.
 
+# Retired from automatic candidate verification: the hosted macOS HVF probe reported HV_UNSUPPORTED and did not reach ELF execution. Kept manual for diagnostics only.
 on:
-  push:
-    branches: [verification]
-    paths:
-      - 'CANONICAL_COMMIT.txt'
-      - '.github/workflows/android-native-verification.yml'
-  pull_request:
-    branches: [verification]
-    paths:
-      - 'CANONICAL_COMMIT.txt'
-      - 'evidence/triggers/prompt3-android-runtime.txt'
-      - '.github/workflows/android-native-verification.yml'
   workflow_dispatch:
 
 permissions:
