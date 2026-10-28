@@ -19,7 +19,7 @@
 ---
 
 
-Canonical ONE source SHA under verification: `d024ebbefdbf6139ddbeaec433f379f421ef88f9`.
+Historical residual line (superseded): `d024ebbefdbf6139ddbeaec433f379f421ef88f9` was an earlier candidate; the active current-state block above pins `f21e8d178f72c6f9c76b4027d5ff85742dbe672e`. Do not use the historical SHA as the active verifier target.
 
 
 
