@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `72c4d3d079a11d41e3410408898e6fe3ddcc9d05`.
+Canonical ONE source SHA under verification: `16e8d4393eaa9c97915989364df56dbcc6c6c98e`.
 
 
 
@@ -576,6 +576,15 @@ The fixed-weight gate cannot pass yet. E1/E2/E4/E6 remain 0 verified until their
 The current-pin native ARM64 runtime [40669813305](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813305) has completed successfully on source SHA `28d1384588662cc93f405dc9dd5f3012183d249f`. The job verified Android API 35 and guest ABI `arm64-v8a`, executed the exact-source generated AArch64 ELF, recorded exit code `0` and output `ONE_NATIVE_BACKEND_OK`, and uploaded source-bound evidence artifact [12808866185](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40669813305/artifacts/12808866185). The matrix is now complete for the listed scoped workflows; the fixed-weight gate must be re-evaluated after this status update. This does not close E1/E2/E4/E6 or authorize a release.
 
 
-## Current candidate freeze — source SHA `72c4d3d079a11d41e3410408898e6fe3ddcc9d05`
+## Historical candidate freeze — source SHA `72c4d3d079a11d41e3410408898e6fe3ddcc9d05` (superseded by E4 ledger reconciliation)
 
 The canonical source advanced from `28d1384588662cc93f405dc9dd5f3012183d249f` to `72c4d3d079a11d41e3410408898e6fe3ddcc9d05` through a documentation-only acceptance record that provisionally accepts E4 at 6/6 within the declared Linux/Windows/Android scope and raises the ledger's provisional verified subtotal to 78/100. The prior matrix remains historical because it checked out `28d138...`; all required exact-SHA evidence must rerun against `72c4d3d079a11d41e3410408898e6fe3ddcc9d05` before the gate can accept the new ledger. The independent pin and README now target `72c4d3d079a11d41e3410408898e6fe3ddcc9d05`. The protected production release has not been dispatched, and E1/E2/E6 remain open.
+
+
+## Current candidate pin — source SHA `16e8d4393eaa9c97915989364df56dbcc6c6c98e`
+
+The source candidate advanced from `72c4d3d079a11d41e3410408898e6fe3ddcc9d05` to `16e8d4393eaa9c97915989364df56dbcc6c6c98e` for a narrow ledger consistency correction: the E4 row now describes its declared support boundary without falsely presenting the older `28d138...` matrix as current, and the prior E4 acceptance section is explicitly historical. No source code, tests, fixed weights, implementation points, verified points, or DoD states changed.
+
+**Matrix rule:** every run linked as current evidence must check out exactly `16e8d4393eaa9c97915989364df56dbcc6c6c98e`. All runs for `72c4d3...` and earlier SHAs are historical for this pin. Re-run and record the required exact-SHA E1 Windows/cross-platform/focused standard-library, Linux distro, artifact-integrity, E4 adversarial/SEC-05/resource guard/cross-platform, Android cross-build/device/runtime, and lockfile workflows. Do not count a run until it is completed successfully. The protected production provenance release remains untriggered and is not authorized by this documentation-only pin update.
+
+The E4 score remains a provisional 6/6 scoped claim only; final gate acceptance is contingent on the new exact-SHA evidence, all other ledger rows, and the fixed-weight gate. No merge or production release is authorized.
