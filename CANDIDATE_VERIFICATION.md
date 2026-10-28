@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`.
+Canonical ONE source SHA under verification: `28d1384588662cc93f405dc9dd5f3012183d249f`.
 
 
 
