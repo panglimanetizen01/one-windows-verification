@@ -5,6 +5,13 @@ on:
     branches: [verification]
     paths:
       - '.github/workflows/android-api35-arm64-community-runtime.yml'
+      - '.github/workflows/android-aarch64-arm-host.yml'
+      - '.github/workflows/android-aarch64-linux-tcg.yml'
+      - '.github/workflows/android-api35-tcg-runtime.yml'
+      - '.github/workflows/android-api35-arm64-runtime-attempt.yml'
+      - '.github/workflows/android-aarch64-tcg-fallback.yml'
+      - '.github/workflows/android-aarch64-tcg-fallback-v2.yml'
+      - '.github/workflows/android-native-verification.yml'
       - 'scripts/resolve_android_api35_image.py'
       - '.github/workflows/validate-e3-e4-workflows.yml'
   workflow_dispatch:
@@ -25,8 +32,40 @@ jobs:
           set -euo pipefail
           go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
-      - name: Validate API 35 ARM64 runtime workflow
+      - name: Validate Android runtime workflow syntax and schema
         shell: bash
         run: |
           set -euo pipefail
-          actionlint -color .github/workflows/android-api35-arm64-community-runtime.yml
+          actionlint -color \
+            .github/workflows/android-api35-arm64-community-runtime.yml \
+            .github/workflows/android-aarch64-arm-host.yml \
+            .github/workflows/android-aarch64-linux-tcg.yml \
+            .github/workflows/android-api35-tcg-runtime.yml \
+            .github/workflows/android-api35-arm64-runtime-attempt.yml \
+            .github/workflows/android-aarch64-tcg-fallback.yml \
+            .github/workflows/android-aarch64-tcg-fallback-v2.yml \
+            .github/workflows/android-native-verification.yml
+      - name: Enforce manual-only retired diagnostics and fast-fail host guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          retired=(
+            .github/workflows/android-aarch64-linux-tcg.yml
+            .github/workflows/android-api35-tcg-runtime.yml
+            .github/workflows/android-api35-arm64-runtime-attempt.yml
+            .github/workflows/android-aarch64-tcg-fallback.yml
+            .github/workflows/android-native-verification.yml
+          )
+          for file in "${retired[@]}"; do
+            grep -q '^  workflow_dispatch: "$file"
+            if grep -Eq '^  (push|pull_request):' "$file"; then
+              echo "retired workflow still has automatic triggers: $file" >&2
+              exit 1
+            fi
+          done
+          for file in \
+            .github/workflows/android-aarch64-linux-tcg.yml \
+            .github/workflows/android-api35-tcg-runtime.yml \
+            .github/workflows/android-api35-arm64-runtime-attempt.yml; do
+            grep -q 'Fail fast — unsupported ARM64 guest on x86_64 host' "$file"
+          done
