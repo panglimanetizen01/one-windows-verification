@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `342a7641266f728c05f610d397d79867df678227`.
+Canonical ONE source SHA under verification: `45b9c1220059eb5755faf67ee49d0d2382e6ac7a`.
 
 ## Latest status refresh — 2026-10-27
 
@@ -227,3 +227,9 @@ The independent exact-SHA matrix remains separate and does execute tests. It has
 - The independent verifier pin was advanced to canonical milestone branch HEAD `342a7641266f728c05f610d397d79867df678227` by verifier commit [`d7647b4`](https://github.com/panglimanetizen01/one-windows-verification/commit/d7647b4942df6499b93769eb63ba639e56229791).
 - This source revision adds a focused regression test for first-match list removal and input-copy preservation. It is a new source SHA; prior E1/E3/E4/Android/package evidence tied to `06c3e740d8c886d7d1a14493831ed41e09e2d3b9` or earlier revisions is historical and is not automatically accepted for this pin.
 - Exact-SHA matrix and fixed-weight ledger verification are now required for `342a7641266f728c05f610d397d79867df678227`. No score, Definition of Done checkbox, production trusted-publisher acceptance, or release status is changed by updating the pin.
+
+
+## Candidate source delta — 2026-10-28
+
+- Exact candidate pin advanced to `45b9c1220059eb5755faf67ee49d0d2382e6ac7a` after adding regression tests for empty-list display, list append order/empty/non-list inputs, and list removal with empty or absent values.
+- Prior exact-SHA evidence for earlier source revisions does not certify this revision. The pin update triggers fresh independent ledger verification; accept no score or gate until the resulting exact-SHA jobs are inspected.
