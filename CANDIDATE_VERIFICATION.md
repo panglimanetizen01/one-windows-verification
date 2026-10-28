@@ -307,3 +307,46 @@ This dated delta preserves the earlier checkpoint as historical and records late
 2. Continue E2 only through the authorized protected production provenance path.
 3. Complete E4 threat-control/evidence crosswalk and E6 forensic reconciliation.
 4. After a relevant acceptance input changes and is committed, run the gate against the exact pinned source and current verifier state; do not award points from workflow-green status alone.
+
+
+## E1 source/spec/test crosswalk — 2026-10-28
+
+This is a static source inspection of canonical candidate `1119c450eda1437d79d75304a1daefb93e8a357f`, not a substitute for executing the required acceptance matrix. It records what the checked-in files declare and test, without awarding E1 points.
+
+### Normative sources inspected
+
+- `docs/spec/one-v0.1-standard-library.md` — public API stability, deterministic operations, explicit effects, stable errors/signatures, and backend compatibility acceptance criteria.
+- `docs/spec/one-v0.1-stdlib.md` — source-level call table, argument counts/result contracts, edge-case requirements, diagnostics, and required acceptance commands.
+- `crates/one-core/src/semantic.rs` — static builtin registration/arity table.
+- `crates/one-core/src/interpreter.rs` — runtime builtin recognition, arity enforcement, and delegation to typed `stdlib` helpers.
+- `crates/one-core/src/stdlib.rs` — public Rust helper implementation and helper-level tests.
+- `crates/one-core/tests/stdlib_builtins.rs` — source-pipeline integration and edge-contract tests.
+
+### Parity result from source inspection
+
+The 28 documented source-level calls were compared across the semantic registration and interpreter dispatch lists. The compared names are:
+
+`panjang teks`, `teks memuat`, `teks diawali`, `teks diakhiri`, `huruf kecil`, `huruf besar`, `pangkas teks`, `ganti teks`, `pisah teks`, `ubah teks ke angka`, `panjang daftar`, `tambah elemen daftar`, `hapus elemen daftar`, `gabung teks`, `jumlah daftar angka`, `ambil indeks`, `nilai mutlak`, `bagi bulat`, `angka sisa bagi`, `angka minimum`, `angka maksimum`, `nilai pemetaan`, `atur pemetaan`, `hapus kunci pemetaan`, `ubah nilai ke json`, `nilai dari json`, `waktu utc dari unix`, and `unix dari waktu utc`.
+
+**Static parity finding:** all 28 names appear in both the semantic registration and interpreter dispatch lists. No missing-name discrepancy was found in that comparison. The integration test file contains named tests for text, lists, mapping, JSON, integer boundaries/overflow, deterministic diagnostics, UTC canonicalization, invalid inputs, and public Rust helper contracts. This is evidence of declared coverage, not proof that each required command has passed on every required platform.
+
+### E1 gaps that remain open
+
+1. The normative acceptance commands must complete successfully on the same pinned source SHA: focused `stdlib_builtins`, `one-core --lib`, full workspace tests, warnings-denied Clippy, and `tools/check_contract.py`, with required platform coverage.
+2. The current source lab's prior canonical Ubuntu/Windows run [40638875488](https://github.com/panglimanetizen01/one/actions/runs/40638875488) failed before executable steps (`steps: null`). It supplies no source-test result. The independent mirror Windows E1 run [40638899155](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899155) and cross-platform E1 run [40638899012](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40638899012) are scoped passes, but do not replace the full row's same-SHA acceptance requirements.
+3. Source inspection alone cannot prove public Rust API stability, backend conformance, reproducible artifact provenance, or complete edge-case acceptance.
+4. No E1 score, fixed weight, or DoD checkbox is changed by this crosswalk. E1 remains open until the required exact-SHA suite and ledger acceptance criteria are satisfied.
+
+### Reproducible local acceptance sequence
+
+Run from the canonical source checkout at the pinned SHA, preserving exit codes and full logs:
+
+```bash
+cargo --locked test -p one-core --test stdlib_builtins
+cargo --locked test -p one-core --lib
+cargo --locked test --workspace
+cargo --locked clippy --workspace --all-targets --all-features -- -D warnings
+python tools/check_contract.py
+```
+
+Each command's success must be captured as evidence; do not infer PASS from workflow creation/start, static inspection, or a different SHA.
