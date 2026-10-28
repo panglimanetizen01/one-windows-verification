@@ -139,14 +139,16 @@ jobs:
           CANONICAL_SOURCE_SHA: ${{ runner.os == 'Linux' && steps.canonical_linux.outputs.sha || steps.canonical_windows.outputs.sha }}
         run: python tools/one_health.py --expected-sha "${{ runner.os == 'Linux' && steps.canonical_linux.outputs.sha || steps.canonical_windows.outputs.sha }}" --check-one-source --json-out one-health-report.json --markdown-out one-health-report.md
 
-      - name: Summarize self-scan report
-        if: always()
-        working-directory: one-source
-        env:
-          CANONICAL_SOURCE_SHA: ${{ runner.os == 'Linux' && steps.canonical_linux.outputs.sha || steps.canonical_windows.outputs.sha }}
-        run: python -c 'import json,os,pathlib; p=pathlib.Path("one-health-report.json"); print("EXPECTED_SOURCE_SHA=",os.environ.get("CANONICAL_SOURCE_SHA")); print("NO_REPORT_GENERATED"); sys.exit(0)' 
-        shell: bash
+      - name: Summarize self-scan report (Linux)
         if: always() && runner.os == 'Linux'
+        working-directory: one-source
+        shell: bash
+        run: |
+          if [[ -f one-health-report.json ]]; then
+            python -c 'import json; p=json.load(open("one-health-report.json", encoding="utf-8")); print("SOURCE_SHA=",p.get("head_sha")); print("EXPECTED_SOURCE_SHA=",p.get("expected_sha")); print("SEVERITY_COUNTS=",json.dumps(p.get("severity_counts",{}),sort_keys=True)); print("DETECTORS=",json.dumps(p.get("detectors_run",[]))); [print("{} {}/{} {}:{} — {}".format(x.get("severity"),x.get("detector_id"),x.get("rule_id"),x.get("path"),x.get("line") or 0,x.get("summary"))) for x in p.get("findings",[])]'
+          else
+            echo "NO_REPORT_GENERATED"
+          fi
 
       - name: Summarize self-scan report (Windows)
         if: always() && runner.os == 'Windows'
