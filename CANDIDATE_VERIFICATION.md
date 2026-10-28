@@ -3,16 +3,18 @@
 ## Active candidate state — 2026-10-28 (authoritative; supersedes historical snapshots below)
 
 - Canonical source repository/branch: [panglimanetizen01/one](https://github.com/panglimanetizen01/one/tree/milestone/100-ecosystem-20261023).
-- Current source candidate: `b460ebcc11c5f8d30a322b60019d6854dc1fb5e2` ([commit](https://github.com/panglimanetizen01/one/commit/b460ebcc11c5f8d30a322b60019d6854dc1fb5e2)).
-- This candidate includes the targeted addition of user-documentation consistency and regression checks to `.github/workflows/release-check.yml`, reconciled from PR #85 without merging that PR. The current source SHA is authoritative; earlier candidate results are historical.
-- **Current-SHA canonical source runs** for `b460ebcc11c5f8d30a322b60019d6854dc1fb5e2`: repository health `40720884257`, One CI `40720884299`, E2 lab `40720884586`, E1 lab `40720884226`, Linux distro `40720884381`, and focused stdlib `40720886680`. All six completed with failure; every returned job had `steps: null` and `logs_url: null`; artifact listings for all six runs were empty. The previous exact-SHA candidate `e3dc049e76620de0a6d5cb0971067fcd436ab977` is historical after the release-check workflow change.
-- **Current exact-SHA matrix: BLOCKED / NOT VERIFIED.** The canonical jobs provide no executable test result. Do not retry identical zero-step jobs without a changed condition or transient-failure diagnosis. No source-test conclusion or root cause is established.
-- Current ledger: 92/100 implementation points provisional; E3 0/8, E4 0/6, E5 0/4 verified for current candidate; carried-forward F/C ledger arithmetic 60/100 only. Final exact-SHA score **UNKNOWN / NOT RECONCILED**. DoD: 3 checked / 10 unchecked. Gate **NOT PASSED**.
-- E2 protected production provenance release remains unauthorized and has not been dispatched. No merge or release is authorized.
+- **Current source candidate:** `b07973b186dcf3941167b9367f6d0abba4523605` ([commit](https://github.com/panglimanetizen01/one/commit/b07973b186dcf3941167b9367f6d0abba4523605)).
+- PR #80 remains open, draft, and unmerged; base branch is `main`. No merge or release authorization is inferred.
+- **Scanner A–E implementation state:** the canonical source contains repository integrity/contract checks, security detectors (secret redaction, AST correlation for obfuscated execution and sensitive-data egress, agent-instruction prompt-injection correlation, and dependency/action pin checks), baseline triage, allowlisted guarded Markdown repair, and adjudicated detector/repair quality metrics. Current code exposes 52 scanner tests and 5 quality-ledger tests, but test names/source presence are not execution evidence.
+- **Exact-SHA execution added:** the independent verifier now has a dedicated `health-scanner-verification.yml` workflow intended to run scanner/collector/quality regression suites and scan the exact source checkout on Ubuntu and Windows. It is an independent mirror, not canonical source CI. The first resulting runs must be inspected for checkout SHA, executed steps, exit codes, report artifacts, and findings.
+- **Canonical source CI:** latest observed runs for source SHA `b07973b186dcf3941167b9367f6d0abba4523605` (repository health `40723688227`, One CI `40723688332`, E1 `40723688229`, E2 `40723688287`, Linux distro `40723688199`, focused stdlib `40723688231`) all ended in failure with `steps: null`, `logs_url: null`, and no artifacts. This does not prove source tests failed or passed. Root cause is unknown; no identical retry is justified without a changed condition or diagnosis.
+- **Acceptance:** implementation **92/100 provisional**; carried-forward foundation/core arithmetic **60/100 only**; final exact-SHA score **UNKNOWN / NOT RECONCILED**. Current verified points: E1 **0/10**, E2 **0/8**, E3 **0/8**, E4 **0/6**, E5 **0/4**, E6 **0/4**. Definition of Done: **3 checked / 10 unchecked**. Gate **NOT PASSED**.
+- E2 protected production provenance remains unauthorized and undispatched. No merge, production release, protection bypass, secret mutation, or trust-store mutation occurred.
 
 ---
 
-Canonical ONE source SHA under verification: `b460ebcc11c5f8d30a322b60019d6854dc1fb5e2`.
+Canonical ONE source SHA under verification: `b07973b186dcf3941167b9367f6d0abba4523605`.
+
 
 
 

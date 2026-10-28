@@ -1,0 +1,157 @@
+name: ONE Health Scanner Exact-SHA Verification
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - 'CANDIDATE_VERIFICATION.md'
+      - '.github/workflows/health-scanner-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: one-health-scanner-exact-sha-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  scanner:
+    name: Health scanner tests and self-scan (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout verifier harness
+        uses: actions/checkout@v4
+
+      - name: Read and validate canonical source SHA (Linux)
+        id: canonical-linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sha="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid canonical source SHA" >&2
+            exit 2
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Read and validate canonical source SHA (Windows)
+        id: canonical-windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $sha = (Get-Content CANONICAL_COMMIT.txt -Raw).Trim()
+          if ($sha -notmatch '^[0-9a-f]{40}$') { throw "Invalid canonical source SHA" }
+          "sha=$sha" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Checkout exact canonical ONE source
+        uses: actions/checkout@v4
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ runner.os == 'Linux' && steps.canonical-linux.outputs.sha || steps.canonical-windows.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: one-source
+          persist-credentials: false
+
+      - name: Verify exact source checkout (Linux)
+        if: runner.os == 'Linux'
+        working-directory: one-source
+        shell: bash
+        run: |
+          expected="${{ steps.canonical-linux.outputs.sha }}"
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+          echo "Verified exact source checkout: $actual"
+
+      - name: Verify exact source checkout (Windows)
+        if: runner.os == 'Windows'
+        working-directory: one-source
+        shell: pwsh
+        run: |
+          $expected = "${{ steps.canonical-windows.outputs.sha }}"
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne $expected) { throw "Source SHA mismatch: expected $expected actual $actual" }
+          Write-Output "Verified exact source checkout: $actual"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Scanner regression corpus
+        working-directory: one-source
+        run: python -m unittest discover -s tools -p "test_one_health.py" -v
+
+      - name: CI evidence collector regression corpus
+        working-directory: one-source
+        run: python -m unittest discover -s tools -p "test_collect_ci_health.py" -v
+
+      - name: Detector quality and repair outcome corpus
+        working-directory: one-source
+        run: python -m unittest discover -s tools -p "test_health_quality.py" -v
+
+      - name: Install stable Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build ONE CLI for normative fixture checks
+        working-directory: one-source
+        run: cargo build --locked -p one-cli
+
+      - name: Run scanner against the exact ONE checkout (Linux)
+        if: runner.os == 'Linux'
+        working-directory: one-source
+        shell: bash
+        run: |
+          set +e
+          python tools/one_health.py --expected-sha "${{ steps.canonical-linux.outputs.sha }}" --check-one-source --json-out one-health-report.json --markdown-out one-health-report.md
+          result=$?
+          echo "SCANNER_EXIT_CODE=$result"
+          exit "$result"
+
+      - name: Run scanner against the exact ONE checkout (Windows)
+        if: runner.os == 'Windows'
+        working-directory: one-source
+        shell: pwsh
+        run: |
+          python tools/one_health.py --expected-sha "${{ steps.canonical-windows.outputs.sha }}" --check-one-source --json-out one-health-report.json --markdown-out one-health-report.md
+          $result = $LASTEXITCODE
+          Write-Output "SCANNER_EXIT_CODE=$result"
+          exit $result
+
+      - name: Summarize self-scan report (Linux)
+        if: always() && runner.os == 'Linux'
+        working-directory: one-source
+        shell: bash
+        run: |
+          if [[ -f one-health-report.json ]]; then
+            python -c 'import json; p=json.load(open("one-health-report.json", encoding="utf-8")); print("SOURCE_SHA=",p.get("head_sha")); print("FINDING_COUNTS=",json.dumps(p.get("counts",{}),sort_keys=True)); print("DETECTORS=",json.dumps(p.get("detectors_run",[]))); [print(f"{x.get(chr(115)+chr(101)+chr(118)+chr(101)+chr(114)+chr(105)+chr(116)+chr(121))} {x.get(chr(100)+chr(101)+chr(116)+chr(101)+chr(99)+chr(116)+chr(111)+chr(114)+chr(95)+chr(105)+chr(100))}/{x.get(chr(114)+chr(117)+chr(108)+chr(101)+chr(95)+chr(105)+chr(100))} {x.get(chr(112)+chr(97)+chr(116)+chr(104))}:{x.get(chr(108)+chr(105)+chr(110)+chr(101)) or 0} — {x.get(chr(115)+chr(117)+chr(109)+chr(109)+chr(97)+chr(114)+chr(121))}") for x in p.get("findings",[])]'
+          else
+            echo "NO_REPORT_GENERATED"
+          fi
+
+      - name: Summarize self-scan report (Windows)
+        if: always() && runner.os == 'Windows'
+        working-directory: one-source
+        shell: pwsh
+        run: |
+          if (Test-Path one-health-report.json) {
+            python -c 'import json; p=json.load(open("one-health-report.json", encoding="utf-8")); print("SOURCE_SHA=",p.get("head_sha")); print("FINDING_COUNTS=",json.dumps(p.get("counts",{}),sort_keys=True)); print("DETECTORS=",json.dumps(p.get("detectors_run",[]))); [print("{} {}/{} {}:{} — {}".format(x.get("severity"),x.get("detector_id"),x.get("rule_id"),x.get("path"),x.get("line") or 0,x.get("summary"))) for x in p.get("findings",[])]'
+          } else {
+            Write-Output "NO_REPORT_GENERATED"
+          }
+
+      - name: Upload scanner report and source-bound evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-health-scanner-${{ matrix.os }}
+          path: |
+            one-source/one-health-report.json
+            one-source/one-health-report.md
+          if-no-files-found: warn
+          retention-days: 14
