@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `a1d1de1382b7d412680948827c1f4cc04bf2d695`.
+Canonical ONE source SHA under verification: `be16e23a50ed5f5d325d3a42ed4a62e28538199c`.
 
 
 
@@ -680,3 +680,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Canonical source CI run [#40706436572](https://github.com/panglimanetizen01/one/actions/runs/40706436572) ended failed before any job steps, with `runner_id=0` on both jobs and no steps/log output. Classify this as CI job-start/runner infrastructure unknown; it is not evidence that source tests failed.
 - Do not mark this scanner increment cross-platform PASS until the new pinned independent run actually discovers and passes the collector tests on Linux and Windows, builds the CLI, and validates the normative One fixtures on this exact SHA.
 - No merge, protected production release, or acceptance-ledger credit is authorized by these scanner changes. E1/E2/E6 and other existing fixed-ledger gaps remain independent gates.
+
+
+## Normative contract drift detector — 2026-10-28
+
+- Exact source target advanced to `be16e23a50ed5f5d325d3a42ed4a62e28538199c` after adding static invariants for grammar ambiguity rejection, absence of a generic action production, bounded CLI recognition, explicit capability grants, stable/deterministic diagnostics, deterministic `.oneir`/`.onepkg` package boundaries, and non-expanding platform capability adapters.
+- Regression tests now cover missing normative contract documents and disappearance of required grammar invariants. This detector is text-presence based and does not replace parser/conformance tests or contract review.
+- Independent cross-platform verification has been triggered by updating `CANONICAL_COMMIT.txt`; await terminal results and inspect the collector test count, build, and normative fixture validation before treating this increment as verified.
