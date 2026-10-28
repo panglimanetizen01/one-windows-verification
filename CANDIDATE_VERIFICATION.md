@@ -1,9 +1,19 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `53220eeb4bae9138b3a46b469004f8eac4a11420`.
+Canonical ONE source SHA under verification: `1a84d522a2953044c250ebe43c22989d6ec07dfc`.
 
 
-## Current candidate checkpoint — 2026-10-28T04:16Z
+
+## Current candidate checkpoint — 2026-10-28T04:42Z
+
+- **Pinned canonical source SHA:** `1a84d522a2953044c250ebe43c22989d6ec07dfc` ([source commit](https://github.com/panglimanetizen01/one/commit/1a84d522a2953044c250ebe43c22989d6ec07dfc)). The source change is a documentation/ledger reconciliation; runtime code is unchanged from the pre-reconciliation candidate, but all required checks must still pass against this exact SHA.
+- **Ledger:** fixed weights remain 100; implementation `92/100`; verified `72/100` provisional, with E3 `8/8` and E5 `4/4` declared from passing evidence on the pre-reconciliation SHA `53220eeb4bae9138b3a46b469004f8eac4a11420`. This source commit advances the SHA, so those points are not final until the live exact-SHA matrix passes on this pin.
+- **Pre-reconciliation E3/E5 evidence:** [E1 cross-platform lab](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40631564810), [Windows E1](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40631565038), [cross-platform verification with contract/docs checks and CLI smoke](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40631564946), [Linux distro](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40631564950), [artifact integrity](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40631564901), and [native ARM64 Android API 35 runtime](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40631564953), which confirmed arm64-v8a, /system/bin/linker64, ELF execution exit code 0, and ONE_NATIVE_BACKEND_OK. These links are historical after this new pin.
+- **Current acceptance gaps:** E1 `0/10` (broader standard-library scope incomplete), E2 `0/8` (no protected production release run on this SHA; no release authorization), E4 `0/6` (full current threat-review acceptance remains open), E6 `0/4`. Definition of Done has 8 unchecked items. Overall gate remains **NOT PASSED**.
+- **Canonical runner failures on prior candidate:** source runs [40631476813](https://github.com/panglimanetizen01/one/actions/runs/40631476813) and [40631476838](https://github.com/panglimanetizen01/one/actions/runs/40631476838) failed before steps with runner ID `0`, empty runner name, and no steps, including after retry. Classify as infrastructure/job-start failures, not source-test evidence.
+- **Runtime workflow hygiene:** native ARM64-hosted API 35 is the automatic required runtime path. Community ARM64 and macOS TCG probes are manual-only fallbacks/diagnostics to avoid duplicate long emulator boots. Existing old diagnostic runs do not count as current-SHA acceptance.
+- **Fresh exact-SHA matrix:** the pin update triggers required verification workflows. No result from SHA `53220eeb4bae9138b3a46b469004f8eac4a11420` is transferred to this new SHA. Pending/in-progress runs earn no points.
+## Pre-reconciliation candidate checkpoint — 2026-10-28T04:16Z (historical source SHA `53220eeb4bae9138b3a46b469004f8eac4a11420`)
 
 - **Pinned canonical source SHA:** `53220eeb4bae9138b3a46b469004f8eac4a11420` ([source commit](https://github.com/panglimanetizen01/one/commit/53220eeb4bae9138b3a46b469004f8eac4a11420)). The pin update itself is the only verifier-side action after this source SHA was frozen.
 - **Ledger reconciliation:** E3/E4/E5 rows now conform to the six-column fixed-weight schema. Historical E3/E5 evidence is explicitly not credited to this candidate. Current recorded totals are **92/100 implementation** and **60/100 verified**; no weights changed.
