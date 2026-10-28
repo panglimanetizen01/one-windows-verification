@@ -115,9 +115,9 @@ jobs:
     name: API 35 arm64-v8a ELF runtime on ARM64 host
     needs: build-android-elf
     runs-on: ubuntu-24.04-arm
-    # The Android boot step has a 70-minute timeout; the job-level timeout
-    # must exceed install (up to 30m) + boot + ELF build/execute.
-    timeout-minutes: 110
+    # Reserve time for slow software-emulated ARM64 guest boot on hosted ARM64.
+    # Install can take 30m, boot up to 60m, and ELF execution/evidence upload need headroom.
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
 
@@ -233,7 +233,7 @@ jobs:
           path: ${{ runner.temp }}/one-android-elf
 
       - name: Boot Android API 35 AArch64 on ARM64 host
-        timeout-minutes: 25
+        timeout-minutes: 70
         shell: bash
         run: |
           set -euo pipefail
@@ -291,7 +291,7 @@ jobs:
           trap 'kill "$pid" 2>/dev/null || true' EXIT
           adb start-server
           booted=0
-          for attempt in $(seq 1 120); do
+          for attempt in $(seq 1 360); do
             if ! kill -0 "$pid" 2>/dev/null; then tail -n 250 "$log"; exit 1; fi
             if adb devices | tr -d '\r' | grep -q '^emulator-5554[[:space:]]\+device$'; then
               [ "$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" = "1" ] && booted=1 && break
