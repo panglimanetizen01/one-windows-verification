@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `1119c450eda1437d79d75304a1daefb93e8a357f`.
+Canonical ONE source SHA under verification: `1b950ebb3b9f4447229cec5055b9791520de87c5`.
 
 
 
@@ -442,3 +442,12 @@ This pass reconciles the current candidate pin, fixed-weight ledger, DoD, E1/E2/
 5. Run the fixed-weight gate once the relevant evidence inputs above have changed; inspect the result and its job logs. Do not force a score or check a DoD item to manufacture a PASS.
 
 **Disposition:** E6 remains `0/4`; no score, weight, or DoD checkbox is changed by this audit. The milestone remains NOT PASSED. PR #80 remains open/unmerged; no release is authorized.
+
+
+## Candidate pin refresh — 2026-10-28T09:08Z
+
+- **New canonical source SHA:** `1b950ebb3b9f4447229cec5055b9791520de87c5` ([commit](https://github.com/panglimanetizen01/one/commit/1b950ebb3b9f4447229cec5055b9791520de87c5)); source candidate branch `milestone/100-ecosystem-20261023` was fast-forwarded from the previous pin `1119c450eda1437d79d75304a1daefb93e8a357f`.
+- **User-supplied Android/Termux local results for this SHA lineage:** `cargo --locked test -p one-core --lib` PASS (251 tests); `cargo --locked test -p one-core --test native_backend_linux_windows` PASS (8 tests); subsequent `cargo --locked test --workspace` PASS (`WORKSPACE=0)); `cargo --locked clippy --workspace --all-targets --all-features -- -D warnings` PASS; `python tools/check_contract.py` PASS (91 required artifacts, 85 concrete indexed artifacts, fixture checks pass). These are user-reported local results; this verifier has not executed them.
+- Fixes in this candidate lineage address descriptor-relative filesystem access on Android/Termux, host gating for a GNU x86_64 Linux linker integration test, and unique temp fixture paths. The user-reported first full-workspace attempt had two human-core failures; the later final run reported `HUMAN_CORE=0 WORKSPACE=0 CLIPPY=0 CONTRACT=0`. Preserve both facts; the earlier failure is superseded by the later local run, not erased.
+- Prior GitHub Actions runs listed above are bound to earlier source pins and are historical only. Do not carry their PASS results forward to `1b950ebb3b9f4447229cec5055b9791520de87c5`. Exact-SHA CI and verifier gate evidence must be regenerated for this pin.
+- Fixed-weight ledger and DoD scores are unchanged. E1, E2, E4, E6 remain open; E3/E5 remain provisional. This pin update awards no points. No protected production provenance release was dispatched; no merge or release is authorized.
