@@ -4,9 +4,9 @@ Canonical ONE source SHA under verification: `6d492006f9fa873fbd7d8ad61fa5833df7
 
 
 
-## Current candidate checkpoint — 2026-10-28T05:45Z
+## Historical candidate checkpoint — 2026-10-28T05:45Z (superseded; retained for audit trail)
 
-- **Pinned canonical source SHA:** `1119c450eda1437d79d75304a1daefb93e8a357f` ([source commit](https://github.com/panglimanetizen01/one/commit/1119c450eda1437d79d75304a1daefb93e8a357f)). This commit reconciles the E4 threat-review document with the current candidate-scoped evidence. No runtime code changed in this commit; nevertheless, exact-SHA policy requires rerunning the required matrix on this new SHA.
+- **Historical pinned canonical source SHA at this checkpoint:** `1119c450eda1437d79d75304a1daefb93e8a357f` ([source commit](https://github.com/panglimanetizen01/one/commit/1119c450eda1437d79d75304a1daefb93e8a357f)). This commit reconciles the E4 threat-review document with the current candidate-scoped evidence. No runtime code changed in this commit; nevertheless, exact-SHA policy requires rerunning the required matrix on this new SHA.
 - **Threat review updated:** [E4 threat review](https://github.com/panglimanetizen01/one/blob/1119c450eda1437d79d75304a1daefb93e8a357f/docs/verification/E4-threat-review-2026-10-26.md) now records scoped current-candidate evidence links for runs 40634065806 (filesystem/resource regression), 40634065919 (SEC-05), 40634065925 (subprocess resource guard), 40634065845 (cross-platform), and 40634065997 (Linux distro). These runs checked out prior candidate SHA `1a84d522a2953044c250ebe43c22989d6ec07dfc`; they are historical after this documentation commit and are not falsely promoted as exact evidence for the new SHA.
 - **Fixed-weight ledger remains unchanged:** implementation `92/100`; verified `72/100` provisional; 8 Definition-of-Done items unchecked. E1 `0/10`, E2 `0/8`, E4 `0/6`, E6 `0/4` remain open. No points are awarded by this documentation reconciliation.
 - **E2 release provenance:** no protected production `ONE Package Provenance Release` run exists for this SHA. No release was dispatched or published; no release is authorized.
@@ -517,3 +517,8 @@ The exact-SHA ledger gate run [40664244856](https://github.com/panglimanetizen01
 The source repository's One CI, focused standard-library, E1 lab, Linux distro, and E2 package/provenance lab jobs repeatedly failed before any steps executed (runner ID 0 / zero executable steps). These are unresolved GitHub job-start/runner failures, not test failures and not PASS. They were retried as non-release jobs; no additional blind retries will be issued without a runner/workflow change. The protected production package-provenance release workflow remains failed/unproven and was not retried or manually dispatched.
 
 No score changes and no DoD items are checked by this evidence-index update. E1, E2, E4 and E6 ledger rows remain incomplete until their full acceptance definitions—not just individual green workflows—are satisfied. The candidate remains draft/open; no merge or production release authorization is implied.
+
+
+## Documentation consistency correction — 2026-10-28
+
+The earlier section dated `2026-10-28T05:45Z` is explicitly marked **historical/superseded**. Its `1119c450...` pin describes that checkpoint only and must not be interpreted as the current candidate. The authoritative current source SHA is the value at the top of this document and in `CANONICAL_COMMIT.txt`: `6d492006f9fa873fbd7d8ad61fa5833df707b1f6`. Historical workflow references remain preserved as audit history and are not current-SHA acceptance evidence.
