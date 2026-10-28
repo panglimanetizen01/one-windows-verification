@@ -1,12 +1,8 @@
 name: ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback
 
+# Manual fallback only: the native ARM64-hosted API 35 runtime is the primary required path.
+# Keep this community emulator available for diagnosis/recovery without duplicate long boots on every pin update.
 on:
-  push:
-    branches: [verification]
-    paths:
-      - 'CANONICAL_COMMIT.txt'
-      - '.github/workflows/android-api35-arm64-community-runtime.yml'
-      - 'scripts/resolve_android_api35_image.py'
   workflow_dispatch:
 
 permissions:
