@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `65d09e3f9ed8639ff0d22a948ada06c3def36c22`.
+Canonical ONE source SHA under verification: `1c39b81cbc20706b67e54841e8aef92675a9a43a`.
 
 
 
@@ -662,3 +662,12 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Current canonical source SHA: 65d09e3f9ed8639ff0d22a948ada06c3def36c22. The previous scanner test run on source SHA c60a6ef969dc83814797e52a105a44d889425421 executed successfully far enough to run 23 unit tests and exposed two scanner test defects: the workflow overlap detector missed list-form `- run:` commands, and a baseline-resolution assertion did not match the documented resolution wording.
 - Both defects were corrected in the current candidate: workflow command matching now accepts list-form steps, and resolution evidence explicitly asks reviewers to check detector coverage and evidence. The independent verifier is being rerun on this exact SHA.
 - This is a meaningful validation result: the scanner suite did execute on Ubuntu in the independent verifier. It did **not** pass on the prior SHA; the current SHA still needs a fresh full run. No acceptance ledger points are assigned based on a failing prior run.
+
+
+## Health scanner A–E continuation — 2026-10-28
+
+- Current pinned source SHA: `1c39b81cbc20706b67e54841e8aef92675a9a43a`. This advances the prior validated candidate `65d09e3f9ed8639ff0d22a948ada06c3def36c22`; all previous run results are scoped to their recorded source SHA.
+- The prior exact-SHA cross-platform run [#40699856640](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40699856640) completed successfully on both Ubuntu and Windows for source SHA `65d09e3f9ed8639ff0d22a948ada06c3def36c22`. Both jobs passed scanner tests, One CLI build, source-only normative fixture checks, and the rest of their configured verification steps; health JSON/Markdown reports and release-candidate bundles were uploaded. This does not validate the newer SHA.
+- New changes on source SHA `1c39b81cbc20706b67e54841e8aef92675a9a43a`: scanner/runtime environment metadata, tests for metadata and CLI contract drift, scheduled weekly health runs, branch-scoped cached baseline comparison, detector governance/schema compatibility policy, and explicit-path-only guarded Markdown repair with traversal/type/branch safeguards.
+- A fresh independent cross-platform run is required for `1c39b81cbc20706b67e54841e8aef92675a9a`. No PASS is claimed for the new changes until the run is terminal and its test/build/scan steps are inspected.
+- The source candidate remains open/draft/unmerged. Repository-health work does not close E1/E2/E6 or Definition-of-Done gaps, and no protected production provenance has been asserted. The fixed-weight acceptance ledger remains separate and must be re-evaluated by the live gate.
