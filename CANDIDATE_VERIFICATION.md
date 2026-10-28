@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `1e5571d3d5a0ab128e4589563e0dfe8c5b5ac679`.
+Canonical ONE source SHA under verification: `695fcfbe6b3350cf7c3ea661da0877f9c6876d1c`.
 
 
 
@@ -745,3 +745,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 
 - Added regression fixtures for unreadable UTF-8 text files, duplicate workflow names, missing local workflow actions, exact checkout-SHA mismatch, and symlink escape (the latter explicitly skips when the OS does not permit symlink creation).
 - The exact-SHA matrix must now confirm these tests together with Markdown anchor, contract-drift, artifact-integrity, CI collector correlation, build, and normative One fixture checks. No test result is inferred from a source edit; the new pin triggers a fresh run.
+
+
+## Coverage metrics and partial-collection resilience — exact source SHA `695fcfbe6b3350cf7c3ea661da0877f9c6876d1c`
+
+- Reports now expose per-detector status and finding counts in JSON and Markdown, distinguishing detectors that ran from those not applicable because input was absent or not requested. This is descriptive coverage, not a measured accuracy or repair-success rate.
+- Fixed collector correlation timing so metadata already collected still yields cautious findings when a later Actions API request fails; added a regression test for partial collection. Added revision/path/workflow/file-integrity fixtures and report table-order regression coverage.
+- This pin triggers a fresh cross-platform matrix for the exact current source. Prior runs for older pins were canceled or stale and do not certify this increment.
