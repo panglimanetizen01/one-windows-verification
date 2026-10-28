@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `84cf0895808e61336c897558358a09557227dd4c`.
+Canonical ONE source SHA under verification: `c6354b5838951d7ed892f2cf80e94913f821d5ea`.
 
 
 
@@ -699,3 +699,9 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 
 - Removed a duplicate `ci-evidence` row from `docs/verification/health-detectors.md` and consolidated the exact-SHA live Actions collector and saved-evidence classifier into one detector entry.
 - The prior run [#40707791947](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40707791947) exercised source SHA `6b10565abc3d6d33f605bbd83f7d8923af558fd2`: Linux and Windows scanner/collector test steps, build, normative fixture scan, Linux AST/Clippy/tests/offline verification had passed at the latest observation; Windows Clippy was still in progress. This does not certify the later documentation-only SHA. The pin is advanced again so the latest exact revision receives independent validation.
+
+
+## Detector coverage edge case — exact SHA `c6354b5838951d7ed892f2cf80e94913f821d5ea`
+
+- A review found that the normative contract checker always ran, but `detectors_run` only reported `contract-drift` if a `docs/` directory existed. That made coverage metadata inaccurate for truncated repositories. The detector is now always reported because its missing/unreadable contract checks also execute; a regression test removes `docs/` and asserts both the coverage marker and a blocked missing-contract finding.
+- The usage guide and detector catalogue now both document the live exact-SHA Actions metadata collector and the normative contract drift checks, with explicit limitations. The exact source pin was advanced to this revision; wait for fresh cross-platform validation before considering this latest fix verified.
