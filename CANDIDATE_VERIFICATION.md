@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `1c39b81cbc20706b67e54841e8aef92675a9a43a`.
+Canonical ONE source SHA under verification: `a1d1de1382b7d412680948827c1f4cc04bf2d695`.
 
 
 
@@ -671,3 +671,12 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - New changes on source SHA `1c39b81cbc20706b67e54841e8aef92675a9a43a`: scanner/runtime environment metadata, tests for metadata and CLI contract drift, scheduled weekly health runs, branch-scoped cached baseline comparison, detector governance/schema compatibility policy, and explicit-path-only guarded Markdown repair with traversal/type/branch safeguards.
 - A fresh independent cross-platform run is required for `1c39b81cbc20706b67e54841e8aef92675a9a`. No PASS is claimed for the new changes until the run is terminal and its test/build/scan steps are inspected.
 - The source candidate remains open/draft/unmerged. Repository-health work does not close E1/E2/E6 or Definition-of-Done gaps, and no protected production provenance has been asserted. The fixed-weight acceptance ledger remains separate and must be re-evaluated by the live gate.
+
+
+## Repository health scanner follow-up — exact SHA `a1d1de1382b7d412680948827c1f4cc04bf2d695`
+
+- The source candidate now includes live exact-SHA GitHub Actions metadata collection (`tools/collect_ci_health.py`), unit tests for collector failure states, more truthful detector-coverage reporting, environment metadata, weekly scans with branch-scoped baselines, and exact-path guarded Markdown repairs with diff previews.
+- The prior independent run [#40705837410](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40705837410) was run against older pinned SHA `1c39b81cbc20706b67e54841e8aef92675a9a43a`; it passed all 28 scanner tests on both OSes but the collector test step found **0 tests**, because that older source revision predates `tools/test_collect_ci_health.py`. This is a pin/coverage mismatch, not a passing result for the new collector. The canonical pin has now been advanced to this current SHA to force a fresh run.
+- Canonical source CI run [#40706436572](https://github.com/panglimanetizen01/one/actions/runs/40706436572) ended failed before any job steps, with `runner_id=0` on both jobs and no steps/log output. Classify this as CI job-start/runner infrastructure unknown; it is not evidence that source tests failed.
+- Do not mark this scanner increment cross-platform PASS until the new pinned independent run actually discovers and passes the collector tests on Linux and Windows, builds the CLI, and validates the normative One fixtures on this exact SHA.
+- No merge, protected production release, or acceptance-ledger credit is authorized by these scanner changes. E1/E2/E6 and other existing fixed-ledger gaps remain independent gates.
