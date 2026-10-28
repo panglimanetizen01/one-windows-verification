@@ -205,3 +205,11 @@ This closes the Android runtime execution criterion **for this candidate SHA onl
 
 - After the native-host Android success, the failed ledger job from [run #40615864847](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864847) was retried again. Latest attempt job `122584935681` is `in_progress` at this checkpoint; no result is credited yet.
 - Protected release [run #40615804347](https://github.com/panglimanetizen01/one/actions/runs/40615804347), job retry `122584598175`, failed again before any readable step summaries; log retrieval still returns `BlobNotFound`, and no artifact exists. This remains an unresolved canonical runner/job-start failure, not production trusted-publisher acceptance. Do not infer missing secrets or environment configuration without job evidence.
+
+
+## Ledger retry result after Android runtime acceptance — 2026-10-28
+
+- [Ledger run #40615864847](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864847), latest retry job [`122584935681`](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864847/job/122584935681), completed and correctly returned **NOT PASSED** for pinned source SHA `06c3e740d8c886d7d1a14493831ed41e09e2d3b9`.
+- The current live workflow matrix no longer reports a missing Android runtime: native ARM64-host run `40615864980` succeeded with exit code 0 and exact `ONE_NATIVE_BACKEND_OK`.
+- Remaining explicit ledger blockers are seven unchecked Definition of Done items, E1 `0/10` full-row evidence, E2 `0/8` production trusted-publisher acceptance, E6 `0/4` final forensic audit, and protected release run `40615804347` completed/failure. No points were awarded and no checklist was checked to bypass these requirements.
+- Canonical protected-release job retry [`122584598175`](https://github.com/panglimanetizen01/one/actions/runs/40615804347) also completed/failure with no step summaries; log retrieval returned `BlobNotFound` and no artifacts were created. Root cause remains **UNKNOWN** from available metadata. This is an unresolved job-start/infrastructure-path failure, not proof that signing secrets/trust material are missing and not production acceptance.
