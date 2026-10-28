@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `0d0202a1405ae12aaaadf05c6916bacc70316126`.
+Canonical ONE source SHA under verification: `342a7641266f728c05f610d397d79867df678227`.
 
 ## Latest status refresh — 2026-10-27
 
@@ -220,3 +220,10 @@ This closes the Android runtime execution criterion **for this candidate SHA onl
 Inspected the canonical Actions job metadata for these current-SHA runs: [E2 lab #40615809803](https://github.com/panglimanetizen01/one/actions/runs/40615809803), [focused stdlib #40615809871](https://github.com/panglimanetizen01/one/actions/runs/40615809871), [E1 lab #40615809816](https://github.com/panglimanetizen01/one/actions/runs/40615809816), [One CI #40615809865](https://github.com/panglimanetizen01/one/actions/runs/40615809865), [Linux distro #40615809757](https://github.com/panglimanetizen01/one/actions/runs/40615809757), and push-triggered [E1 #40615804332](https://github.com/panglimanetizen01/one/actions/runs/40615804332), [Linux distro #40615804396](https://github.com/panglimanetizen01/one/actions/runs/40615804396), and [E2 lab #40615804464](https://github.com/panglimanetizen01/one/actions/runs/40615804464). All 15 associated job records inspected across these runs report empty step lists; all eight representative job-log retrievals returned GitHub `BlobNotFound`. No command/test output was produced by those jobs. This repeated cross-workflow pattern supports classification as **canonical Actions job-start/log infrastructure failure**, not as a code test failure and not as PASS. The protected release run's third attempt [#40615804347](https://github.com/panglimanetizen01/one/actions/runs/40615804347) likewise has `steps: null`, `logs_url: null`, and no artifacts. Available evidence does not identify the infrastructure root cause, so it remains **UNKNOWN**; do not infer missing secrets, environment configuration, or permissions.
 
 The independent exact-SHA matrix remains separate and does execute tests. It has passed the named E1, E3 cross-platform, E4, package determinism/synthetic-trust, artifact-integrity and Linux-distro checks; native Android API 35 runtime also passed as documented above. These independent results do not silently satisfy the canonical hosted-CI requirement or E2 production trust requirement.
+
+
+## Candidate pin update — 2026-10-28
+
+- The independent verifier pin was advanced to canonical milestone branch HEAD `342a7641266f728c05f610d397d79867df678227` by verifier commit [`d7647b4`](https://github.com/panglimanetizen01/one-windows-verification/commit/d7647b4942df6499b93769eb63ba639e56229791).
+- This source revision adds a focused regression test for first-match list removal and input-copy preservation. It is a new source SHA; prior E1/E3/E4/Android/package evidence tied to `06c3e740d8c886d7d1a14493831ed41e09e2d3b9` or earlier revisions is historical and is not automatically accepted for this pin.
+- Exact-SHA matrix and fixed-weight ledger verification are now required for `342a7641266f728c05f610d397d79867df678227`. No score, Definition of Done checkbox, production trusted-publisher acceptance, or release status is changed by updating the pin.
