@@ -139,6 +139,16 @@ jobs:
         shell: pwsh
         if: runner.os == 'Windows'
         run: python -m unittest discover -s tools -p 'test_one_health.py' -v
+      - name: CI metadata collector tests (Linux)
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: python3 -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
+      - name: CI metadata collector tests (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: python -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
       - name: Build
         working-directory: source
         run: cargo --locked build --workspace --all-targets
