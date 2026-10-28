@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `16e8d4393eaa9c97915989364df56dbcc6c6c98e`.
+Canonical ONE source SHA under verification: `0b52fb56795a822d35c34b8415c88ce68931dc7c`.
 
 
 
@@ -588,3 +588,12 @@ The source candidate advanced from `72c4d3d079a11d41e3410408898e6fe3ddcc9d05` to
 **Matrix rule:** every run linked as current evidence must check out exactly `16e8d4393eaa9c97915989364df56dbcc6c6c98e`. All runs for `72c4d3...` and earlier SHAs are historical for this pin. Re-run and record the required exact-SHA E1 Windows/cross-platform/focused standard-library, Linux distro, artifact-integrity, E4 adversarial/SEC-05/resource guard/cross-platform, Android cross-build/device/runtime, and lockfile workflows. Do not count a run until it is completed successfully. The protected production provenance release remains untriggered and is not authorized by this documentation-only pin update.
 
 The E4 score remains a provisional 6/6 scoped claim only; final gate acceptance is contingent on the new exact-SHA evidence, all other ledger rows, and the fixed-weight gate. No merge or production release is authorized.
+
+
+## Current candidate refresh — 2026-10-28T18:00+07:00
+
+- Current canonical source branch HEAD and PR #80 head: `0b52fb56795a822d35c34b8415c88ce68931dc7c` (commit correcting `docs/verification/README.md`). Exact-source pin synchronized in `CANONICAL_COMMIT.txt` by verifier commit `a26d4a1746e641909ea58522563cc462a5a80be4`.
+- The previous top-level pin `16e8d4393eaa9c97915989364df56dbcc6c6c98e` is historical and must not be used to credit current candidate acceptance.
+- Fresh canonical source workflows triggered by this candidate commit have completed with failures: Linux distro run [40683766257](https://github.com/panglimanetizen01/one/actions/runs/40683766257), focused stdlib run [40683766435](https://github.com/panglimanetizen01/one/actions/runs/40683766435), One CI [40683766364](https://github.com/panglimanetizen01/one/actions/runs/40683766364), E2 regression lab [40683766429](https://github.com/panglimanetizen01/one/actions/runs/40683766429), and E1 lab [40683766235](https://github.com/panglimanetizen01/one/actions/runs/40683766235). The connector could enumerate jobs but could not retrieve their logs (GitHub log blob 404); do not classify these failures as source defects or infrastructure failures without job-level runner/step evidence.
+- Current candidate verification matrix has not yet been run to completion on this exact pin. Historical passes do not transfer. E1, E2 protected production provenance, complete E4 acceptance, and E6 reconciliation remain open; ledger gate remains NOT PASSED and score remains UNKNOWN / NOT RECONCILED until current ledger logic and exact-SHA evidence are inspected.
+- Production release and merge are user-authorized in the active conversation, but execution remains gated on passing required matrix, resolving branch protection/review requirements, and valid protected environment approval. Do not bypass any protection or treat synthetic-trust tests as production provenance.
