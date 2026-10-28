@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `0b52fb56795a822d35c34b8415c88ce68931dc7c`.
+Canonical ONE source SHA under verification: `a3582a749bf32e0bbd72ddc8ef4eeb5383fa8afc`.
 
 
 
@@ -597,3 +597,13 @@ The E4 score remains a provisional 6/6 scoped claim only; final gate acceptance 
 - Fresh canonical source workflows triggered by this candidate commit have completed with failures: Linux distro run [40683766257](https://github.com/panglimanetizen01/one/actions/runs/40683766257), focused stdlib run [40683766435](https://github.com/panglimanetizen01/one/actions/runs/40683766435), One CI [40683766364](https://github.com/panglimanetizen01/one/actions/runs/40683766364), E2 regression lab [40683766429](https://github.com/panglimanetizen01/one/actions/runs/40683766429), and E1 lab [40683766235](https://github.com/panglimanetizen01/one/actions/runs/40683766235). The connector could enumerate jobs but could not retrieve their logs (GitHub log blob 404); do not classify these failures as source defects or infrastructure failures without job-level runner/step evidence.
 - Current candidate verification matrix has not yet been run to completion on this exact pin. Historical passes do not transfer. E1, E2 protected production provenance, complete E4 acceptance, and E6 reconciliation remain open; ledger gate remains NOT PASSED and score remains UNKNOWN / NOT RECONCILED until current ledger logic and exact-SHA evidence are inspected.
 - Production release and merge are user-authorized in the active conversation, but execution remains gated on passing required matrix, resolving branch protection/review requirements, and valid protected environment approval. Do not bypass any protection or treat synthetic-trust tests as production provenance.
+
+
+## Candidate source fix — 2026-10-28
+
+- New canonical source SHA: `a3582a749bf32e0bbd72ddc8ef4eeb5383fa8afc`.
+- Fixed `crates/one-core/src/adapter.rs::parse_http_target`: parse authority using the shared strict `parse_http_authority` contract; recognize query-only URLs and normalize them to origin-form `/?...`; reject malformed IPv6, invalid ports, userinfo, fragments, and unsupported schemes as `InvalidArguments`.
+- Added regression tests for bracketed IPv6 with default/explicit ports, query-only and path-plus-query targets, malformed authorities/ports, userinfo, fragment, and unsupported scheme.
+- This source change invalidates all prior exact-SHA evidence for final acceptance. The previous candidate SHA `0b52fb56795a822d35c34b8415c88ce68931dc7c` and its matrix results are historical only. The new matrix must complete on this exact SHA; do not promote any old result.
+- Prior candidate's Android API 35 ARM64-host runtime remained in progress and is not credited to the new SHA.
+- Gate remains NOT PASSED; E1/E2/E6 and protected production provenance are still open. Do not merge or publish.
