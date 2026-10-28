@@ -376,3 +376,34 @@ The available workflow names/results establish scoped regressions, but do not by
 - E4 implementation remains recorded as 6/6, but verified remains 0/6; this is not an acceptance contradiction because implementation and verification are distinct ledger dimensions.
 - Do not check the E4 DoD item until the threat-review matrix is complete, all required platform tests pass against the final exact source SHA, residual limitations are accepted explicitly, and the fixed-weight gate validates the synchronized evidence.
 - No new source workflow was dispatched by this documentation update. No merge, protected release, or release authorization is implied.
+
+
+## E2 protected provenance workflow review — 2026-10-28
+
+### Workflow inspected
+
+Canonical candidate workflow: `.github/workflows/package-provenance-release.yml` at source branch `milestone/100-ecosystem-20261023`, file blob `9f8888608bb13a1748d75be49423893f26c19d61`. Its `workflow_dispatch` inputs are `project_path` and `publisher_id`; the job declares protected environment `one-release`. It validates the signing-seed format and trusted-publisher store, resolves the project root and checks it remains inside the checkout, builds the CLI with `cargo --locked`, packages twice and compares bytes, signs V2 source-bound Ed25519 provenance, verifies against the trust store and source tree, checks the source revision and artifact digest, and uploads the package, sidecar, and checksums.
+
+### Security controls observed in workflow source
+
+- The job runs in the protected `one-release` environment and requires the protected seed, publisher ID, and trusted-publisher store to be present.
+- Project paths are constrained to repository-relative locations; `realpath -e` and a root-prefix check reject paths resolving outside the checkout.
+- Deterministic package bytes are checked by building the package twice and comparing SHA-256 digests.
+- The signed sidecar is checked against the checked-out Git revision, source-tree verification, final artifact digest, allowed artifact format, and dependency-model marker.
+- Signing material is written under runner temporary storage with mode `0600`; this source inspection did not observe any command intentionally printing the seed or trusted-store contents.
+
+### E2 remains blocked — no release was triggered
+
+This is a workflow-source review, not a production provenance result. The current evidence record states that no successful protected `ONE Package Provenance Release` run exists for source SHA `1119c450eda1437d79d75304a1daefb93e8a357f`. No workflow dispatch or release publication was initiated during this continuation, because it would exercise protected signing material and potentially publish artifacts; that requires explicit release authorization and the appropriate protected-environment approval.
+
+The workflow's push trigger only covers the candidate branch when selected package/workflow/source paths change. A documentation-only checkpoint commit in the independent verifier does not trigger the canonical source workflow. Do not infer that the workflow ran from its presence in the repository.
+
+### Evidence required to close E2
+
+1. Authorized run of the protected workflow against the intended frozen candidate source SHA and committed project input.
+2. Successful protected-environment approval and evidence that the trusted publisher is independently configured.
+3. Successful deterministic package comparison, V2 signature verification, source-tree/revision binding, artifact digest check, and portable checksum verification in the same run.
+4. Retained artifact/sidecar/checksum identifiers and exact source SHA recorded in the evidence index.
+5. Successful fixed-weight gate on the frozen source SHA after all required source evidence is available.
+
+**Disposition:** E2 stays 7/8 implemented and 0/8 verified; DoD stays unchecked. This review awards no points, changes no source pin, and does not authorize merge or release.
