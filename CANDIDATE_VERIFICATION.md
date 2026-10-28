@@ -188,3 +188,20 @@ The following completed jobs have been checked against their actual latest-attem
 - Community ARM64 fallback [#40615865014](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615865014) built the exact-source ELF and produced artifact `12785401068` (SHA-256 `15de6713fe2a8ccaeb338860df16ac4dcf9e48d39976669ceb44c6c81ba5dc2f`), but runtime job `122579375110` was still booting API 35; **no runtime PASS yet**.
 - Protected package release [#40615804347](https://github.com/panglimanetizen01/one/actions/runs/40615804347), attempt 2, failed. Job `122580654236` has no step summaries; log retrieval returned `BlobNotFound`; no artifacts were produced. Run metadata confirms event `push`, candidate SHA `06c3e740d8c886d7d1a14493831ed41e09e2d3b9`, and attempt 2, but does not expose a root cause. Do not infer secret or environment failure from missing logs.
 - E1/E2/E6 full-row acceptance, all DoD checkboxes, production trusted-publisher verification, Android runtime execution, and final release remain open. Scores remain unchanged until the official ledger verifies all acceptance criteria.
+
+
+## Android API 35 runtime PASS — exact source SHA `06c3e740d8c886d7d1a14493831ed41e09e2d3b9` (2026-10-28)
+
+**Native ARM64-host runtime acceptance is now proven for this exact source SHA.** [Workflow #40615864980](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864980), job [`122578974567`](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864980/job/122578974567), completed successfully. Its exact-source checkout and ARM64 host checks passed; the API 35 `arm64-v8a` emulator reached `sys.boot_completed=1`; the generated ELF was pushed to the guest and executed. The job log records:
+
+- ELF: `ELF 64-bit LSB pie executable, ARM aarch64`, interpreter `/system/bin/linker64`.
+- Guest process exit code: `0`.
+- Exact guest output: `ONE_NATIVE_BACKEND_OK`.
+- Evidence artifact: [artifact `12786176877`](https://api.github.com/repos/panglimanetizen01/one-windows-verification/actions/artifacts/12786176877), `one-api35-arm64-runtime-evidence-06c3e740d8c886d7d1a14493831ed41e09e2d3b9`, archive SHA-256 `29e7bbd7e1dabe95ebc727a5b14bfa428476b3825fecfa57255839934b36180a`.
+
+This closes the Android runtime execution criterion **for this candidate SHA only**; it does not alone close E3/E1/E2/E6 or the release gate. The community ARM64 fallback [#40615865014](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615865014) was still booting at the last check and is not credited; the native-host success is the valid alternative accepted by the ledger verifier.
+
+### Latest ledger/release retries
+
+- After the native-host Android success, the failed ledger job from [run #40615864847](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40615864847) was retried again. Latest attempt job `122584935681` is `in_progress` at this checkpoint; no result is credited yet.
+- Protected release [run #40615804347](https://github.com/panglimanetizen01/one/actions/runs/40615804347), job retry `122584598175`, failed again before any readable step summaries; log retrieval still returns `BlobNotFound`, and no artifact exists. This remains an unresolved canonical runner/job-start failure, not production trusted-publisher acceptance. Do not infer missing secrets or environment configuration without job evidence.
