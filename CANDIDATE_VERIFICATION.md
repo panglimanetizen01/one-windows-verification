@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `989523d406da22c5a6b1cf52fd64c42897ec1e66`.
+Canonical ONE source SHA under verification: `c60a6ef969dc83814797e52a105a44d889425421`.
 
 
 
@@ -646,3 +646,12 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Canonical source workflow [One CI 40698556053](https://github.com/panglimanetizen01/one/actions/runs/40698556053) and health workflow [40698556180](https://github.com/panglimanetizen01/one/actions/runs/40698556180) failed before any steps were exposed; both health matrix jobs reported runner_id=0 and steps=[]. These runs provide no scanner test, build, or source-test result. Treat as unresolved job-start infrastructure failures, not as a scanner pass/fail.
 - The scanner tests and CLI fixture checks are therefore not yet confirmed as executed. A fresh independent exact-SHA matrix and ledger gate are required for this source SHA. No score or DoD status is promoted by adding the tool.
 - No merge, protected production release, or branch-protection bypass occurred. E1/E2/E6 and production provenance blockers remain unchanged until independently re-evaluated on this exact SHA.
+
+
+## Repository health scanner follow-up — 2026-10-28
+
+- Current canonical source SHA is c60a6ef969dc83814797e52a105a44d889425421. The earlier 989523d406da22c5a6b1cf52fd64c42897ec1e66 checkpoint is superseded; its exact-SHA evidence must not be credited to this candidate.
+- The source scanner now includes a low-confidence workflow-overlap hint, blocks grammar checks when no normative fixtures are found, rejects incompatible baseline schemas, and preserves prior findings as not-checked if the corresponding detector did not run. Regression fixtures were added for these guards.
+- Canonical source runs [One CI 40699188585](https://github.com/panglimanetizen01/one/actions/runs/40699188585) and [Repository Health 40699188725](https://github.com/panglimanetizen01/one/actions/runs/40699188725) again failed before exposing any executable steps (runner_id=0, steps=[]). No source or scanner test outcome can be inferred from those runs.
+- The independent cross-platform verification workflow now runs the scanner regression tests and source-only normative One fixture checks on Ubuntu and Windows after building the exact pinned source. A fresh run must finish before any scanner result is claimed.
+- Current exact-SHA acceptance gate is not passed until all required jobs are terminal and the fixed-weight ledger/DoD plus protected production provenance are reconciled. No score or checklist item is promoted by the scanner work itself.
