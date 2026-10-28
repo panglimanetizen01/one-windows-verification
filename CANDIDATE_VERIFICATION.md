@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `bb78cff75be4dbdc38d643038f3fa88db54e6479`.
+Canonical ONE source SHA under verification: `92949a2dad3abfb4bcd75022ea2a3fe4d2a67089`.
 
 
 
@@ -712,3 +712,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Added the repository-health scanner and its boundaries to the One root README, including commands to run both regression suites and explicit language-level non-interference and no-autonomous-release guarantees.
 - Source-side canonical CI on recent PR candidates continues to fail before steps with `runner_id=0` and `steps: []` (for example [Linux distro run #40708379109](https://github.com/panglimanetizen01/one/actions/runs/40708379109)). Treat this as runner/job-start infrastructure unknown, not a source regression.
 - The previous independent run [#40708432578](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40708432578) was cancelled when the canonical pin advanced; its completed scanner/collector steps had passed but it does not certify this new SHA. This pin update triggers a fresh exact-SHA matrix.
+
+
+## CI artifact integrity hints — exact SHA `92949a2dad3abfb4bcd75022ea2a3fe4d2a67089`
+
+- Added saved-evidence checks for expired CI artifacts, duplicate artifact names within one run, and unavailable artifact digests. Missing digests are informational because the collector does not download and hash artifact bytes; artifact presence is never treated as proof of correctness.
+- Added regression tests for these cases and made `artifact-integrity` appear in `detectors_run` only when an artifacts array is actually available. Detector governance and usage docs describe this boundary.
+- The exact-SHA pin has been advanced so the new artifact checks are validated against this revision. No source-language grammar or CLI semantics were changed.
