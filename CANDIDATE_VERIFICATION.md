@@ -1,6 +1,6 @@
 # Current exact-SHA acceptance evidence
 
-Canonical ONE source SHA under verification: `c6354b5838951d7ed892f2cf80e94913f821d5ea`.
+Canonical ONE source SHA under verification: `bb78cff75be4dbdc38d643038f3fa88db54e6479`.
 
 
 
@@ -705,3 +705,10 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 
 - A review found that the normative contract checker always ran, but `detectors_run` only reported `contract-drift` if a `docs/` directory existed. That made coverage metadata inaccurate for truncated repositories. The detector is now always reported because its missing/unreadable contract checks also execute; a regression test removes `docs/` and asserts both the coverage marker and a blocked missing-contract finding.
 - The usage guide and detector catalogue now both document the live exact-SHA Actions metadata collector and the normative contract drift checks, with explicit limitations. The exact source pin was advanced to this revision; wait for fresh cross-platform validation before considering this latest fix verified.
+
+
+## Developer-facing health scanner documentation — exact SHA `bb78cff75be4dbdc38d643038f3fa88db54e6479`
+
+- Added the repository-health scanner and its boundaries to the One root README, including commands to run both regression suites and explicit language-level non-interference and no-autonomous-release guarantees.
+- Source-side canonical CI on recent PR candidates continues to fail before steps with `runner_id=0` and `steps: []` (for example [Linux distro run #40708379109](https://github.com/panglimanetizen01/one/actions/runs/40708379109)). Treat this as runner/job-start infrastructure unknown, not a source regression.
+- The previous independent run [#40708432578](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40708432578) was cancelled when the canonical pin advanced; its completed scanner/collector steps had passed but it does not certify this new SHA. This pin update triggers a fresh exact-SHA matrix.
