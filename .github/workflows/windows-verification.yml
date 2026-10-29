@@ -106,6 +106,10 @@ jobs:
           "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
 
+      - name: Test local CI runner
+        working-directory: source
+        run: python -m unittest discover -s tests -p test_ci_local.py
+
       - name: Run local CI parity runner
         working-directory: source
         run: python tools/ci_local.py --report artifacts/ci-local-report.json --timeout 3600
