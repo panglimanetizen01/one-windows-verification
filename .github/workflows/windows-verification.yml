@@ -159,26 +159,6 @@ jobs:
         shell: pwsh
         if: runner.os == 'Windows'
         run: python -m unittest discover -s tools -p 'test_health_quality.py' -v
-      - name: Python repository-health regression suites (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: |
-          set -euo pipefail
-          python3 -m unittest discover -s tools -p "test_one_health.py" -v
-          python3 -m unittest discover -s tools -p "test_collect_ci_health.py" -v
-          python3 -m unittest discover -s tools -p "test_health_quality.py" -v
-      - name: Python repository-health regression suites (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: |
-          python -m unittest discover -s tools -p "test_one_health.py" -v
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m unittest discover -s tools -p "test_collect_ci_health.py" -v
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m unittest discover -s tools -p "test_health_quality.py" -v
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build
         working-directory: source
         run: cargo --locked build --workspace --all-targets
