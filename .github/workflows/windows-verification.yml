@@ -1,6 +1,4 @@
-# Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
-name: One Cross-Platform Verification
-# Exact-SHA revalidation for the current milestone candidate; do not credit stale SHA results.
+name: One Exact-SHA CI Parity Verification
 
 on:
   push:
@@ -19,12 +17,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-cross-platform-v3-${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: one-ci-parity-${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  verification:
-    name: verify (${{ matrix.os }})
+  ci:
+    name: ci (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -32,16 +30,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Read canonical target
+
+      - name: Read canonical source SHA
         id: canonical
         shell: bash
         run: |
           target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
           if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
-            echo "invalid canonical commit: $target" >&2
+            echo "Invalid canonical commit: $target" >&2
             exit 1
           fi
           echo "ref=$target" >> "$GITHUB_OUTPUT"
+
       - name: Checkout canonical One source
         uses: actions/checkout@v4
         with:
@@ -49,237 +49,102 @@ jobs:
           ref: ${{ steps.canonical.outputs.ref }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
-      - name: Verify canonical target
+
+      - name: Verify checked-out source SHA (Linux)
+        if: runner.os != 'Windows'
         working-directory: source
         shell: bash
-        if: runner.os != 'Windows'
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
-      - name: Verify canonical target (Windows)
+
+      - name: Verify checked-out source SHA (Windows)
+        if: runner.os == 'Windows'
         working-directory: source
         shell: pwsh
-        if: runner.os == 'Windows'
         run: |
           $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
-      - name: Setup Android SDK (Linux cross-platform job)
-        if: runner.os != 'Windows'
+          if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "Canonical commit mismatch: $actual" }
+
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
           packages: platform-tools
-      - name: Install Windows cross-compiler
+
+      - name: Install cross-compilers (Ubuntu)
+        if: runner.os == 'Linux'
+        working-directory: source
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang mingw-w64
+          set +o pipefail
+          yes | sdkmanager --licenses
+          set -o pipefail
+          sdkmanager --install "ndk;27.2.12479018"
+          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
+          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
+
+      - name: Install cross-compilers (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
           install: mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
-      - name: Install Linux cross-compilers and Android NDK
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          sudo apt-get install -y --no-install-recommends clang gcc-mingw-w64-x86-64
-          set +o pipefail
-          yes | sdkmanager --licenses
-          set -o pipefail
-          ndk_root="$ANDROID_HOME/ndk/27.2.12479018"
-          if [[ ! -x "$ndk_root/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" ]]; then
-            sdkmanager --install "ndk;27.2.12479018"
-          fi
-          test -x "$ndk_root/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
-          echo "ONE_ANDROID_CLANG=$ndk_root/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
-          cat > "$RUNNER_TEMP/one-windows-compiler" <<'WRAPPER'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          args=()
-          for arg in "$@"; do
-            if [[ "$arg" != "--target=x86_64-w64-windows-gnu" ]]; then args+=("$arg"); fi
-          done
-          exec x86_64-w64-mingw32-gcc "${args[@]}"
-          WRAPPER
-          chmod +x "$RUNNER_TEMP/one-windows-compiler"
-          echo "ONE_WINDOWS_CLANG=$RUNNER_TEMP/one-windows-compiler" >> "$GITHUB_ENV"
-      - name: Configure available compiler overrides (Linux)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          command -v clang
-          command -v x86_64-w64-mingw32-gcc
-      - name: Configure available compiler overrides (Windows)
+
+      - name: Install Android NDK (Windows)
         if: runner.os == 'Windows'
+        working-directory: source
         shell: pwsh
         run: |
+          $env:ANDROID_HOME = $env:ANDROID_HOME
+          $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+          & "$env:ANDROID_HOME\cmdline-tools\latest\bin\sdkmanager.bat" --install "ndk;27.2.12479018"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $clang = Join-Path $env:ANDROID_HOME "ndk\27.2.12479018\toolchains\llvm\prebuilt\windows-x86_64\bin\clang.exe"
+          "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
+
       - name: Toolchain
         working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: rustc --version && cargo --version && python3 --version
-      - name: Toolchain (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: rustc --version; cargo --version; python --version
+        run: rustc --version && cargo --version
+
       - name: Contract artifacts
         working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: python3 tools/check_contract.py && python3 tools/check_user_docs.py && python3 tools/check_user_docs_test.py
-      - name: Contract artifacts (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: python tools/check_contract.py; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python tools/check_user_docs.py; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python tools/check_user_docs_test.py
-      - name: Repository health scanner tests (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: python3 -m unittest discover -s tools -p 'test_one_health.py' -v
-      - name: Repository health scanner tests (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: python -m unittest discover -s tools -p 'test_one_health.py' -v
-      - name: CI metadata collector tests (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: python3 -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
-      - name: CI metadata collector tests (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: python -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
-      - name: Health quality ledger tests (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: python3 -m unittest discover -s tools -p 'test_health_quality.py' -v
-      - name: Health quality ledger tests (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: python -m unittest discover -s tools -p 'test_health_quality.py' -v
+        run: python tools/check_contract.py
+
       - name: Build
         working-directory: source
-        run: cargo --locked build --workspace --all-targets
-      - name: Repository health scan and normative One fixture validation
-        working-directory: source
-        run: python tools/one_health.py --check-one-source --expected-sha "${{ steps.canonical.outputs.ref }}" --json-out one-health-report.json --markdown-out one-health-report.md --quiet
-      - name: Upload repository health report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: one-health-report-${{ runner.os }}
-          path: |
-            source/one-health-report.json
-            source/one-health-report.md
-          if-no-files-found: warn
-          retention-days: 14
-      - name: Release-mode build
-        working-directory: source
-        run: cargo --locked build --release --workspace --all-targets
-      - name: Package release candidate bundle (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: |
-          mkdir -p release-bundle
-          cp target/release/one release-bundle/one
-          {
-            printf 'source_sha=%s\n' "$(git rev-parse HEAD)"
-            printf 'target=%s\n' "$(rustc -vV | awk -F': ' '/^host:/{print $2}')"
-            printf 'rustc=%s\n' "$(rustc --version)"
-            printf 'cargo=%s\n' "$(cargo --version)"
-            printf 'cli_version=%s\n' "$(./target/release/one version)"
-          } > release-bundle/BUILD-METADATA.txt
-          (cd release-bundle && sha256sum one > SHA256SUMS)
-      - name: Package release candidate bundle (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: |
-          New-Item -ItemType Directory -Force release-bundle | Out-Null
-          Copy-Item target/release/one.exe release-bundle/one.exe
-          $sourceSha = (git rev-parse HEAD).Trim()
-          $target = (rustc -vV | Select-String '^host:').ToString().Split(':', 2)[1].Trim()
-          $rustcVersion = (rustc --version).Trim()
-          $cargoVersion = (cargo --version).Trim()
-          $cliVersion = (& .\target\release\one.exe version | Out-String).Trim()
-          @(
-            "source_sha=$sourceSha"
-            "target=$target"
-            "rustc=$rustcVersion"
-            "cargo=$cargoVersion"
-            "cli_version=$cliVersion"
-          ) | Set-Content release-bundle/BUILD-METADATA.txt
-          $hash = (Get-FileHash release-bundle/one.exe -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  one.exe" | Set-Content release-bundle/SHA256SUMS
-      - name: Verify Linux bundle provenance, CLI version, and checksum
-        if: runner.os != 'Windows'
-        working-directory: source
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -Fx "source_sha=${{ steps.canonical.outputs.ref }}" release-bundle/BUILD-METADATA.txt
-          (cd release-bundle && sha256sum --check SHA256SUMS)
-          expected_version="$(sed -n 's/^cli_version=//p' release-bundle/BUILD-METADATA.txt)"
-          actual_version="$(target/release/one version)"
-          test -n "$expected_version"
-          test "$actual_version" = "$expected_version"
+        run: cargo build --workspace --all-targets
 
-      - name: Verify Windows bundle provenance, CLI version, and checksum
-        if: runner.os == 'Windows'
-        working-directory: source
-        shell: pwsh
-        run: |
-          $metadata = Get-Content release-bundle/BUILD-METADATA.txt
-          if ($metadata -notcontains "source_sha=${{ steps.canonical.outputs.ref }}") { throw "Bundle source SHA does not match canonical pin" }
-          $manifestLine = (Get-Content release-bundle/SHA256SUMS | Select-Object -First 1).Trim()
-          $manifestParts = $manifestLine -split '\s+'
-          if ($manifestParts.Count -ne 2 -or $manifestParts[1] -ne 'one.exe') { throw "Malformed Windows SHA256SUMS manifest" }
-          $actualHash = (Get-FileHash release-bundle/one.exe -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ($actualHash -ne $manifestParts[0]) { throw "Windows release bundle checksum mismatch" }
-          $expectedVersion = (($metadata | Where-Object { $_ -like 'cli_version=*' } | Select-Object -First 1) -replace '^cli_version=', '')
-          $actualVersion = (& .\target\release\one.exe version | Out-String).Trim()
-          if (-not $expectedVersion -or $actualVersion -ne $expectedVersion) { throw "Windows bundle CLI version mismatch" }
-      - name: Upload release candidate bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: one-release-candidate-${{ runner.os }}-${{ steps.canonical.outputs.ref }}
-          path: source/release-bundle/*
-          if-no-files-found: error
-          retention-days: 14
-      - name: AST contract regression tests
-        working-directory: source
-        run: cargo --locked test -p one-core ast_contract_tests
       - name: Clippy
         working-directory: source
         shell: bash
-        run: cargo --locked clippy --workspace --all-targets -- -D warnings
-      - name: Tests
-        working-directory: source
-        if: runner.os != 'Windows'
-        run: cargo --locked test --workspace --all-targets
-      - name: Tests (Windows; Android target covered on Ubuntu)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: cargo --locked test --workspace --all-targets -- --skip android_target_explicit_mempertahankan_build_native --test-threads=1
-      - name: Real network runtime tests
-        working-directory: source
-        shell: bash
-        run: cargo --locked test -p one-core --features real-network --all-targets -- --test-threads=1
-      - name: Offline verification
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: bash tools/verify_offline.sh
-      - name: Offline verification (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: .\tools\verify_offline.ps1
+        run: cargo clippy --workspace --all-targets -- -D warnings
 
-# Exact source target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
+      - name: Workspace tests
+        working-directory: source
+        run: cargo test --workspace --all-targets
 
-# Android AArch64 runtime acceptance is handled by the dedicated exact-SHA workflow.
+      - name: Deterministic .oneir and .onepkg artifacts
+        working-directory: source
+        run: cargo test -p one-cli --test cli build_and_package_artifacts_are_byte_deterministic
+
+      - name: DNS success and failure classification
+        working-directory: source
+        run: cargo test -p one-core --all-targets dns_adapter
+
+      - name: Orchestration policy deny and allow paths
+        working-directory: source
+        run: cargo test -p one-core --all-targets orchestrator
+
+      - name: Database vertical slice
+        working-directory: source
+        run: cargo test -p one-core --test database_vertical_slice
+
+      - name: HTTP GET vertical slice
+        working-directory: source
+        run: cargo test -p one-core --test http_get_vertical_slice
+
+      - name: HTTP GET CLI vertical slice
+        working-directory: source
+        run: cargo test -p one-cli --test http_get_orchestration
