@@ -106,47 +106,14 @@ jobs:
           "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
 
-      - name: Toolchain
+      - name: Run local CI parity runner
         working-directory: source
-        run: rustc --version && cargo --version
+        run: python tools/ci_local.py --report artifacts/ci-local-report.json --timeout 3600
 
-      - name: Contract artifacts
-        working-directory: source
-        run: python tools/check_contract.py
-
-      - name: Build
-        working-directory: source
-        run: cargo build --workspace --all-targets
-
-      - name: Clippy
-        working-directory: source
-        shell: bash
-        run: cargo clippy --workspace --all-targets -- -D warnings
-
-      - name: Workspace tests
-        working-directory: source
-        run: cargo test --workspace --all-targets
-
-      - name: Deterministic .oneir and .onepkg artifacts
-        working-directory: source
-        run: cargo test -p one-cli --test cli build_and_package_artifacts_are_byte_deterministic
-
-      - name: DNS success and failure classification
-        working-directory: source
-        run: cargo test -p one-core --all-targets dns_adapter
-
-      - name: Orchestration policy deny and allow paths
-        working-directory: source
-        run: cargo test -p one-core --all-targets orchestrator
-
-      - name: Database vertical slice
-        working-directory: source
-        run: cargo test -p one-core --test database_vertical_slice
-
-      - name: HTTP GET vertical slice
-        working-directory: source
-        run: cargo test -p one-core --test http_get_vertical_slice
-
-      - name: HTTP GET CLI vertical slice
-        working-directory: source
-        run: cargo test -p one-cli --test http_get_orchestration
+      - name: Upload local CI report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-ci-report-${{ matrix.os }}
+          path: source/artifacts/ci-local-report.json
+          if-no-files-found: warn
