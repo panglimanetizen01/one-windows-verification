@@ -1,6 +1,7 @@
 # Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
 name: One Cross-Platform Verification
 # Exact-SHA revalidation for the current milestone candidate; do not credit stale SHA results.
+# Revalidate current ONE health scanner target after baseline applicability regression tests (2026-10-29).
 
 on:
   push:
