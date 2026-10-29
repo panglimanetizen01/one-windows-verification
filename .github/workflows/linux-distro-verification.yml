@@ -52,6 +52,14 @@ jobs:
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - name: Python repository-health regression suites
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tools -p "test_one_health.py" -v
+          python3 -m unittest discover -s tools -p "test_collect_ci_health.py" -v
+          python3 -m unittest discover -s tools -p "test_health_quality.py" -v
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.99.0
@@ -115,6 +123,14 @@ jobs:
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - name: Python repository-health regression suites
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tools -p "test_one_health.py" -v
+          python3 -m unittest discover -s tools -p "test_collect_ci_health.py" -v
+          python3 -m unittest discover -s tools -p "test_health_quality.py" -v
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.99.0

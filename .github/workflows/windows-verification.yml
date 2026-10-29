@@ -61,6 +61,36 @@ jobs:
         run: |
           $actual = (git rev-parse HEAD).Trim()
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
+      - name: Repository health scanner tests (Linux)
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: python3 -m unittest discover -s tools -p 'test_one_health.py' -v
+      - name: Repository health scanner tests (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: python -m unittest discover -s tools -p 'test_one_health.py' -v
+      - name: CI metadata collector tests (Linux)
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: python3 -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
+      - name: CI metadata collector tests (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: python -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
+      - name: Health quality ledger tests (Linux)
+        working-directory: source
+        shell: bash
+        if: runner.os != 'Windows'
+        run: python3 -m unittest discover -s tools -p 'test_health_quality.py' -v
+      - name: Health quality ledger tests (Windows)
+        working-directory: source
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: python -m unittest discover -s tools -p 'test_health_quality.py' -v
       - name: Setup Android SDK (Linux cross-platform job)
         if: runner.os != 'Windows'
         uses: android-actions/setup-android@v3
@@ -129,36 +159,6 @@ jobs:
         shell: pwsh
         if: runner.os == 'Windows'
         run: python tools/check_contract.py; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python tools/check_user_docs.py; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python tools/check_user_docs_test.py
-      - name: Repository health scanner tests (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: python3 -m unittest discover -s tools -p 'test_one_health.py' -v
-      - name: Repository health scanner tests (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: python -m unittest discover -s tools -p 'test_one_health.py' -v
-      - name: CI metadata collector tests (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: python3 -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
-      - name: CI metadata collector tests (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: python -m unittest discover -s tools -p 'test_collect_ci_health.py' -v
-      - name: Health quality ledger tests (Linux)
-        working-directory: source
-        shell: bash
-        if: runner.os != 'Windows'
-        run: python3 -m unittest discover -s tools -p 'test_health_quality.py' -v
-      - name: Health quality ledger tests (Windows)
-        working-directory: source
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: python -m unittest discover -s tools -p 'test_health_quality.py' -v
       - name: Build
         working-directory: source
         run: cargo --locked build --workspace --all-targets
