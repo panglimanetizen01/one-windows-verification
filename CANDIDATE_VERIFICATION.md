@@ -1,3 +1,14 @@
+## 2026-10-31 independent verifier pin separation
+
+- The PR #80 milestone scanner/source verification pin is `f21e8d178f72c6f9c76b4027d5ff85742dbe672e` and is stored only in `CANONICAL_COMMIT.txt`.
+- The PR #92 Local CI parity source pin is `62e391e699fe4ac5a18d6feb808568c192dd82e1` and is stored only in `LOCAL_CI_CANONICAL_COMMIT.txt`.
+- The Local CI parity workflow `.github/workflows/windows-verification.yml` reads only the Local CI pin. The scanner workflow `.github/workflows/health-scanner-verification.yml` continues to read the canonical PR #80 pin.
+- Historical parity run [40841004682](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40841004682) checked out `62e391e699fe4ac5a18d6feb808568c192dd82e1` and passed its 12 configured host checks on Ubuntu 24.04 and Windows Server 2025. Artifacts: [Ubuntu 12883580249](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40841004682), [Windows 12883006724](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40841004682). This is PR #92 Local CI evidence only, not PR #80 acceptance.
+- The previous shared pin coupled unrelated jobs: the scanner run [40840247022](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/40840247022) was triggered with `62e391e699fe4ac5a18d6feb808568c192dd82e1`, where the scanner source files are absent. That run is not scanner acceptance evidence.
+- No PR #80 acceptance score changes are made here. Exact-SHA PR #80 matrix remains outstanding.
+
+---
+
 # Current exact-SHA acceptance evidence
 
 ## Active scanner A–E verification state — 2026-10-28 (authoritative)
