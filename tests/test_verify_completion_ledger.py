@@ -122,7 +122,7 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("tools/check_user_docs.py", workflow)
         self.assertIn("tools/check_user_docs_test.py", workflow)
         self.assertIn("tools/verify_offline.sh", workflow)
-        self.assertIn("tools/verify_offline.ps1", workflow)
+        self.assertIn("verify_offline.ps1", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
 
 
