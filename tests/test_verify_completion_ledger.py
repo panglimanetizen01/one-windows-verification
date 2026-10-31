@@ -112,5 +112,19 @@ class LedgerGateTests(unittest.TestCase):
         self.assertTrue(any("exact source SHA" in error for error in errors))
 
 
+    def test_required_cross_platform_workflow_is_restored_and_uses_canonical_pin(self):
+        self.assertIn("One Cross-Platform Verification", REQUIRED_MIRROR_WORKFLOWS)
+        workflow_path = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "one-cross-platform-verification.yml"
+        workflow = workflow_path.read_text(encoding="utf-8")
+        self.assertIn("name: One Cross-Platform Verification", workflow)
+        self.assertIn("CANONICAL_COMMIT.txt", workflow)
+        self.assertNotIn("LOCAL_CI_CANONICAL_COMMIT.txt", workflow)
+        self.assertIn("tools/check_user_docs.py", workflow)
+        self.assertIn("tools/check_user_docs_test.py", workflow)
+        self.assertIn("tools/verify_offline.sh", workflow)
+        self.assertIn("tools/verify_offline.ps1", workflow)
+        self.assertIn("cancel-in-progress: false", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
