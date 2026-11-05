@@ -1,4 +1,18 @@
-# Current exact-SHA state — 2026-10-31
+# Current exact-SHA state — 2026-11-05
+
+- Canonical source repository: `panglimanetizen01/one`, branch `milestone/100-ecosystem-20261023`, PR #80 open/draft/unmerged.
+- Exact source pin: `8bca6303bce084acaa26e16ba69b1e2650829709`. This pin was advanced only after the source branch's current-state/DoD/checkpoint/verification README reconciliation commit was created. A pin selects the source; it does not itself prove execution.
+- Previous pin `1248a39199322fd4007cbd043bb58864096842c8` is historical. Its verifier matrix exposed real Linux project-fixture failures and Windows CLI/package path/reparse regressions. Subsequent source commits include the Linux fixture setup correction and E1/E2 workflow adjustments; those changes require fresh execution on the new pin.
+- Canonical source CI on predecessor `85b035a9f0ec8512a13bb66c987e2f8ec024d8fd` had six workflow runs that completed failure with all returned job steps null, no artifacts, and representative log downloads returning BlobNotFound. Root cause UNKNOWN; not source-test failure and not PASS.
+- The verifier branch's last complete matrix was for predecessor `1248a391...`: Android API 35 AArch64 native runtime run [41262527363](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/41262527363) succeeded; however One Cross-Platform Verification [41262527342](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/41262527342), health scanner [41262527377](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/41262527377), E1 [41262527323](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/41262527323), and Linux distro [41262527298](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/41262527298) failed. Their logs show Linux project tests failing at two temp-dir fixtures, Windows CLI/package tests failing on path/reparse checks, and scanner regression enforcement failing. Those results are for `1248a391...` only.
+- Ledger gate [41262533958](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/41262533958) on `1248a391...` returned NOT PASSED: index did not name the exact pin, DoD 10 unchecked, E1–E6 each 0 verified, multiple required runs failed or were incomplete, and no protected production provenance run existed.
+- Source DoD currently records 3 checked / 10 unchecked / 13 total. Implementation 92/100 is provisional; 60/100 is the last measured verified subtotal on an older source SHA, not current acceptance. Final score UNKNOWN / NOT RECONCILED; gate NOT PASSED.
+- E2 protected production provenance remains unauthorized and must not be dispatched. No merge, release, secret/trust-store mutation, or branch-protection bypass.
+- Next: inspect this push-triggered exact-SHA matrix for source `8bca630...`; verify exact checkout SHA, every job's steps/logs/exit codes/artifacts, and rerun the ledger gate only after all required matrix jobs are terminal. Do not repeat the 132-file audit or reuse predecessor results.
+
+---
+
+# Historical exact-SHA state — 2026-10-31 (superseded by active block above)
 
 ## Candidate update — 2026-11-01
 
