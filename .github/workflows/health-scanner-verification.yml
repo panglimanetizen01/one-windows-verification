@@ -142,7 +142,7 @@ jobs:
           rm -f "$trusted"
           cp "$built" "$trusted"
           test -f "$trusted"
-          test "$(stat -c '%h' "$trusted" 2>/dev/null || stat -f '%l' "$trusted")" = "1"
+          python -c 'import os,sys; n=os.stat(sys.argv[1]).st_nlink; print("trusted CLI hard-link count:", n); sys.exit(0 if n == 1 else 1)' "$trusted"
 
       - name: Run scanner against the exact ONE checkout
         id: self_scan
