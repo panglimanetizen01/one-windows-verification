@@ -235,7 +235,12 @@ jobs:
         working-directory: source
         shell: pwsh
         if: runner.os == 'Windows'
-        run: .\tools\verify_offline.ps1
+        run: |
+          $canonicalTemp = Join-Path $env:GITHUB_WORKSPACE "target"
+          New-Item -ItemType Directory -Force -Path $canonicalTemp | Out-Null
+          $env:TEMP = $canonicalTemp
+          $env:TMP = $canonicalTemp
+          .\tools\verify_offline.ps1
 
 # Exact source target is read from CANONICAL_COMMIT.txt to prevent source/verification drift.
 
