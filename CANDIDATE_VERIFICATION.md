@@ -1038,3 +1038,14 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Extracted executable size: 2,918,400 bytes. Independently calculated SHA-256 `78ba0cf7bd7ca8fc7151706ec6c9732de7bfaf80cdeb8bc175fc78a693e0bac1`, matching the embedded `SHA256SUMS` entry exactly.
 - PE structure inspection: DOS `MZ` signature present, PE signature `PE\0\0`, machine field `0x8664` (AMD64/x86_64), consistent with the declared Windows target.
 - Scope limitation: this independently verifies the Windows bundle's archive digest, embedded source metadata, internal executable checksum, and PE architecture. It does not verify the still-pending Linux bundle, and does not replace the combined candidate-artifact workflow [42055295791](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42055295791). Overall artifact-integrity acceptance remains pending.
+
+
+## Latest continuation checkpoint — 2026-11-05 16:03 UTC
+
+Canonical source remains `65526103bc42d9fecef29c1ec2571de7c88d01a0`; `CANONICAL_COMMIT.txt` readback matches exactly.
+
+- Wider cross-platform run [42055295735](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42055295735) remains `in_progress`. Windows job `127341932021` is SUCCESS. Ubuntu job `127341932381` remains in `Install Linux cross-compilers and Android NDK`; no later step has started. Active-job log retrieval returns GitHub storage `BlobNotFound`; no Ubuntu outcome is inferred.
+- Combined artifact-integrity run [42055295791](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42055295791) remains `in_progress` at `Discover exact-SHA candidate bundles and verify archive digests`, waiting for a successful exact-SHA cross-platform run and Linux/Windows bundles. Active-job log retrieval also returns `BlobNotFound`.
+- Source CI [42055118629](https://github.com/panglimanetizen01/one/actions/runs/42055118629) and Repository Health [42055118192](https://github.com/panglimanetizen01/one/actions/runs/42055118192) are terminal FAILURE. Latest job metadata returns `steps: null` for all five jobs and log endpoints return 404 `BlobNotFound`. Classification remains UNKNOWN (runner/log evidence unavailable), not source/test failure.
+- Latest gate [42060390115](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42060390115) completed NOT PASSED. All 8 verifier unit tests passed; enforcement failed closed. It reports source SHA 65526103, implementation 92/100, verified 60/100, 10 DoD items unchecked, E1–E6 each 0 verified, both matrix workflows still in progress, and no exact-SHA protected production provenance run.
+- No ledger points or DoD checkboxes changed. No source commit, protected release, merge, or main-branch mutation was made.
