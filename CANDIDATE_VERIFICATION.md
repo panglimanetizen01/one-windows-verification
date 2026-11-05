@@ -1,4 +1,17 @@
 # Historical exact-SHA state — d75b284 (superseded by active fix candidate above)
+# Historical fix candidate — f301521 (superseded by updated candidate above) (updated after CI harness hardening)
+
+- Candidate source: `panglimanetizen01/one`, branch `fix/windows-temp-path-canonicalization`, parent `d75b2846465ba53281198693750f2e6ba39e2e33`, current candidate SHA `bc7f3f426f9e0a39419f1e6846318e877c528546`. PR #80 is not modified by this isolated branch.
+- Source fixes: Windows CLI test fixtures canonicalize the system temporary root before invoking the CLI; this addresses the observed `RUNNER~1` 8.3 alias mismatch without weakening reparse-point or non-canonical path rejection. The health scanner's trusted GitHub API client recognizer now proves URL routes passed through `_paginate(request_json, url, ...)` derive from the exact `https://api.github.com` API root; a regression test scans the real collector source.
+- Scanner CLI integrity fix: source `ci.yml` and `repository-health.yml` plus verifier `health-scanner-verification.yml` build the CLI into a separate target directory, copy the executable into the expected scanner location as a standalone file, and verify `st_nlink == 1` using Python. The hard-link rejection rule remains intact.
+- Parent-SHA Windows evidence: run [42025068487](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42022068487) showed 9/27 CLI integration tests failing because `std::env::temp_dir()` returned `C:\\Users\\RUNNER~1\\AppData\\Local\\Temp`, which resolves to a different canonical path. This patch fixes test fixture path construction rather than loosening production validation.
+- Parent-SHA scanner evidence: run [42025073700](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42025073700) showed scanner regression tests passed and the collector false positive disappeared (findings fell from 29 to 28; sensitive-data-egress HIGH disappeared), but self-scan remained blocked by a two-hard-link CLI binary. The isolated build/copy step was added to the verifier harness after that run; this new harness change needs a fresh exact-SHA run.
+- No PASS is claimed for candidate `bc7f3f426f9e0a39419f1e6846318e877c528546` yet. The verifier branch pin must match this exact SHA, and fresh Linux/Windows CLI tests, scanner tests/self-scan, full cross-platform suite, artifact integrity, and ledger gate must be inspected.
+- Acceptance remains DoD 3 checked / 10 unchecked / 13 total; implementation 92/100 provisional; verified 60/100 historical; E1–E6 each 0 credited; final score UNKNOWN / NOT RECONCILED; gate NOT PASSED. E2 protected production provenance remains unauthorized. No merge/release/secret mutation.
+- No-repeat guard: do not repeat the 132-file audit or unchanged parent-SHA tests. Re-run only exact candidate verification and investigate any new failure.
+
+---
+
 # Active verification target — 2026-11-05
 
 - Candidate source repository: `panglimanetizen01/one`; branch `fix/windows-temp-path-canonicalization`; parent source SHA `d75b2846465ba53281198693750f2e6ba39e2e33`; candidate SHA `f301521ef21bdb5d3fcf7e0dd70aa6ffc5f8afa5`. This is an isolated fix branch; PR #80 remains unchanged at its previous head until fixes are reviewed and integrated.
