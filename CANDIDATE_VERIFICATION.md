@@ -14,16 +14,17 @@ Completed SUCCESS:
 - E4 filesystem/resource run 42041989253: Unix + Windows SUCCESS. E4 subprocess run 42041989028: Linux + Windows SUCCESS; changed-file formatting check succeeded. Whole-repository formatting diagnostic is non-blocking.
 - E4 subprocess resource guard run 42041989189: SUCCESS. Focused stdlib/database run 42041989156: SUCCESS. Linux distro run 42041989129: Debian 12 + Ubuntu 24.04 SUCCESS. Cargo lock bootstrap run 42041989391: SUCCESS.
 - Android AArch64 cross-build/contract fallback runs 42041989278 and 42041989293: SUCCESS. Android API 35 ELF build job in run 42041989323: SUCCESS; produced ELF artifact with SHA-256 51fc16b4fc2b050b448f93dac1633365c840e45cdafcbf690864b1ee745a0256.
+- Android API 35 native ARM64 runtime run [42041989323](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989323): SUCCESS. Runtime job 127295436840 booted an ARM64 AVD on the ARM64 host, verified API 35 and ABI arm64-v8a, pushed the exact candidate ELF, and executed it natively. Captured result: exit code 0 and output `ONE_NATIVE_BACKEND_OK`. Runtime artifact [13425513305](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989323/artifacts/13425513305), SHA-256 `5f84bb59f40b61c093a52c7c38b305b9ca5c37ba68ba48bd6f673ba7feed9594`, contains `ONE_SOURCE_SHA.txt` = d4a832ff..., emulator log, ELF metadata, runtime result, ELF and ELF digest. Artifact readback independently confirmed source SHA, ELF AArch64 format, exit code 0 and exact output.
 - Synthetic-trust E2 lab run 42041989271: SUCCESS only for synthetic trust; not protected production provenance.
 
-Still in progress / not yet proven:
-- Android API 35 native ARM64 runtime job 127295436840 in run 42041989323 remains IN_PROGRESS at step "Boot Android API 35 AArch64 on ARM64 host". Emulator installation, ARM64 host checks, source pin check, backend contract tests and ELF artifact download passed. Runtime execution/output and evidence upload have not completed. No Android native runtime PASS is claimed.
+Still not yet proven:
+- No Android API 35 runtime blocker remains for this candidate. E3 still requires row-by-row reconciliation of all other platform/runtime acceptance criteria; this single Android proof does not automatically verify the entire E3 ledger row.
 - Recheck this run before any further change. Workflow boot step has a 70-minute timeout; job timeout is 150 minutes. The available job-log endpoint currently returns 404 while the step is running; steps API confirms it remains active.
 
 ## Canonical CI / acceptance blockers
 - Source GitHub Actions One CI run 42041813814 and Repository Health run 42041813918 on d4a832ff failed with jobs exposing steps:null/no usable logs through the available connector. This is not evidence of source-test failure or PASS; root cause UNKNOWN.
 - CircleCI check ci/circleci: linux-verify is FAILURE; job logs are unavailable through the connected GitHub action. Root cause UNKNOWN. Do not retry an identical run without new diagnostics or a changed condition.
-- Ledger gate run 42041997886 returned NOT PASSED before all matrix jobs completed. It reported implementation 92/100, verified 60/100, 10 unchecked DoD items, E1-E6 each 0 verified, and no protected production provenance. Its log explicitly marked E4 subprocess, E1 Windows, E4 filesystem and E1 cross-platform as in-progress at evaluation time; those jobs subsequently completed SUCCESS. Therefore this gate result is stale for the completed matrix and must be rerun after Android runtime is terminal. Do not promote points based on workflow successes alone.
+- Ledger gate run 42041997886 returned NOT PASSED before all matrix jobs completed and is stale. Later exact-SHA evidence includes completion of the E1/E4 matrix and Android API 35 native ARM64 runtime (run 42041989323, exit 0, `ONE_NATIVE_BACKEND_OK`). Reconcile all row-level criteria and DoD against the new evidence, then run a fresh ledger gate. Do not promote points based on workflow success alone.
 - E2 synthetic trust is not protected production provenance. No protected release was dispatched or authorized.
 
 ## Acceptance / no-repeat
