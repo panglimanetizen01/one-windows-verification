@@ -22,6 +22,14 @@ Completed exact-SHA evidence on 65526103:
 
 The predecessor d4a832ff evidence sections below are historical only. Do not treat predecessor artifacts or runs as current-SHA acceptance. The ledger score and Definition of Done remain unchanged until a final frozen candidate is selected and row-level evidence is reconciled.
 
+Latest gate log inspection — [run 42056666135](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42056666135), exact source SHA 65526103:
+- All 8 verifier unit tests passed. The enforcement step then failed with exit code 1 as designed.
+- Structural acceptance output: implementation 92/100, verified 60/100, 18 rows checked, 10 DoD items unchecked. E1 0/10, E2 0/8, E3 0/8, E4 0/6, E5 0/4, E6 0/4.
+- Live evidence failures at evaluation time: candidate artifact integrity run 42055295791 in progress; cross-platform run 42055295735 in progress; Android API 35 runtime run 42055295755 in progress; no protected exact-SHA production provenance release.
+- The E1 DNS test has now been independently confirmed in BOTH operating-system job logs for run 42055295771: Windows Server 2025 reports 3 passed / 0 failed, as does Ubuntu 24.04. This is scoped test evidence only, not full E1 row acceptance.
+- At latest inspection, the three required matrix jobs remained active: cross-platform Linux was installing Linux cross-compilers/Android NDK; Android ARM64 job was booting API 35; artifact-integrity job was waiting for successful exact-SHA Linux/Windows candidate bundles from the cross-platform run. Their job-log download endpoints returned 404 while jobs were still in progress; this is not a completed failure and no outcome is inferred.
+- The source DoD still has 10 unchecked items: final SHA freeze, cross-artifact consistency, failed-workflow classification, explicit equivalence for any hosted-CI alternative, and E1–E6 acceptance. Do not check these boxes until their exact acceptance conditions are met.
+
 ## Historical exact-SHA independent verification (predecessor source d4a832ff...)
 
 Completed SUCCESS:
