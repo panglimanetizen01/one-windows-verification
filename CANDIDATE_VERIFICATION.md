@@ -1,13 +1,35 @@
-# Active fix candidate — 2026-11-05 (source SHA d4a832f...)
+# Active fix candidate — 2026-11-05 (exact source SHA d4a832ff22133c412fe3bbe18c705ef9036144d8)
 
-- Candidate source: `panglimanetizen01/one`, branch `fix/windows-temp-path-canonicalization`, PR #94, parent `d75b2846465ba53281198693750f2e6ba39e2e33`, current candidate SHA `d4a832ff22133c412fe3bbe18c705ef9036144d8`. PR #80 remains unchanged at `d75b2846465ba53281198693750f2e6ba39e2e33`.
-- Windows fixture correction: canonicalize the temporary root for CLI, project, and filesystem adapter tests. This addresses the demonstrated Windows `RUNNER~1` 8.3 alias mismatch without weakening canonical-path, reparse-point, or hard-link protections.
-- Scanner correction: narrowly recognize the trusted collector's authenticated GitHub API flow through `_paginate(request_json, API_ROOT-derived-url, ...)`; regression test scans the actual `tools/collect_ci_health.py`. No general egress suppression.
-- Scanner CLI integrity: source GitHub workflows and verifier harness build the CLI in an isolated Cargo target, copy it as a standalone file, and enforce `st_nlink == 1`. The CircleCI workflow was additionally corrected in commit `d4a832ff22133c412fe3bbe18c705ef9036144d8` to remove the prior destination before copying, ensuring the standalone inode rather than preserving any existing hard-link identity.
-- Exact-SHA status: source GitHub Actions runs 42041813814 (One CI) and 42041813918 (Repository Health) on this SHA terminated with failed jobs exposing `steps: null`; these provide no test-step or exit-code evidence. CircleCI status was pending at last observation; no CircleCI test result is claimed. The independent verifier has just been pinned to this SHA; its new run must be inspected for exact checkout SHA, Linux/Windows test steps, reports, and exit codes.
-- Previous candidate `bc7f3f426f9e0a39419f1e6846318e877c528546` and its scoped passes remain historical after this new source commit. The earlier Windows offline smoke issue was addressed in the verifier harness by setting `TEMP` and `TMP` to the canonical checkout `target/` directory; that harness change must be exercised on this candidate.
-- Acceptance: implementation/verified percentages remain provisional/historical; final score UNKNOWN / NOT RECONCILED; E1–E6 acceptance points are not promoted; gate NOT PASSED. No merge, release, secret/trust-store change, or protected E2 production provenance dispatch.
-- No-repeat guard: do not repeat the 132-file inventory, prior successful unchanged-scope tests, or identical zero-step canonical CI attempts. Re-run only the exact-SHA candidate matrix and changed scopes.
+- Candidate source: panglimanetizen01/one, branch fix/windows-temp-path-canonicalization, PR #94 (open/draft/unmerged), parent d75b2846465ba53281198693750f2e6ba39e2e33, candidate SHA d4a832ff22133c412fe3bbe18c705ef9036144d8. PR #80 remains open/draft/unmerged at d75b2846465ba53281198693750f2e6ba39e2e33.
+- Verifier pin CANONICAL_COMMIT.txt matches d4a832ff22133c412fe3bbe18c705ef9036144d8. Pin commit 6804b92f85ed10023b8f9c9d239924de7593c60e. Evidence index active block is committed by this update.
+- Source delta in PR #94: Windows temp fixture roots are canonicalized; trusted collector exception is constrained to the authenticated GitHub API client flow; scanner CLI is built/copied as a standalone inode. Latest source commit d4a832ff additionally removes existing CircleCI destination before copying, preserving the st_nlink == 1 integrity assertion. No production security control was weakened.
+
+## Exact-SHA independent verification (source d4a832ff...)
+
+Completed SUCCESS:
+- Health Scanner run 42041988991: Linux + Windows; exact checkout; 63 scanner tests, 9 collector tests, 5 quality tests on each; self-scan has 0 critical/high/medium/low and 27 informational.
+- Cross-platform run 42041989394: Ubuntu + Windows Server 2025; workspace tests, Clippy, real-network tests and offline verification succeeded.
+- Candidate artifact integrity run 42041988924: SUCCESS; embedded source SHA and archive digests verified. Linux binary SHA-256 e21d26d515c45c45759ac922126fc04bbbec7743914d87c4b08545b807102760 (ELF64 x86-64); Windows binary SHA-256 25ec85f9f2b99b15fcf1828b5740e8803e9a72d9a9531f8cde0f0783c4f65624 (PE32+ x86-64).
+- E1 cross-platform run 42041989124: Ubuntu + Windows SUCCESS. E1 Windows acceptance run 42041989256: SUCCESS.
+- E4 filesystem/resource run 42041989253: Unix + Windows SUCCESS. E4 subprocess run 42041989028: Linux + Windows SUCCESS; changed-file formatting check succeeded. Whole-repository formatting diagnostic is non-blocking.
+- E4 subprocess resource guard run 42041989189: SUCCESS. Focused stdlib/database run 42041989156: SUCCESS. Linux distro run 42041989129: Debian 12 + Ubuntu 24.04 SUCCESS. Cargo lock bootstrap run 42041989391: SUCCESS.
+- Android AArch64 cross-build/contract fallback runs 42041989278 and 42041989293: SUCCESS. Android API 35 ELF build job in run 42041989323: SUCCESS; produced ELF artifact with SHA-256 51fc16b4fc2b050b448f93dac1633365c840e45cdafcbf690864b1ee745a0256.
+- Synthetic-trust E2 lab run 42041989271: SUCCESS only for synthetic trust; not protected production provenance.
+
+Still in progress / not yet proven:
+- Android API 35 native ARM64 runtime job 127295436840 in run 42041989323 remains IN_PROGRESS at step "Boot Android API 35 AArch64 on ARM64 host". Emulator installation, ARM64 host checks, source pin check, backend contract tests and ELF artifact download passed. Runtime execution/output and evidence upload have not completed. No Android native runtime PASS is claimed.
+- Recheck this run before any further change. Workflow boot step has a 70-minute timeout; job timeout is 150 minutes. The available job-log endpoint currently returns 404 while the step is running; steps API confirms it remains active.
+
+## Canonical CI / acceptance blockers
+- Source GitHub Actions One CI run 42041813814 and Repository Health run 42041813918 on d4a832ff failed with jobs exposing steps:null/no usable logs through the available connector. This is not evidence of source-test failure or PASS; root cause UNKNOWN.
+- CircleCI check ci/circleci: linux-verify is FAILURE; job logs are unavailable through the connected GitHub action. Root cause UNKNOWN. Do not retry an identical run without new diagnostics or a changed condition.
+- Ledger gate run 42041997886 returned NOT PASSED before all matrix jobs completed. It reported implementation 92/100, verified 60/100, 10 unchecked DoD items, E1-E6 each 0 verified, and no protected production provenance. Its log explicitly marked E4 subprocess, E1 Windows, E4 filesystem and E1 cross-platform as in-progress at evaluation time; those jobs subsequently completed SUCCESS. Therefore this gate result is stale for the completed matrix and must be rerun after Android runtime is terminal. Do not promote points based on workflow successes alone.
+- E2 synthetic trust is not protected production provenance. No protected release was dispatched or authorized.
+
+## Acceptance / no-repeat
+- Final score UNKNOWN / NOT RECONCILED; final gate NOT PASSED. Current ledger still requires row-by-row evidence and DoD reconciliation; E1-E6 accepted points are not promoted. The last observed ledger snapshot was 92 implementation / 60 verified and DoD 3 checked / 10 unchecked, not final acceptance.
+- No merge, release, protected E2 production provenance dispatch, main-branch edit, secret/trust-store mutation, destructive reset, or changes to ~/one-termux.
+- Do not repeat the 132-file audit, successful unchanged-scope exact-SHA jobs, or zero-step canonical CI attempts. Next action: inspect Android native runtime completion, then trigger fresh ledger gate and reconcile any remaining row-level evidence gaps from actual logs/artifacts.
 
 ---
 
