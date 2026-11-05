@@ -1,10 +1,14 @@
-# Active fix candidate — 2026-11-05 (exact source SHA d4a832ff22133c412fe3bbe18c705ef9036144d8)
+# Active fix candidate — 2026-11-05 (exact source SHA 65526103bc42d9fecef29c1ec2571de7c88d01a0)
 
-- Candidate source: panglimanetizen01/one, branch fix/windows-temp-path-canonicalization, PR #94 (open/draft/unmerged), parent d75b2846465ba53281198693750f2e6ba39e2e33, candidate SHA d4a832ff22133c412fe3bbe18c705ef9036144d8. PR #80 remains open/draft/unmerged at d75b2846465ba53281198693750f2e6ba39e2e33.
-- Verifier pin CANONICAL_COMMIT.txt matches d4a832ff22133c412fe3bbe18c705ef9036144d8. Pin commit 6804b92f85ed10023b8f9c9d239924de7593c60e. Evidence index active block is committed by this update.
-- Source delta in PR #94: Windows temp fixture roots are canonicalized; trusted collector exception is constrained to the authenticated GitHub API client flow; scanner CLI is built/copied as a standalone inode. Latest source commit d4a832ff additionally removes existing CircleCI destination before copying, preserving the st_nlink == 1 integrity assertion. No production security control was weakened.
+- Candidate source: panglimanetizen01/one, branch fix/windows-temp-path-canonicalization, PR #94 (open/draft/unmerged), parent d4a832ff22133c412fe3bbe18c705ef9036144d8, candidate SHA 65526103bc42d9fecef29c1ec2571de7c88d01a0. PR #80 remains open/draft/unmerged at d75b2846465ba53281198693750f2e6ba39e2e33.
+- Verifier pin CANONICAL_COMMIT.txt is being advanced to 65526103bc42d9fecef29c1ec2571de7c88d01a0 in this evidence commit; verify the resulting pin and exact-SHA workflow checkout before treating any new run as current.
+- Source delta in PR #94: Windows temp fixture roots are canonicalized; trusted collector exception is constrained to the authenticated GitHub API client flow; scanner CLI is built/copied as a standalone inode. Commit d4a832ff removes an existing CircleCI destination before copying, preserving the st_nlink == 1 integrity assertion. New commit 65526103 adds `crates/one-core/tests/network_dns_vertical_slice.rs` with source-to-runtime DNS success, missing-capability denial, and out-of-scope denial tests. This is test-only; it does not change runtime behavior or define a new stable API. No production security control was weakened.
 
-## Exact-SHA independent verification (source d4a832ff...)
+## Current candidate verification state
+
+The exact-SHA evidence sections below describe predecessor d4a832ff unless explicitly stated otherwise. The new candidate SHA 65526103 has not yet completed its required exact-SHA matrix. The DNS integration tests are committed but are NOT YET VERIFIED; no PASS is claimed for the new SHA. All predecessor results remain useful diagnostic history only and must not be promoted as current-SHA acceptance.
+
+## Historical exact-SHA independent verification (predecessor source d4a832ff...)
 
 Completed SUCCESS:
 - Health Scanner run 42041988991: Linux + Windows; exact checkout; 63 scanner tests, 9 collector tests, 5 quality tests on each; self-scan has 0 critical/high/medium/low and 27 informational.
@@ -21,7 +25,7 @@ Still not yet proven:
 - No Android API 35 runtime blocker remains for this candidate. E3 still requires row-by-row reconciliation of all other platform/runtime acceptance criteria; this single Android proof does not automatically verify the entire E3 ledger row.
 - Runtime status was independently rechecked after completion: job 127295436840 is SUCCESS, the exact candidate ELF executed on Android API 35 / arm64-v8a, and the captured result is exit code 0 with `ONE_NATIVE_BACKEND_OK`. The artifact readback and SHA-256 are recorded above. The earlier in-progress/log-404 observation is superseded and must not be treated as current status.
 
-## Canonical CI / acceptance blockers
+## Canonical CI / acceptance blockers observed on predecessor d4a832ff
 - Source GitHub Actions One CI run 42041813814 and Repository Health run 42041813918 on d4a832ff failed with jobs exposing steps:null/no usable logs through the available connector. This is not evidence of source-test failure or PASS; root cause UNKNOWN.
 - CircleCI check ci/circleci: linux-verify is FAILURE; job logs are unavailable through the connected GitHub action. Root cause UNKNOWN. Do not retry an identical run without new diagnostics or a changed condition.
 - Ledger gate run 42041997886 returned NOT PASSED before all matrix jobs completed and is stale. Later exact-SHA evidence includes completion of the E1/E4 matrix and Android API 35 native ARM64 runtime (run 42041989323, exit 0, `ONE_NATIVE_BACKEND_OK`). Reconcile all row-level criteria and DoD against the new evidence, then run a fresh ledger gate. Do not promote points based on workflow success alone.
@@ -62,7 +66,7 @@ The exact-SHA E1 runs [42041989124](https://github.com/panglimanetizen01/one-win
 - Rust helpers additionally include `display_value` and `map_from_entries`; these are not source-level built-ins. The UTC helpers are deterministic conversions; they do not read the wall clock. The source contract and failure semantics are in `docs/spec/one-v0.1-stdlib.md`, with end-to-end tests in `crates/one-core/tests/stdlib_builtins.rs`.
 
 **Effectful source operations already present in the implementation:**
-- `cari alamat` → `network.dns.resolve`, `NetworkDiscover`, `Discover`. `ir.rs` tests typed lowering and `network_dns_adapter.rs` tests adapter resolution/policy/audit, but the inspected integration-test inventory has no source-to-`Interpreter::execute` vertical-slice test for this action. Network Foundation defines `NetworkDiscover` and lists DNS/system resolution among verified native slices; the precise source action/output contract is not independently established as a stable stdlib API.
+- `cari alamat` → `network.dns.resolve`, `NetworkDiscover`, `Discover`. On predecessor d4a832ff, `ir.rs` tested typed lowering and `network_dns_adapter.rs` tested adapter resolution/policy/audit, but no source-to-`Interpreter::execute` vertical-slice test existed. Candidate 65526103 adds three integration tests for governed loopback resolution, missing-capability denial, and out-of-scope denial; these remain pending exact-SHA execution. Network Foundation defines `NetworkDiscover` and lists DNS/system resolution among verified native slices; the precise source action/output contract is not independently established as a stable stdlib API.
 - `baca berkas` → `filesystem.file.read`, `FilesystemRead`, `Read`. `filesystem_vertical_slice.rs` covers source-to-runtime success, default denial, out-of-scope denial, adapter availability/failure, and normalization.
 - `tulis ke berkas` → `filesystem.file.write`, `FilesystemWrite`, `Write`. `filesystem_write_runtime.rs` covers source execution and explicit grant; `filesystem_capability_isolation.rs` checks lowering to the write-specific capability.
 - `ambil dari` → `network.http.get`, `NetworkConnect`, `Connect`. `http_get_vertical_slice.rs` covers a real loopback HTTP/1.1 GET plus missing-capability and target-scope denial.
