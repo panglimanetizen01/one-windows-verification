@@ -127,7 +127,22 @@ jobs:
         id: build_cli
         continue-on-error: true
         working-directory: one-source
-        run: cargo build --locked -p one-cli
+        shell: bash
+        run: |
+          set -euo pipefail
+          CARGO_TARGET_DIR=target/one-health-cli cargo build --locked -p one-cli
+          if [[ -f target/one-health-cli/debug/one.exe ]]; then
+            built=target/one-health-cli/debug/one.exe
+            trusted=target/debug/one.exe
+          else
+            built=target/one-health-cli/debug/one
+            trusted=target/debug/one
+          fi
+          mkdir -p target/debug
+          rm -f "$trusted"
+          cp "$built" "$trusted"
+          test -f "$trusted"
+          test "$(stat -c '%h' "$trusted" 2>/dev/null || stat -f '%l' "$trusted")" = "1"
 
       - name: Run scanner against the exact ONE checkout
         id: self_scan
