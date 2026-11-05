@@ -10,7 +10,7 @@ Completed SUCCESS:
 - Health Scanner run 42041988991: Linux + Windows; exact checkout; 63 scanner tests, 9 collector tests, 5 quality tests on each; self-scan has 0 critical/high/medium/low and 27 informational.
 - Cross-platform run 42041989394: Ubuntu + Windows Server 2025; workspace tests, Clippy, real-network tests and offline verification succeeded.
 - Candidate artifact integrity run 42041988924: SUCCESS; embedded source SHA and archive digests verified. Linux binary SHA-256 e21d26d515c45c45759ac922126fc04bbbec7743914d87c4b08545b807102760 (ELF64 x86-64); Windows binary SHA-256 25ec85f9f2b99b15fcf1828b5740e8803e9a72d9a9531f8cde0f0783c4f65624 (PE32+ x86-64).
-- E1 cross-platform run 42041989124: Ubuntu + Windows SUCCESS. E1 Windows acceptance run 42041989256: SUCCESS.
+- E1 cross-platform run [42041989124](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989124): Ubuntu 24.04 + Windows Server 2025 SUCCESS. Both jobs checked out the pinned source SHA and completed the E1 source-level integration suite, standard-library library unit suite, full workspace tests, warnings-denied workspace Clippy, and repository contract checker. Captured integration results: Ubuntu 268 passed / 0 failed; Windows 258 passed / 0 failed. E1 Windows acceptance run [42041989256](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989256): SUCCESS. This proves the documented E1 API slice and cross-platform execution; it does not close E1's broader reusable-standard-library scope or justify point promotion without a scope-complete contract.
 - E4 filesystem/resource run 42041989253: Unix + Windows SUCCESS. E4 subprocess run 42041989028: Linux + Windows SUCCESS; changed-file formatting check succeeded. Whole-repository formatting diagnostic is non-blocking.
 - E4 subprocess resource guard run 42041989189: SUCCESS. Focused stdlib/database run 42041989156: SUCCESS. Linux distro run 42041989129: Debian 12 + Ubuntu 24.04 SUCCESS. Cargo lock bootstrap run 42041989391: SUCCESS.
 - Android AArch64 cross-build/contract fallback runs 42041989278 and 42041989293: SUCCESS. Android API 35 ELF build job in run 42041989323: SUCCESS; produced ELF artifact with SHA-256 51fc16b4fc2b050b448f93dac1633365c840e45cdafcbf690864b1ee745a0256.
@@ -19,7 +19,7 @@ Completed SUCCESS:
 
 Still not yet proven:
 - No Android API 35 runtime blocker remains for this candidate. E3 still requires row-by-row reconciliation of all other platform/runtime acceptance criteria; this single Android proof does not automatically verify the entire E3 ledger row.
-- Recheck this run before any further change. Workflow boot step has a 70-minute timeout; job timeout is 150 minutes. The available job-log endpoint currently returns 404 while the step is running; steps API confirms it remains active.
+- Runtime status was independently rechecked after completion: job 127295436840 is SUCCESS, the exact candidate ELF executed on Android API 35 / arm64-v8a, and the captured result is exit code 0 with `ONE_NATIVE_BACKEND_OK`. The artifact readback and SHA-256 are recorded above. The earlier in-progress/log-404 observation is superseded and must not be treated as current status.
 
 ## Canonical CI / acceptance blockers
 - Source GitHub Actions One CI run 42041813814 and Repository Health run 42041813918 on d4a832ff failed with jobs exposing steps:null/no usable logs through the available connector. This is not evidence of source-test failure or PASS; root cause UNKNOWN.
