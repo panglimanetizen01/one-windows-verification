@@ -1,4 +1,17 @@
-# Active fix candidate — 2026-11-05 (source SHA bc7f3f4...)
+# Active fix candidate — 2026-11-05 (source SHA d4a832f...)
+
+- Candidate source: `panglimanetizen01/one`, branch `fix/windows-temp-path-canonicalization`, PR #94, parent `d75b2846465ba53281198693750f2e6ba39e2e33`, current candidate SHA `d4a832ff22133c412fe3bbe18c705ef9036144d8`. PR #80 remains unchanged at `d75b2846465ba53281198693750f2e6ba39e2e33`.
+- Windows fixture correction: canonicalize the temporary root for CLI, project, and filesystem adapter tests. This addresses the demonstrated Windows `RUNNER~1` 8.3 alias mismatch without weakening canonical-path, reparse-point, or hard-link protections.
+- Scanner correction: narrowly recognize the trusted collector's authenticated GitHub API flow through `_paginate(request_json, API_ROOT-derived-url, ...)`; regression test scans the actual `tools/collect_ci_health.py`. No general egress suppression.
+- Scanner CLI integrity: source GitHub workflows and verifier harness build the CLI in an isolated Cargo target, copy it as a standalone file, and enforce `st_nlink == 1`. The CircleCI workflow was additionally corrected in commit `d4a832ff22133c412fe3bbe18c705ef9036144d8` to remove the prior destination before copying, ensuring the standalone inode rather than preserving any existing hard-link identity.
+- Exact-SHA status: source GitHub Actions runs 42041813814 (One CI) and 42041813918 (Repository Health) on this SHA terminated with failed jobs exposing `steps: null`; these provide no test-step or exit-code evidence. CircleCI status was pending at last observation; no CircleCI test result is claimed. The independent verifier has just been pinned to this SHA; its new run must be inspected for exact checkout SHA, Linux/Windows test steps, reports, and exit codes.
+- Previous candidate `bc7f3f426f9e0a39419f1e6846318e877c528546` and its scoped passes remain historical after this new source commit. The earlier Windows offline smoke issue was addressed in the verifier harness by setting `TEMP` and `TMP` to the canonical checkout `target/` directory; that harness change must be exercised on this candidate.
+- Acceptance: implementation/verified percentages remain provisional/historical; final score UNKNOWN / NOT RECONCILED; E1–E6 acceptance points are not promoted; gate NOT PASSED. No merge, release, secret/trust-store change, or protected E2 production provenance dispatch.
+- No-repeat guard: do not repeat the 132-file inventory, prior successful unchanged-scope tests, or identical zero-step canonical CI attempts. Re-run only the exact-SHA candidate matrix and changed scopes.
+
+---
+
+# Historical fix candidate — 2026-11-05 (source SHA bc7f3f4..., superseded by d4a832f...)
 # Historical fix candidate — f301521 (superseded by current candidate above)
 
 - Candidate source: `panglimanetizen01/one`, branch `fix/windows-temp-path-canonicalization`, parent `d75b2846465ba53281198693750f2e6ba39e2e33`, current candidate SHA `bc7f3f426f9e0a39419f1e6846318e877c528546`. PR #80 is not modified by this isolated branch.
@@ -13,7 +26,7 @@
 
 ---
 
-# Active verification target — 2026-11-05
+# Historical verification target — 2026-11-05 (superseded by active d4a832f... block above)
 
 - Candidate source repository: `panglimanetizen01/one`; branch `fix/windows-temp-path-canonicalization`; parent source SHA `d75b2846465ba53281198693750f2e6ba39e2e33`; candidate SHA `f301521ef21bdb5d3fcf7e0dd70aa6ffc5f8afa5`. This is an isolated fix branch; PR #80 remains unchanged at its previous head until fixes are reviewed and integrated.
 - Scope of the candidate patch: canonicalize Windows temporary fixture roots in `crates/one-cli/tests/cli.rs` and `project.rs`; correct the scanner's narrow trusted GitHub API client recognizer to accept `_paginate(request_json, API_ROOT-derived-url, ...)` routes; add regression coverage against the actual collector; build a standalone CLI binary for the scanner in both canonical source workflows, preserving the hard-link rejection policy.
