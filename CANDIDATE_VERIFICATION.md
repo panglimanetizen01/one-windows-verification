@@ -27,6 +27,36 @@ Still not yet proven:
 - Ledger gate run 42041997886 returned NOT PASSED before all matrix jobs completed and is stale. Later exact-SHA evidence includes completion of the E1/E4 matrix and Android API 35 native ARM64 runtime (run 42041989323, exit 0, `ONE_NATIVE_BACKEND_OK`). Reconcile all row-level criteria and DoD against the new evidence, then run a fresh ledger gate. Do not promote points based on workflow success alone.
 - E2 synthetic trust is not protected production provenance. No protected release was dispatched or authorized.
 
+## Exact-SHA row evidence crosswalk — source d4a832ff22133c412fe3bbe18c705ef9036144d8
+
+This crosswalk records what the completed runs actually prove. It does not change source-ledger points or DoD checkboxes.
+
+### E3 — conformance and platforms: required evidence observed on exact source SHA
+
+- Cross-platform workflow [42041989394](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989394): Ubuntu 24.04 and Windows Server 2025 jobs both SUCCESS. Both checked out and verified the canonical source pin, built debug/release, generated and verified native candidate bundles, ran AST contract regressions, Clippy, workspace tests, and real-network tests. Ubuntu also completed offline verification; Windows completed its Windows offline verification. Android cross-target build/contract work is included on Ubuntu.
+- Linux distro workflow [42041989129](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989129): Ubuntu 24.04 and Debian 12 jobs both SUCCESS, including exact source SHA verification, contract checks, build, Clippy, native workspace tests, and real-network tests.
+- Candidate artifact integrity [42041988924](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041988924): SUCCESS; exact-SHA Linux and Windows candidate archives, embedded manifests/source SHA, archive digests, executable formats, and binary digests checked.
+- Android API 35 native runtime [42041989323](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989323), job 127295436840: SUCCESS; native AArch64 execution on API 35 / arm64-v8a, exit 0, output `ONE_NATIVE_BACKEND_OK`; source-bound artifact 13425513305 is independently inspected above.
+- These results satisfy the named E3 platform evidence scopes on d4a832ff. Keep the source ledger unchanged until the full row and final-SHA freeze are reconciled together.
+
+### E4 — security, resource bounds, recovery: named exact-SHA scopes
+
+- Adversarial filesystem/resource workflow [42041989253](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989253): Unix no-follow / SQLite resource-bound job 127294874429 and Windows reparse-point / handle-check job 127294874676 both SUCCESS. Both checked out and verified the exact candidate SHA and ran nonzero-test-asserted regression suites.
+- SEC-05 subprocess timeout/output-limit workflow [42041989028](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989028): Linux job 127294874885 and Windows job 127294875176 both SUCCESS. Logs/step summaries show subprocess contract tests, complete one-core suites, changed-file formatting, timeout/bounded-capture guards, and Windows descendant containment at process creation.
+- Subprocess resource guard [42041989189](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989189): SUCCESS; exact candidate checkout and bounded-execution guard assertion passed.
+- Residual threat-model limitations already documented in the source DoD remain in force; these focused passes do not establish a complete OS sandbox or universal memory accounting.
+
+### E5 — docs and developer tooling: exact-SHA evidence observed
+
+- The cross-platform workflow [42041989394](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42041989394) passed the AST/contract regression checks, debug and release builds, native Linux and Windows package creation, embedded provenance/checksum verification, workspace tests, Clippy, real-network tests, and platform-specific offline verification. The source contract checker and artifact integrity workflow also passed on the same pin.
+- This is exact-SHA evidence for the documented tooling and contract-check scopes. Do not infer final E5 ledger credit until the source DoD and fixed-weight ledger are reconciled on a frozen final candidate.
+
+### E1 / E2 / E6 — explicit unresolved boundaries
+
+- E1: exact-SHA cross-platform run 42041989124 and Windows acceptance run 42041989256 passed their declared suites; source spec `docs/spec/one-v0.1-stdlib.md` defines the currently implemented public helper/source-call contract and its test matrix. However, the source ledger still assigns only 7/10 implementation points. The source spec explicitly says this is a partial library slice and does not define additional stable APIs for every reserved standard-library domain. No authoritative contract found in the current source/checkpoint material defines the remaining 3 implementation points. Do not invent concurrency, logging/configuration, randomness, or persistence APIs to fill an unexplained score gap; resolve the missing scope from the governing milestone specification first.
+- E2: deterministic package, lockfile, candidate-bundle and synthetic-trust lab scopes passed; synthetic trust is not an independently configured production trusted-publisher store and is not the protected `ONE Package Provenance Release` workflow. No production dispatch was made or authorized.
+- E6: remains open until E1–E5, final SHA, source docs, evidence index, PR metadata, and provenance are reconciled with no mandatory gate open.
+
 ## Acceptance / no-repeat
 - Final score UNKNOWN / NOT RECONCILED; final gate NOT PASSED. Current ledger still requires row-by-row evidence and DoD reconciliation; E1-E6 accepted points are not promoted. The last observed ledger snapshot was 92 implementation / 60 verified and DoD 3 checked / 10 unchecked, not final acceptance.
 - No merge, release, protected E2 production provenance dispatch, main-branch edit, secret/trust-store mutation, destructive reset, or changes to ~/one-termux.
