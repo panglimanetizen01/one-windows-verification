@@ -1,5 +1,18 @@
 # Current exact-SHA state — 2026-11-05
 
+- Canonical source: `panglimanetizen01/one`, branch `milestone/100-ecosystem-20261023`, PR #80 open/draft/unmerged.
+- Exact source SHA: `d75b2846465ba53281198693750f2e6ba39e2e33`. The source documents now avoid embedding a self-referential SHA; live PR #80 head and this pin are authoritative.
+- The previous pin `8bca6303bce084acaa26e16ba69b1e2650829709` triggered an exact-SHA matrix at runs 42021771140–42021771405. Some jobs were still running and the first ledger gate failed closed; this matrix is historical after the source documentation-only commit to `d75b284...`. Do not promote those results to the current pin.
+- Canonical source workflows on predecessor `85b035a9...` failed before executable steps: all six runs had `steps: null`, no artifacts and representative `BlobNotFound` log downloads. Root cause UNKNOWN; not source-test failure and not PASS.
+- The independent verifier matrix on predecessor `1248a391...` exposed actual Linux temporary-directory fixture failures and Windows CLI/package reparse/canonical-path failures. The Linux fixture setup was corrected in later source ancestry; Windows path behavior still requires fresh exact-SHA verification. Android API 35 AArch64 runtime passed only on `1248a391...`.
+- DoD: 3 checked / 10 unchecked / 13 total. Implementation 92/100 provisional; last measured verified subtotal 60/100 on an older source SHA; E1–E6 0 verified. Final score UNKNOWN / NOT RECONCILED; gate NOT PASSED.
+- E2 protected production provenance remains unauthorized. No merge, release, secret/trust-store mutation or protection bypass.
+- Next: inspect the push-triggered matrix for exact source `d75b284...`; verify checkout SHA, steps/logs, exit codes and artifacts. Re-run the ledger gate only after required matrix jobs are terminal. No 132-file inventory repeat.
+
+---
+
+# Historical exact-SHA state — pin 8bca630 (superseded by active block above)
+
 - Canonical source repository: `panglimanetizen01/one`, branch `milestone/100-ecosystem-20261023`, PR #80 open/draft/unmerged.
 - Exact source pin: `8bca6303bce084acaa26e16ba69b1e2650829709`. This pin was advanced only after the source branch's current-state/DoD/checkpoint/verification README reconciliation commit was created. A pin selects the source; it does not itself prove execution.
 - Previous pin `1248a39199322fd4007cbd043bb58864096842c8` is historical. Its verifier matrix exposed real Linux project-fixture failures and Windows CLI/package path/reparse regressions. Subsequent source commits include the Linux fixture setup correction and E1/E2 workflow adjustments; those changes require fresh execution on the new pin.
