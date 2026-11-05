@@ -1,4 +1,17 @@
-# Current exact-SHA state — 2026-11-05
+# Historical exact-SHA state — d75b284 (superseded by active fix candidate above)
+# Active verification target — 2026-11-05
+
+- Candidate source repository: `panglimanetizen01/one`; branch `fix/windows-temp-path-canonicalization`; parent source SHA `d75b2846465ba53281198693750f2e6ba39e2e33`; candidate SHA `f301521ef21bdb5d3fcf7e0dd70aa6ffc5f8afa5`. This is an isolated fix branch; PR #80 remains unchanged at its previous head until fixes are reviewed and integrated.
+- Scope of the candidate patch: canonicalize Windows temporary fixture roots in `crates/one-cli/tests/cli.rs` and `project.rs`; correct the scanner's narrow trusted GitHub API client recognizer to accept `_paginate(request_json, API_ROOT-derived-url, ...)` routes; add regression coverage against the actual collector; build a standalone CLI binary for the scanner in both canonical source workflows, preserving the hard-link rejection policy.
+- Demonstrated Windows regression on parent SHA `d75b284...`: 9/27 tests in `one-cli/tests/cli.rs` failed because the Windows runner's `std::env::temp_dir()` returned the 8.3 alias `C:\\Users\\RUNNER~1\\AppData\\Local\\Temp`, which canonicalizes to a different long path. The filesystem adapter correctly rejects non-canonical paths and reparse escapes; the fix changes test fixtures to pass canonical temporary paths rather than weakening adapter validation.
+- Demonstrated scanner findings on parent SHA: (1) trusted collector egress was falsely flagged because the recognizer required direct `request_json(f"...{base}...")` calls, while production collector uses `_paginate(request_json, runs_url, ...)` and other API-root-derived URL arguments; (2) CLI binary had two hard links and was correctly blocked by scanner policy. The fix expands only the AST route proof and prepares a standalone copied CLI binary before scan. It does not suppress general egress findings or relax binary trust requirements.
+- Candidate workflow modifications: `.github/workflows/ci.yml` and `.github/workflows/repository-health.yml` now build CLI into isolated `target/one-health-cli`, replace the scanner candidate with a normal file copy, and assert link count one. This shell path still requires exact Windows/Linux execution.
+- No test has yet run on candidate SHA `f301521...`; no PASS is claimed. Required next evidence: verifier matrix on this exact SHA, inspect checkout SHA, full Windows CLI test summary, scanner regression tests, scanner report severities, and ledger gate. Canonical source CI on old source SHA had zero-step infrastructure failures; that is a separate unresolved issue.
+- Acceptance remains: DoD 3 checked / 10 unchecked / 13 total; implementation 92/100 provisional; verified 60/100 historical and not current; E1–E6 each 0 credited; final score UNKNOWN / NOT RECONCILED; gate NOT PASSED. E2 protected production provenance is not authorized. No merge/release/secret mutation.
+- No-repeat guard: do not rerun the 132-file inventory or the unchanged parent-SHA tests. Re-run only the exact-SHA verifier matrix against this candidate and inspect the changed Windows, scanner, and workflow scopes.
+
+---
+
 
 - Canonical source: `panglimanetizen01/one`, branch `milestone/100-ecosystem-20261023`, PR #80 open/draft/unmerged.
 - Exact source SHA: `d75b2846465ba53281198693750f2e6ba39e2e33`. The source documents now avoid embedding a self-referential SHA; live PR #80 head and this pin are authoritative.
