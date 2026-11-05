@@ -1027,3 +1027,14 @@ Canonical source repository CI workflows (One CI, E1, E2, focused stdlib, Linux 
 - Candidate artifact integrity run [42055295791](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42055295791) remains in progress at the step that waits for a completed successful exact-SHA cross-platform run and its Linux/Windows bundles. Its job log endpoint is unavailable while active. This wait is defined in the workflow (up to 45 minutes); no artifact-integrity result is claimed yet.
 - Previous gate [42057680706](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42057680706) evaluated before Android runtime completed and correctly reported the Android workflow as in progress. Its NOT PASSED result remains valid for the evaluation time; it must not be relabeled as a pass. A fresh gate evaluation is required after all remaining exact-SHA matrix workflows are terminal.
 - Source ledger points and DoD boxes remain unchanged. PR #80 and PR #94 remain open/draft/unmerged. No protected production provenance release was dispatched or authorized.
+
+
+## Independent Windows candidate bundle inspection — 2026-11-05
+
+- Downloaded Windows release-candidate artifact from cross-platform run [42055295735](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42055295735), artifact ID `13428147809`, exact artifact name `one-release-candidate-Windows-65526103bc42d9fecef29c1ec2571de7c88d01a0`.
+- GitHub artifact metadata: 1,515,356 bytes; archive SHA-256 `a2efd40b0ed0c914ba4a695793c5a4b012cd4a0aef7887b8ea05bf1339336da5`. Downloaded ZIP measured 1,515,356 bytes and independently hashed to the same digest.
+- ZIP inventory: `BUILD-METADATA.txt`, `one.exe`, `SHA256SUMS`.
+- Embedded build metadata records source SHA `65526103bc42d9fecef29c1ec2571de7c88d01a0`, target `x86_64-pc-windows-msvc`, CLI version `one 0.1.0`, Rust `1.99.0`, Cargo `1.99.0`.
+- Extracted executable size: 2,918,400 bytes. Independently calculated SHA-256 `78ba0cf7bd7ca8fc7151706ec6c9732de7bfaf80cdeb8bc175fc78a693e0bac1`, matching the embedded `SHA256SUMS` entry exactly.
+- PE structure inspection: DOS `MZ` signature present, PE signature `PE\0\0`, machine field `0x8664` (AMD64/x86_64), consistent with the declared Windows target.
+- Scope limitation: this independently verifies the Windows bundle's archive digest, embedded source metadata, internal executable checksum, and PE architecture. It does not verify the still-pending Linux bundle, and does not replace the combined candidate-artifact workflow [42055295791](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42055295791). Overall artifact-integrity acceptance remains pending.
