@@ -202,15 +202,18 @@ class WorkflowActionPinTests(unittest.TestCase):
     def test_all_external_workflow_actions_are_pinned_to_full_commit_sha(self):
         root = Path(__file__).resolve().parents[1]
         workflow_dir = root / ".github" / "workflows"
-        uses_pattern = re.compile(r"^\\s*uses:\\s*([^\\s#]+)", re.MULTILINE)
+        uses_pattern = re.compile(r"^\s*uses:\s*([^\s#]+)", re.MULTILINE)
         failures = []
+        action_count = 0
         for workflow_path in sorted(workflow_dir.glob("*.yml")):
             content = workflow_path.read_text(encoding="utf-8")
             for action_ref in uses_pattern.findall(content):
+                action_count += 1
                 if action_ref.startswith("./"):
                     continue
                 if not re.fullmatch(r"[^@]+@[0-9a-f]{40}", action_ref):
                     failures.append(f"{workflow_path.relative_to(root)}: {action_ref}")
+        self.assertGreater(action_count, 25, "The pin audit must actually inspect workflow action references.")
         self.assertEqual([], failures, "Every external GitHub Action must be pinned to a full immutable commit SHA.")
 
 if __name__ == "__main__":

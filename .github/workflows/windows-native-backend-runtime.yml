@@ -99,7 +99,7 @@ jobs:
           rustc --version
           cargo --version
           # one-native resolves a relative output path beneath the input .one file's directory (examples/).
-cargo run -p one-cli --bin one-native --locked -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
+          cargo run -p one-cli --bin one-native --locked -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
           if (-not (Test-Path examples/one-windows-native.exe)) {
             throw 'Windows native artifact was not produced.'
           }
