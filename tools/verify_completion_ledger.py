@@ -13,6 +13,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -143,25 +144,14 @@ def select_required_evidence_run(candidates: list[dict], accepted_names: set[str
     return max(latest_by_name.values(), key=lambda run: run.get("created_at", ""))
 
 
-def check_live_workflow_evidence(source_sha: str) -> list[str]:
+def evaluate_required_mirror_runs(
+    source_sha: str,
+    mirror_runs: list[dict],
+    pin_for_run,
+) -> tuple[list[str], list[str]]:
+    """Return terminal failures and pending exact-SHA matrix scopes separately."""
     errors: list[str] = []
-    mirror_token = os.environ.get("GITHUB_TOKEN", "")
-    source_token = os.environ.get("CANONICAL_READ_TOKEN", "")
-    if not mirror_token:
-        return ["live evidence check requires GITHUB_TOKEN with Actions/Contents read access"]
-    if not source_token:
-        return ["live evidence check requires CANONICAL_READ_TOKEN with source Actions read access"]
-
-    mirror_url = (
-        "https://api.github.com/repos/panglimanetizen01/one-windows-verification/"
-        "actions/runs?branch=verification&per_page=100"
-    )
-    try:
-        mirror_runs = github_json(mirror_url, mirror_token).get("workflow_runs", [])
-    except (OSError, ValueError, urllib.error.HTTPError) as exc:
-        return [f"cannot query live independent workflow evidence: {exc}"]
-
-    pin_cache: dict[str, str | None] = {}
+    pending: list[str] = []
     required_groups = [
         ({name}, name) for name in sorted(REQUIRED_MIRROR_WORKFLOWS)
     ]
@@ -174,20 +164,77 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
         for run in mirror_runs:
             if run.get("name") not in accepted_names:
                 continue
-            pin = pin_at_mirror_commit(run.get("head_sha", ""), mirror_token, pin_cache)
-            if pin == source_sha:
+            if pin_for_run(run.get("head_sha", "")) == source_sha:
                 candidates.append(run)
         if not candidates:
-            errors.append(f"no independent run found for current source SHA: {label}")
+            pending.append(f"no independent run found for current source SHA: {label}")
             continue
         latest = select_required_evidence_run(candidates, accepted_names)
         assert latest is not None
-        if latest.get("status") != "completed" or latest.get("conclusion") != "success":
-            errors.append(
+        if latest.get("status") != "completed":
+            pending.append(
                 f"{label} for source SHA {source_sha} is "
-                f"{latest.get('status')}/{latest.get('conclusion') or 'no conclusion'} "
+                f"{latest.get('status') or 'unknown'}/{latest.get('conclusion') or 'no conclusion'} "
+                f"(run {latest.get('id')}); waiting for terminal status"
+            )
+        elif latest.get("conclusion") != "success":
+            errors.append(
+                f"{label} for source SHA {source_sha} completed with "
+                f"{latest.get('conclusion') or 'no conclusion'} "
                 f"(run {latest.get('id')}); only completed success is accepted"
             )
+    return errors, pending
+
+
+def check_live_workflow_evidence(
+    source_sha: str,
+    wait_timeout_seconds: int = 0,
+    poll_interval_seconds: int = 30,
+) -> list[str]:
+    errors: list[str] = []
+    mirror_token = os.environ.get("GITHUB_TOKEN", "")
+    source_token = os.environ.get("CANONICAL_READ_TOKEN", "")
+    if not mirror_token:
+        return ["live evidence check requires GITHUB_TOKEN with Actions/Contents read access"]
+    if not source_token:
+        return ["live evidence check requires CANONICAL_READ_TOKEN with source Actions read access"]
+
+    mirror_url = (
+        "https://api.github.com/repos/panglimanetizen01/one-windows-verification/"
+        "actions/runs?branch=verification&per_page=100"
+    )
+    pin_cache: dict[str, str | None] = {}
+
+    def pin_for_run(mirror_sha: str) -> str | None:
+        return pin_at_mirror_commit(mirror_sha, mirror_token, pin_cache)
+
+    deadline = time.monotonic() + max(0, wait_timeout_seconds)
+    while True:
+        try:
+            mirror_runs = github_json(mirror_url, mirror_token).get("workflow_runs", [])
+        except (OSError, ValueError, urllib.error.HTTPError) as exc:
+            return errors + [f"cannot query live independent workflow evidence: {exc}"]
+
+        matrix_errors, pending = evaluate_required_mirror_runs(source_sha, mirror_runs, pin_for_run)
+        if not pending:
+            errors.extend(matrix_errors)
+            break
+
+        remaining = deadline - time.monotonic()
+        if wait_timeout_seconds <= 0 or remaining <= 0:
+            if wait_timeout_seconds > 0:
+                errors.append(
+                    f"timed out waiting {wait_timeout_seconds}s for the exact-SHA verifier matrix to become terminal"
+                )
+            errors.extend(matrix_errors)
+            errors.extend(pending)
+            break
+
+        print(
+            f"Waiting for {len(pending)} exact-SHA verifier matrix scope(s) to become terminal; "
+            f"next poll in {min(poll_interval_seconds, max(1, int(remaining)))}s."
+        )
+        time.sleep(min(max(1, poll_interval_seconds), remaining))
 
     release_url = (
         "https://api.github.com/repos/panglimanetizen01/one/"
@@ -199,8 +246,6 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
     except urllib.error.HTTPError as exc:
         if exc.code != 403:
             return errors + [f"cannot query canonical release workflow evidence: {exc}"]
-        # A public unauthenticated read may reveal run metadata, but it does not
-        # prove that ONE_REPO_TOKEN has the required Actions: read permission.
         errors.append(
             "supplied source token received HTTP 403 for canonical Actions run-list query; "
             "Actions: read is not proven (unauthenticated public fallback is visibility-only)"
@@ -235,7 +280,6 @@ def check_live_workflow_evidence(source_sha: str) -> list[str]:
             f"{run.get('status')}/{run.get('conclusion') or 'no conclusion'} (run {run.get('id')})"
         )
     return errors
-
 
 def verify(ledger_text: str, dod_text: str, evidence_text: str, source_sha: str) -> tuple[int, list[str], dict]:
     errors: list[str] = []
@@ -309,7 +353,11 @@ def main() -> int:
     parser.add_argument("--evidence-index", required=True, type=Path)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--require-live-workflows", action="store_true")
+    parser.add_argument("--workflow-wait-timeout-seconds", type=int, default=0, help="Wait for required exact-SHA mirror workflows to become terminal before evaluating them.")
+    parser.add_argument("--workflow-poll-interval-seconds", type=int, default=30, help="Polling interval while waiting for the exact-SHA mirror matrix.")
     args = parser.parse_args()
+    if args.workflow_wait_timeout_seconds < 0 or args.workflow_poll_interval_seconds < 1:
+        parser.error("workflow wait timeout must be non-negative and poll interval must be at least one second")
     try:
         code, errors, summary = verify(
             args.ledger.read_text(encoding="utf-8"),
@@ -321,7 +369,11 @@ def main() -> int:
         print(f"ERROR: cannot read required input: {exc}", file=sys.stderr)
         return 2
     if args.require_live_workflows:
-        live_errors = check_live_workflow_evidence(args.source_sha)
+        live_errors = check_live_workflow_evidence(
+            args.source_sha,
+            wait_timeout_seconds=args.workflow_wait_timeout_seconds,
+            poll_interval_seconds=args.workflow_poll_interval_seconds,
+        )
         errors.extend(live_errors)
         if live_errors:
             code = 1

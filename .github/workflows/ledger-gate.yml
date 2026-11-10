@@ -20,6 +20,7 @@ jobs:
   verify-ledger:
     name: Verify ledger against exact pinned ONE source
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     steps:
       - name: Checkout verification harness
         uses: actions/checkout@v4
@@ -60,4 +61,6 @@ jobs:
             --dod one-source/docs/verification/DEFINITION_OF_DONE.md \
             --evidence-index CANDIDATE_VERIFICATION.md \
             --source-sha "${{ steps.pin.outputs.sha }}" \
-            --require-live-workflows
+            --require-live-workflows \
+            --workflow-wait-timeout-seconds 10200 \
+            --workflow-poll-interval-seconds 30

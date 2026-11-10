@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-from verify_completion_ledger import REQUIRED_ANDROID_RUNTIME_WORKFLOWS, REQUIRED_MIRROR_WORKFLOWS, select_required_evidence_run, verify
+from verify_completion_ledger import REQUIRED_ANDROID_RUNTIME_WORKFLOWS, REQUIRED_MIRROR_WORKFLOWS, evaluate_required_mirror_runs, select_required_evidence_run, verify
 
 SHA = "2ead9dba45db4ce4105deaa81720aacc8fcadd6c"
 WEIGHTS = {
@@ -129,6 +129,56 @@ class LedgerGateTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertTrue(any("exact source SHA" in error for error in errors))
 
+
+
+    def _exact_sha_matrix_runs(self):
+        runs = []
+        for index, name in enumerate(sorted(REQUIRED_MIRROR_WORKFLOWS)):
+            runs.append({
+                "name": name,
+                "head_sha": "mirror-commit",
+                "created_at": f"2026-11-11T00:{index:02d}:00Z",
+                "status": "completed",
+                "conclusion": "success",
+            })
+        runs.append({
+            "name": "ONE Android AArch64 runtime — native ARM64 Linux host",
+            "head_sha": "mirror-commit",
+            "created_at": "2026-11-11T00:20:00Z",
+            "status": "completed",
+            "conclusion": "success",
+        })
+        return runs
+
+    def test_live_matrix_waits_for_in_progress_required_workflow(self):
+        runs = self._exact_sha_matrix_runs()
+        target = next(run for run in runs if run["name"] == "E4 subprocess resource guard")
+        target["status"] = "in_progress"
+        target["conclusion"] = None
+        errors, pending = evaluate_required_mirror_runs(SHA, runs, lambda _mirror_sha: SHA)
+        self.assertEqual([], errors)
+        self.assertTrue(any("E4 subprocess resource guard" in item for item in pending))
+
+    def test_live_matrix_terminal_failure_is_failure_not_pending(self):
+        runs = self._exact_sha_matrix_runs()
+        target = next(run for run in runs if run["name"] == "E4 subprocess resource guard")
+        target["conclusion"] = "failure"
+        errors, pending = evaluate_required_mirror_runs(SHA, runs, lambda _mirror_sha: SHA)
+        self.assertTrue(any("E4 subprocess resource guard" in item for item in errors))
+        self.assertEqual([], pending)
+
+    def test_android_success_alternative_satisfies_group_while_other_alternative_runs(self):
+        runs = self._exact_sha_matrix_runs()
+        runs.append({
+            "name": "ONE Android API 35 AArch64 runtime — community ARM64 emulator fallback",
+            "head_sha": "mirror-commit",
+            "created_at": "2026-11-11T00:21:00Z",
+            "status": "in_progress",
+            "conclusion": None,
+        })
+        errors, pending = evaluate_required_mirror_runs(SHA, runs, lambda _mirror_sha: SHA)
+        self.assertFalse(any("Android API 35 AArch64 runtime" in item for item in pending))
+        self.assertFalse(any("Android API 35 AArch64 runtime" in item for item in errors))
 
     def test_required_cross_platform_workflow_is_restored_and_uses_canonical_pin(self):
         self.assertIn("One Cross-Platform Verification", REQUIRED_MIRROR_WORKFLOWS)

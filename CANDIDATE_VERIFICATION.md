@@ -1,3 +1,12 @@
+# Live verifier/source drift and Windows runtime remediation — 2026-11-11
+
+- Live source PR #94 HEAD is `41aace25f9d63e7002468f206307181517f09b79`; CircleCI `ci/circleci: linux-verify` is PENDING for that exact SHA. Verifier `CANONICAL_COMMIT.txt` remains pinned to `6b5070e7c01aa8cf2885653fa1d5728ad8fcdfbd`; do not treat the verifier as current for `41aace25...` until CircleCI succeeds and the source branch is stable.
+- For source SHA `6b5070e...`, the original exact-SHA matrix had 15 completed SUCCESS runs; Android native ARM64 API 35 runtime #42881168518 remains IN PROGRESS at last poll. Early ledger gate #42881168688 failed before the matrix was terminal. Candidate artifact integrity and the cross-platform/E1 Linux/Windows workflows completed SUCCESS.
+- Windows native runtime attempt #42882429048 failed at setup step 8 because the workflow required the nonexistent PowerShell command `x86_64-w64-mingw32-ld`; MinGW clang itself installed and reported its version. Attempt #42883031929 passed the compiler PE probe and successfully built the native backend, but the workflow expected the executable at repository root while the CLI correctly wrote it under `examples/`. Both were harness defects, not source runtime failures.
+- The path correction in verifier commit `3b2f41120e3365bdd8c2e834d9e9425e8fd55a36` aligns build, PE inspection, execution, manifest hashing, and artifact upload with `examples/one-windows-native.exe`. Windows native runtime retry #42883636820 is IN PROGRESS; no Windows runtime PASS until it executes the binary and records exit code 0 plus expected output `Budi`.
+- Ledger gate #42883637021 again returned NOT PASSED while Windows native runtime #42883636820 and Android runtime #42881168518 were still IN PROGRESS. It correctly preserved 10 unchecked DoD items, E1–E6 each 0 verified, and missing protected E2 production provenance. The gate workflow is being corrected to wait for required exact-SHA matrix scopes to become terminal before evaluating.
+- No merge/release, no protected E2 dispatch, no secrets/trust-store mutation, no branch-protection change, and no edit to `LOCAL_CI_CANONICAL_COMMIT.txt`.
+
 # Active exact-SHA candidate — 2026-11-11
 
 - Canonical source: `panglimanetizen01/one`, PR #94, branch `fix/windows-temp-path-canonicalization`, current source HEAD `6b5070e7c01aa8cf2885653fa1d5728ad8fcdfbd`; parent `5d4851501651cbaa20a2cf092b33a25f40fa26c7`. PR #94 remains OPEN / DRAFT / UNMERGED; base `milestone/100-ecosystem-20261023` at `d75b2846465ba53281198693750f2e6ba39e2e33`.
