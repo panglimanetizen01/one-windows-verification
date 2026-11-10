@@ -242,5 +242,14 @@ class WorkflowActionPinTests(unittest.TestCase):
                 f"{repository} must not retain another or mutable pin.",
             )
 
+    def test_rustfmt_export_workflow_is_idempotent_for_existing_exact_sha_branch(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "e3-e4-format-export.yml").read_text(encoding="utf-8")
+        self.assertIn('git ls-remote --exit-code --heads origin "refs/heads/$branch"', workflow)
+        self.assertIn('git fetch --no-tags origin "refs/heads/$branch:refs/remotes/origin/$branch"', workflow)
+        self.assertIn('remote_source_sha" != "$ONE_CANDIDATE_SHA"', workflow)
+        self.assertIn('git show "refs/remotes/origin/$branch:evidence/generated/interop-rustfmt-normalized.rs" | cmp -s - evidence/generated/interop-rustfmt-normalized.rs', workflow)
+        self.assertIn("idempotent success", workflow)
+        self.assertNotIn("git push --force", workflow)
 if __name__ == "__main__":
     unittest.main()

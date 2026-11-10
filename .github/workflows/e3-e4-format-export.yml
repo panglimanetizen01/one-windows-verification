@@ -48,9 +48,28 @@ jobs:
           cp source/crates/one-core/src/interop.rs evidence/generated/interop-rustfmt-normalized.rs
           printf '%s\n' "$ONE_CANDIDATE_SHA" > evidence/generated/interop-rustfmt-source-sha.txt
           branch="evidence/interop-rustfmt-${ONE_CANDIDATE_SHA:0:8}"
+          verify_existing_branch() {
+            git fetch --no-tags origin "refs/heads/$branch:refs/remotes/origin/$branch"
+            remote_source_sha="$(git show "refs/remotes/origin/$branch:evidence/generated/interop-rustfmt-source-sha.txt" | tr -d '\r\n[:space:]')"
+            if [[ "$remote_source_sha" != "$ONE_CANDIDATE_SHA" ]]; then
+              echo "Existing evidence branch is pinned to a different source SHA: $remote_source_sha" >&2
+              return 1
+            fi
+            git show "refs/remotes/origin/$branch:evidence/generated/interop-rustfmt-normalized.rs" | cmp -s - evidence/generated/interop-rustfmt-normalized.rs
+            echo "Existing evidence branch already contains the exact source SHA and identical rustfmt output; idempotent success."
+            echo "EXISTING_EVIDENCE_BRANCH=$branch"
+            echo "EXISTING_EVIDENCE_COMMIT=$(git rev-parse "refs/remotes/origin/$branch")"
+          }
+          if git ls-remote --exit-code --heads origin "refs/heads/$branch" >/dev/null 2>&1; then
+            verify_existing_branch
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
           git add evidence/generated/interop-rustfmt-normalized.rs evidence/generated/interop-rustfmt-source-sha.txt
           git commit -m "evidence: export rustfmt-normalized interop.rs for $ONE_CANDIDATE_SHA"
-          git push origin "HEAD:refs/heads/$branch"
+          if ! git push origin "HEAD:refs/heads/$branch"; then
+            echo "Evidence branch creation raced with another run; verify the remote branch content."
+            verify_existing_branch
+          fi
