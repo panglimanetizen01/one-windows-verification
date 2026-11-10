@@ -1,3 +1,12 @@
+## Local CI evidence self-identification — 2026-11-11
+
+- PR #92 Local CI source SHA `8e505e0c5e1843905139858394547fc3dd6a7149` has exact-SHA parity PASS on Ubuntu and Windows Server 2025: run #42893057181, jobs #130098900060 and #130098899230. Both hosts checked out the exact source SHA and completed all 12/12 configured checks with 0 failed/unavailable. Linux workspace tests now pass, including linker_discovery_tests::linux_x86_64_linker_override_diprioritaskan. Windows workspace tests also pass.
+- The two uploaded Local CI report artifacts were downloaded and inspected. Linux artifact #13798458073, 995 bytes, SHA-256 d6713b8caa462cb2041d34c8f5d667db85164a120584226ec4657119720b141b; Windows artifact #13799097492, 1,025 bytes, SHA-256 65b6f08b372ef1915ea165f62140a1b88f8178c07715208523e01451cc7df128. Both JSON reports show total 12, passed 12, failed_or_unavailable 0. The workflow logs independently prove the exact checkout SHA. The JSON reports did not yet embed the source SHA, which is a self-contained evidence gap.
+- Source PR #92 has therefore advanced to `a494447bc635a8d7ee641b41b7a63b2d4dec3c4e`. `tools/ci_local.py` now embeds `source_revision` in every JSON report: commit SHA, branch/detached state, working-tree cleanliness, dirty-path count, status, and error when unavailable. Four regression tests cover clean tree, dirty tree, non-Git directory, and report serialization. `docs/LOCAL_CI.md` documents the new evidence fields and the rule to compare the report SHA with the hosted workflow pin.
+- The verifier's `LOCAL_CI_CANONICAL_COMMIT.txt` is being advanced to `a494447bc635a8d7ee641b41b7a63b2d4dec3c4e`. The next parity run must prove the JSON report itself contains the exact SHA and clean worktree on both Linux and Windows; the 8e505e0 PASS remains historical evidence for the previous source revision only.
+- CircleCI combined status for a494447bc635a8d7ee641b41b7a63b2d4dec3c4e has no status entries at the time of this checkpoint. Do not infer success or failure. Inspect the authenticated CircleCI pipeline directly; the GitHub connector cannot access CircleCI job logs.
+
+---
 ## Local CI parity regression repair — 2026-11-11
 
 - PR #92 (Add Python local CI runner) remains OPEN / DRAFT / UNMERGED. Its branch tooling/python-local-ci advanced from 62e391e699fe4ac5a18d6feb808568c192dd82e1 to 8e505e0c5e1843905139858394547fc3dd6a7149.
