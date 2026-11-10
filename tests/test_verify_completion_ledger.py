@@ -217,5 +217,29 @@ class WorkflowActionPinTests(unittest.TestCase):
         self.assertGreater(action_count, 25, "The pin audit must actually inspect workflow action references.")
         self.assertEqual([], failures, "Every external GitHub Action must be pinned to a full immutable commit SHA.")
 
+    def test_runtime_actions_use_verified_node24_commit_pins(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow_dir = root / ".github" / "workflows"
+        expected = {
+            "actions/checkout": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "actions/upload-artifact": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "actions/download-artifact": "37930b1c2abaa49bbe596cd826c3c89aef350131",
+            "actions/setup-python": "6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+            "android-actions/setup-android": "be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd",
+            "reactivecircus/android-emulator-runner": "a421e43855164a8197daf9d8d40fe71c6996bb0d",
+            "Swatinem/rust-cache": "d1527c8f67ef9af357290475d4af4b0fab8f12e0",
+            "msys2/setup-msys2": "ec48f7c5447b3140e2b088413ae3a55687bccb6e",
+        }
+        observed = set()
+        for workflow_path in sorted(workflow_dir.glob("*.yml")):
+            content = workflow_path.read_text(encoding="utf-8")
+            observed.update(uses_pattern.findall(content))
+        for repository, sha in expected.items():
+            self.assertIn(f"{repository}@{sha}", observed, f"{repository} must use its verified Node 24-compatible commit.")
+            self.assertFalse(
+                any(ref.startswith(repository + "@") and ref != f"{repository}@{sha}" for ref in observed),
+                f"{repository} must not retain another or mutable pin.",
+            )
+
 if __name__ == "__main__":
     unittest.main()

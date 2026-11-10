@@ -28,13 +28,13 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout verifier harness
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Read pinned canonical revision
         id: source
         shell: bash
         run: echo "sha=$(tr -d '\r\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
       - name: Checkout exact canonical ONE revision
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.source.outputs.sha }}
@@ -71,7 +71,7 @@ jobs:
           Get-Command x86_64-w64-mingw32-clang -ErrorAction SilentlyContinue
 
       - name: Install Android API 35 NDK toolchain
-        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
           packages: platform-tools
 
@@ -113,7 +113,7 @@ jobs:
           toolchain: 1.99.0
           components: rustfmt, clippy
       - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.x"
       - name: Cache Cargo dependencies

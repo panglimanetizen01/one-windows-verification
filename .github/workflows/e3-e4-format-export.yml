@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout verification harness
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Resolve exact candidate SHA
         id: target
         shell: bash
@@ -26,7 +26,7 @@ jobs:
           printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
           echo "sha=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE source
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}

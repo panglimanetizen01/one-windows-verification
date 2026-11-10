@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout verification harness
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Resolve exact candidate SHA
         id: target
         shell: bash
@@ -44,7 +44,7 @@ jobs:
           echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact ONE candidate
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -94,7 +94,7 @@ jobs:
         run: rustfmt --edition 2024 crates/one-core/src/interop.rs
       - name: Upload rustfmt-normalized implementation artifact
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: sec05-rustfmt-normalized-interop
           path: source/crates/one-core/src/interop.rs
@@ -137,7 +137,7 @@ jobs:
           Get-Command x86_64-w64-mingw32-clang.exe -ErrorAction SilentlyContinue
           Get-Command x86_64-w64-mingw32-gcc.exe -ErrorAction SilentlyContinue
       - name: Checkout verification harness
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Resolve exact candidate SHA
         id: target
         shell: bash
@@ -151,7 +151,7 @@ jobs:
           echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact ONE candidate
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}

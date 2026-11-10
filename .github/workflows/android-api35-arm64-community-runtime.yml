@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Resolve canonical source SHA
         id: target
         shell: bash
@@ -24,7 +24,7 @@ jobs:
           printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
           echo "sha=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE source
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -34,7 +34,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
           toolchain: 1.99.0
-      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
           packages: platform-tools
       - name: Build and verify native backend ELF
@@ -90,7 +90,7 @@ jobs:
           cp "$RUNNER_TEMP/ELF-DEPENDENCIES.txt" "$RUNNER_TEMP/one-android-aarch64-artifact/"
           sha256sum "$RUNNER_TEMP/one-android-aarch64-artifact/one-android-aarch64" | tee "$RUNNER_TEMP/one-android-aarch64-artifact/ELF-SHA256.txt"
           printf 'source_sha=%s\n' "$ONE_CANDIDATE_SHA" > "$RUNNER_TEMP/one-android-aarch64-artifact/SOURCE.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: one-api35-aarch64-runtime-elf-${{ steps.target.outputs.sha }}
           path: ${{ runner.temp }}/one-android-aarch64-artifact/
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 100
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Resolve canonical source SHA
         id: target
         shell: bash
@@ -113,7 +113,7 @@ jobs:
           printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
           echo "sha=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE source for source-SHA evidence
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -132,7 +132,7 @@ jobs:
            grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            /usr/bin/adb version
           uname -a
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: one-api35-aarch64-runtime-elf-${{ steps.target.outputs.sha }}
           path: ${{ runner.temp }}/one-android-aarch64-artifact
@@ -150,7 +150,7 @@ jobs:
           grep -Eq 'Machine:[[:space:]]+AArch64' ELF-HEADER.txt
           grep -Fq '/system/bin/linker64' ELF-PROGRAM-HEADERS.txt
           file one-android-aarch64
-      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
           packages: platforms;android-35
       - name: Install API 35 arm64-v8a system image and pinned ARM64 emulator
@@ -322,7 +322,7 @@ jobs:
           /usr/bin/adb -s emulator-5554 shell rm -f "$remote"
       - name: Upload runtime evidence and emulator logs
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: one-api35-aarch64-runtime-evidence-${{ steps.target.outputs.sha }}
           path: |

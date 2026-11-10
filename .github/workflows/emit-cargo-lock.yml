@@ -17,7 +17,7 @@ jobs:
     name: Generate deterministic Cargo lockfile from exact canonical source
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Read canonical source SHA
         id: canonical
         shell: bash
@@ -29,7 +29,7 @@ jobs:
           fi
           echo "ref=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout canonical ONE source
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.ref }}
