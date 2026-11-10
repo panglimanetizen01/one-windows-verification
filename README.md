@@ -4,7 +4,7 @@ Temporary public verification mirror for independent Linux and Windows verificat
 
 The canonical source repository remains private: `panglimanetizen01/one`.
 
-Current verifier pin: `5486c09b746254e65ec647e86db3e48fde975747` (PR #94; the pin is a target pointer, not execution evidence)..
+Current verifier pin: `5486c09b746254e65ec647e86db3e48fde975747` (PR #94; the pin is a target pointer, not execution evidence).
 
 This repository exists only to execute the canonical source snapshot on GitHub-hosted runners without requiring a paid GitHub upgrade.
 
