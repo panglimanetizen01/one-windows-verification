@@ -52,7 +52,8 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("ONE_WINDOWS_CLANG=clang", workflow)
         self.assertIn("one-native --locked -- build --target windows-x86_64", workflow)
         self.assertIn("Execute Windows native artifact", workflow)
-        self.assertIn("runtime_exit_code=0", workflow)
+        self.assertIn("runtime_exit_code=$exitCode", workflow)
+        self.assertIn("if ($exitCode -ne 0)", workflow)
         self.assertIn("one-windows-native-runtime-manifest.txt", workflow)
         self.assertNotIn("LOCAL_CI_CANONICAL_COMMIT.txt", workflow)
 
