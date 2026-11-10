@@ -220,6 +220,7 @@ class WorkflowActionPinTests(unittest.TestCase):
     def test_runtime_actions_use_verified_node24_commit_pins(self):
         root = Path(__file__).resolve().parents[1]
         workflow_dir = root / ".github" / "workflows"
+        uses_pattern = re.compile(r"^\s*(?:-\s*)?uses:\s*([^\s#]+)", re.MULTILINE)
         expected = {
             "actions/checkout": "3d3c42e5aac5ba805825da76410c181273ba90b1",
             "actions/upload-artifact": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
