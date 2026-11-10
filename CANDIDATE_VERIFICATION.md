@@ -9,6 +9,8 @@
 - Acceptance remains NOT PASSED: implementation 92/100 provisional; 60/100 historical verified subtotal; DoD 3/13 checked; E1 0/10, E2 0/8, E3 0/8, E4 0/6, E5 0/4, E6 0/4 verified at the last gate. E1's broader concurrency, logging/configuration, randomness, and API persistence scope is still incomplete. E2 production provenance is absent and unauthorized. E6 remains open. Final score UNKNOWN / NOT RECONCILED.
 - No merge/release, no secret/trust-store mutation, no branch-protection changes, no direct main edits, and no source Actions removal. Next: inspect CircleCI 5486 through Termux; poll fresh verifier matrix; inspect all logs/artifacts; then reconcile scoped E3/E4/E5 evidence and gate only after required workflows are terminal.
 
+- **Windows native backend runtime — PASS on exact source SHA 5486:** verifier workflow run #42885349118, job #130072095358; checkout log records source SHA `5486c09b746254e65ec647e86db3e48fde975747`; runner Windows Server 2025 AMD64; MinGW clang 20.1.8 probe PASS; native `windows-x86_64` backend generated PE32+ AMD64 at `examples/one-windows-native.exe`; PE header inspection PASS; execution exit code 0; output `Budi`; binary SHA-256 `7043f7b9a478b0f8737b400d6f990638cc093caece918611c25b2b4e3f79ec73`. Artifact #13796895423 ZIP digest `sha256:99c98a9b9b808c15602880ce38d2a44e0e249812ba123f2d8c514750c5a3b939` (15,775 bytes, not expired). This is native Windows runtime evidence, not merely a cross-compile.
+
 ---
 
 ## Historical candidate verification — source SHA 6b5070e7 (2026-11-11)
