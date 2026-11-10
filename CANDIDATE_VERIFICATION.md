@@ -1,3 +1,13 @@
+## Local CI parity regression repair — 2026-11-11
+
+- PR #92 (Add Python local CI runner) remains OPEN / DRAFT / UNMERGED. Its branch tooling/python-local-ci advanced from 62e391e699fe4ac5a18d6feb808568c192dd82e1 to 8e505e0c5e1843905139858394547fc3dd6a7149.
+- Exact-SHA parity run #42890455312 exposed one Linux-only workspace-test failure: native_backend::linker_discovery_tests::linux_x86_64_linker_override_diprioritaskan. The test created an executable shell script beneath the temporary directory and invoked it with --version. On the hosted parity runner the temporary mount denied execution, producing NATIVE-LINKER-INCOMPATIBLE. The Windows job passed.
+- Source fix in 8e505e0 replaces the temporary shell scripts in all four Unix linker-discovery tests with symlinks to PATH-resolved system true/false utilities. The probe still executes --version, so success/failure semantics remain tested; the test no longer depends on the temporary mount being executable or on /bin/true being hard-coded. docs/LOCAL_CI.md now records this portability requirement.
+- Verifier LOCAL_CI_CANONICAL_COMMIT.txt is being advanced to 8e505e0c5e1843905139858394547fc3dd6a7149. The next One Exact-SHA CI Parity Verification must verify that exact checkout and run both Linux and Windows local-CI runners. Do not credit the old Linux failure as a current source failure after the new SHA is tested; retain it as historical evidence.
+- Prior parity run #42890455312: Windows job #130089896718 SUCCESS; Ubuntu job #130089896947 FAILED only at Workspace tests (119 passed, 1 failed). Build, Clippy, local CI runner unit tests, contract check, and other vertical slices passed. The single failing test is the noexec-sensitive linker test above. The new run must prove all 12 configured local-CI checks pass on both OSes.
+- Keep PR #92 and PR #94 as separate exact-SHA candidates: PR #92 local CI tooling pin is 8e505e0; PR #94 milestone candidate pin remains 5486c09b746254e65ec647e86db3e48fde975747. Never conflate their commit status or evidence.
+
+---
 ## Node 24 action refresh and idempotent evidence export — 2026-11-11
 
 - Canonical source candidate remains 5486c09b746254e65ec647e86db3e48fde975747. The verifier-only action refresh commit is a3922dbd981161f0a2c6a1b688b9adaa420046d0; the follow-up test-scope correction is 95ce48cf1f948632966f4a7d549ac632ede6fd51. The canonical source pin remains unchanged.
