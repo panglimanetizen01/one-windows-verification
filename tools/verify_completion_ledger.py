@@ -80,6 +80,7 @@ REQUIRED_MIRROR_WORKFLOWS = {
     "ONE E4 adversarial filesystem and resource-bound regression",
     "E4 subprocess resource guard",
     "E4 SEC-05 subprocess timeout and output-limit verification",
+    "ONE Windows Native Backend Runtime — Windows Server 2025",
 }
 
 

@@ -9,6 +9,8 @@
 - Acceptance remains fail-closed: implementation 92/100 provisional; 60/100 historical verified subtotal; DoD 3/13 checked; E1–E6 full rows not accepted; final completion UNKNOWN / NOT RECONCILED; gate NOT PASSED. No merge/release, no secret/trust-store mutation, no branch-protection changes, and no source Actions removal.
 - Next: inspect CircleCI exact SHA `6b5070e7c01aa8cf2885653fa1d5728ad8fcdfbd` via authenticated Termux API; poll this new verifier matrix; verify exact source checkouts, step logs, artifact digests and Android runtime execution; only then perform a fresh ledger evaluation. The ledger still requires all E1–E6 full rows and 13 DoD items; partial workflow successes do not earn full row credit.
 
+- Exact-SHA Windows native backend runtime is an additional required mirror scope. Workflow `ONE Windows Native Backend Runtime — Windows Server 2025` reads the canonical pin, checks out the exact source SHA, provisions MinGW clang, builds the Windows AArch64? no — Windows x86_64 native backend, validates PE32+ AMD64, executes the generated binary, and uploads a source-bound runtime manifest plus binary SHA-256. A workflow run must complete successfully on the pinned source SHA before this scope is credited.
+
 ---
 
 ## Historical candidate verification — 2026-11-11 — source SHA 5d485150

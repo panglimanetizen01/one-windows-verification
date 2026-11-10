@@ -41,6 +41,20 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("ONE E4 adversarial filesystem and resource-bound regression", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("E4 subprocess resource guard", REQUIRED_MIRROR_WORKFLOWS)
         self.assertIn("E4 SEC-05 subprocess timeout and output-limit verification", REQUIRED_MIRROR_WORKFLOWS)
+        self.assertIn("ONE Windows Native Backend Runtime — Windows Server 2025", REQUIRED_MIRROR_WORKFLOWS)
+
+    def test_required_windows_native_runtime_is_exact_sha_and_executes_artifact(self):
+        workflow_path = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "windows-native-backend-runtime.yml"
+        workflow = workflow_path.read_text(encoding="utf-8")
+        self.assertIn("name: ONE Windows Native Backend Runtime — Windows Server 2025", workflow)
+        self.assertIn("CANONICAL_COMMIT.txt", workflow)
+        self.assertIn("CANONICAL_READ_TOKEN", workflow)
+        self.assertIn("ONE_WINDOWS_CLANG=clang", workflow)
+        self.assertIn("one-native --locked -- build --target windows-x86_64", workflow)
+        self.assertIn("Execute Windows native artifact", workflow)
+        self.assertIn("runtime_exit_code=0", workflow)
+        self.assertIn("one-windows-native-runtime-manifest.txt", workflow)
+        self.assertNotIn("LOCAL_CI_CANONICAL_COMMIT.txt", workflow)
 
     def test_android_alternative_accepts_latest_success_of_either_supported_runtime(self):
         runs = [
