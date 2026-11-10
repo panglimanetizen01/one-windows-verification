@@ -132,7 +132,7 @@ jobs:
            grep -Eqi 'aarch64|arm64' "$RUNNER_TEMP/ADB-HOST-BINARY.txt"
            /usr/bin/adb version
           uname -a
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: one-api35-aarch64-runtime-elf-${{ steps.target.outputs.sha }}
           path: ${{ runner.temp }}/one-android-aarch64-artifact

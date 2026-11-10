@@ -22,7 +22,7 @@ jobs:
     name: UTC and database resource-bound regressions (canonical source SHA)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Read canonical source SHA
         id: canonical
         shell: bash
@@ -33,7 +33,7 @@ jobs:
             exit 1
           fi
           echo "ref=$target" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.ref }}
@@ -43,10 +43,10 @@ jobs:
         working-directory: source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
           toolchain: 1.99.0
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
         with:
           workspaces: source
       - name: UTC formatter unit and calendar-boundary tests

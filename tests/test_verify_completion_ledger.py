@@ -202,9 +202,10 @@ class WorkflowActionPinTests(unittest.TestCase):
     def test_all_external_workflow_actions_are_pinned_to_full_commit_sha(self):
         root = Path(__file__).resolve().parents[1]
         workflow_dir = root / ".github" / "workflows"
-        uses_pattern = re.compile(r"^\s*uses:\s*([^\s#]+)", re.MULTILINE)
+        uses_pattern = re.compile(r"^\s*(?:-\s*)?uses:\s*([^\s#]+)", re.MULTILINE)
         failures = []
         action_count = 0
+        self.assertEqual(["actions/checkout@11d5960a326750d5838078e36cf38b85af677262"], uses_pattern.findall("      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262"))
         for workflow_path in sorted(workflow_dir.glob("*.yml")):
             content = workflow_path.read_text(encoding="utf-8")
             for action_ref in uses_pattern.findall(content):

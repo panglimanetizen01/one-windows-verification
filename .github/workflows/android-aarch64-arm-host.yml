@@ -227,7 +227,7 @@ jobs:
         working-directory: source
         run: cargo test --locked -p one-core --test native_backend_android_aarch64
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: one-android-api35-arm64-elf
           path: ${{ runner.temp }}/one-android-elf
