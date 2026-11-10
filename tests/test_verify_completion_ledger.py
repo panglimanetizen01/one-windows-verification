@@ -53,6 +53,7 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("clang --target=x86_64-w64-windows-gnu", workflow)
         self.assertIn("MinGW clang PE probe PASS.", workflow)
         self.assertIn("one-native --locked -- build --target windows-x86_64", workflow)
+        self.assertIn("examples/one-windows-native.exe", workflow)
         self.assertIn("Execute Windows native artifact", workflow)
         self.assertIn("runtime_exit_code=$exitCode", workflow)
         self.assertIn("if ($exitCode -ne 0)", workflow)

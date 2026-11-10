@@ -15,6 +15,8 @@
 
 - Windows native runtime workflow attempt #42882429048 exposed a harness-only tool-name assumption: `x86_64-w64-mingw32-ld` was not a PowerShell command on the MINGW64 runner, although `clang` was installed. This was not a source build failure. The workflow is corrected to compile and PE-inspect a tiny MinGW probe using the same explicit target triple as the backend, rather than requiring that prefixed linker executable name. The corrected workflow is retriggered on the same pinned source SHA.
 
+- Windows native runtime attempt #42883031929 confirmed the MinGW compiler probe now passes and `one-native` successfully generated the PE artifact, but the workflow then failed because `native_main.rs` resolves a relative output name beneath the source example's directory (`examples/`), while the harness incorrectly expected the executable at the repository root. Corrected the inspection, execution, manifest hash, and upload paths to `examples/one-windows-native.exe`; this is a workflow path fix, not a source build defect. The same source pin 6b is retriggered.
+
 ## Historical candidate verification — 2026-11-11 — source SHA 5d485150
 
 - Canonical source: `panglimanetizen01/one`, PR #94, branch `fix/windows-temp-path-canonicalization`, exact source HEAD `5d4851501651cbaa20a2cf092b33a25f40fa26c7`; parent `15781298a11c26580545b90c398a98d79b572a9b`. PR #94 remains OPEN / DRAFT / UNMERGED; base `milestone/100-ecosystem-20261023` at `d75b2846465ba53281198693750f2e6ba39e2e33`.

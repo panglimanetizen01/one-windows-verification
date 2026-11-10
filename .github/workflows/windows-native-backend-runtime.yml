@@ -98,8 +98,8 @@ jobs:
           $ErrorActionPreference = 'Stop'
           rustc --version
           cargo --version
-          cargo run -p one-cli --bin one-native --locked -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
-          if (-not (Test-Path one-windows-native.exe)) {
+          cargo run -p one-cli --bin one-native --locked -- build --target windows-x86_64 examples/hello.one examples/one-windows-native.exe
+          if (-not (Test-Path examples/one-windows-native.exe)) {
             throw 'Windows native artifact was not produced.'
           }
 
@@ -108,7 +108,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $bytes = [System.IO.File]::ReadAllBytes('one-windows-native.exe')
+          $bytes = [System.IO.File]::ReadAllBytes('examples/one-windows-native.exe')
           if ($bytes.Length -lt 64 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
             throw 'Artifact does not have a valid PE MZ header.'
           }
@@ -131,7 +131,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $output = & .\one-windows-native.exe 2>&1
+          $output = & .\examples\one-windows-native.exe 2>&1
           $exitCode = $LASTEXITCODE
           $outputText = ($output | Out-String).Trim()
           Write-Host "runtime_exit_code=$exitCode"
@@ -150,7 +150,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $hash = (Get-FileHash one-windows-native.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          $hash = (Get-FileHash examples/one-windows-native.exe -Algorithm SHA256).Hash.ToLowerInvariant()
           @(
             "source_sha=${{ steps.canonical.outputs.ref }}"
             "host_os=$([System.Environment]::OSVersion.VersionString)"
@@ -158,7 +158,7 @@ jobs:
             "target=x86_64-pc-windows-gnu"
             "rustc=$(rustc --version)"
             "cargo=$(cargo --version)"
-            "binary=one-windows-native.exe"
+            "binary=examples/one-windows-native.exe"
             "binary_sha256=$hash"
             "runtime_exit_code=${{ steps.runtime.outputs.runtime_exit_code }}"
             "runtime_output=${{ steps.runtime.outputs.runtime_output }}"
@@ -171,6 +171,6 @@ jobs:
         with:
           name: one-windows-native-runtime-${{ steps.canonical.outputs.ref }}
           path: |
-            source/one-windows-native.exe
+            source/examples/one-windows-native.exe
             source/one-windows-native-runtime-manifest.txt
           if-no-files-found: ignore
