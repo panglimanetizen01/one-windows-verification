@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout verifier harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Read and validate canonical source SHA (Linux)
         id: canonical_linux
@@ -53,7 +53,7 @@ jobs:
       - name: Checkout exact canonical ONE source (Linux)
         id: checkout_source_linux
         if: runner.os == 'Linux'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical_linux.outputs.sha }}
@@ -64,7 +64,7 @@ jobs:
       - name: Checkout exact canonical ONE source (Windows)
         id: checkout_source_windows
         if: runner.os == 'Windows'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical_windows.outputs.sha }}
@@ -96,7 +96,7 @@ jobs:
 
       - name: Set up Python
         id: python_setup
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
 
@@ -121,7 +121,7 @@ jobs:
       - name: Install stable Rust toolchain
         id: rust_setup
         continue-on-error: true
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
 
       - name: Build ONE CLI for normative fixture checks
         id: build_cli
@@ -179,7 +179,7 @@ jobs:
 
       - name: Upload scanner report and source-bound evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: one-health-scanner-${{ matrix.os }}
           path: |

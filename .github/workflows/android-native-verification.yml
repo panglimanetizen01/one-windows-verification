@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout verification harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Read canonical source SHA
         id: target
@@ -29,7 +29,7 @@ jobs:
         run: echo "sha=$(tr -d '\r\n' < CANONICAL_COMMIT.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Checkout canonical ONE source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -42,17 +42,17 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
           toolchain: 1.99.0
 
       - name: Cache Rust build
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
         with:
           workspaces: source
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
         with:
           packages: platform-tools
 

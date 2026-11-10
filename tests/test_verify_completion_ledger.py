@@ -1,3 +1,4 @@
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -54,6 +55,8 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("MinGW clang PE probe PASS.", workflow)
         self.assertIn("one-native --locked -- build --target windows-x86_64", workflow)
         self.assertIn("examples/one-windows-native.exe", workflow)
+        self.assertIn("examples/hello.one one-windows-native.exe", workflow)
+        self.assertNotIn("examples/hello.one examples/one-windows-native.exe", workflow)
         self.assertIn("Execute Windows native artifact", workflow)
         self.assertIn("runtime_exit_code=$exitCode", workflow)
         self.assertIn("if ($exitCode -ne 0)", workflow)
@@ -193,6 +196,22 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("verify_offline.ps1", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
 
+
+
+class WorkflowActionPinTests(unittest.TestCase):
+    def test_all_external_workflow_actions_are_pinned_to_full_commit_sha(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow_dir = root / ".github" / "workflows"
+        uses_pattern = re.compile(r"^\\s*uses:\\s*([^\\s#]+)", re.MULTILINE)
+        failures = []
+        for workflow_path in sorted(workflow_dir.glob("*.yml")):
+            content = workflow_path.read_text(encoding="utf-8")
+            for action_ref in uses_pattern.findall(content):
+                if action_ref.startswith("./"):
+                    continue
+                if not re.fullmatch(r"[^@]+@[0-9a-f]{40}", action_ref):
+                    failures.append(f"{workflow_path.relative_to(root)}: {action_ref}")
+        self.assertEqual([], failures, "Every external GitHub Action must be pinned to a full immutable commit SHA.")
 
 if __name__ == "__main__":
     unittest.main()

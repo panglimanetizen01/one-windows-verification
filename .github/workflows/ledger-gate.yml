@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 180
     steps:
       - name: Checkout verification harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Read canonical source SHA pin
         id: pin
@@ -38,7 +38,7 @@ jobs:
           echo "Pinned ONE source SHA: $sha"
 
       - name: Checkout exact ONE source revision
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.pin.outputs.sha }}

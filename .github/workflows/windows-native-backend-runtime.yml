@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout verification harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Read canonical source SHA
         id: canonical
@@ -51,13 +51,13 @@ jobs:
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
           "source_sha=$actual"
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
           toolchain: 1.99.0
           components: rustfmt, clippy
 
       - name: Install MinGW clang and linker
-        uses: msys2/setup-msys2@v2
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e
         with:
           msystem: MINGW64
           update: true

@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Resolve exact candidate SHA
         id: target
@@ -34,7 +34,7 @@ jobs:
           echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout pinned ONE source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -49,11 +49,11 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
           test "$(uname -m)" = "x86_64"
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
           toolchain: 1.99.0
 
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
         with:
           packages: platform-tools
 
@@ -102,7 +102,7 @@ jobs:
           readelf -l "$RUNNER_TEMP/one-native-android-elf" | grep -F 'Requesting program interpreter: /system/bin/linker64'
           sha256sum "$RUNNER_TEMP/one-native-android-elf" | tee "$RUNNER_TEMP/one-native-android-elf.sha256"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: one-android-api35-arm64-elf
           path: |
@@ -119,7 +119,7 @@ jobs:
     # Install can take 30m, boot up to 60m, and ELF execution/evidence upload need headroom.
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Resolve exact candidate SHA
         id: target
@@ -131,7 +131,7 @@ jobs:
           echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout pinned ONE source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -148,11 +148,11 @@ jobs:
           uname -a
           printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/ONE_SOURCE_SHA.txt"
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
           toolchain: 1.99.0
 
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
         with:
           packages: platform-tools
 
@@ -323,7 +323,7 @@ jobs:
 
       - name: Upload Android API 35 runtime evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: one-api35-arm64-runtime-evidence-${{ steps.target.outputs.sha }}
           if-no-files-found: warn

@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout verification harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Resolve exact candidate SHA
         id: target
         shell: bash
@@ -44,7 +44,7 @@ jobs:
           echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact ONE candidate
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -60,7 +60,7 @@ jobs:
           command -v x86_64-w64-mingw32-ld || true
       - name: Configure Windows-target compiler on Linux
         run: echo 'ONE_WINDOWS_CLANG=clang' >> "$GITHUB_ENV"
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
       - name: Record exact candidate and toolchain
         working-directory: source
         shell: bash
@@ -94,7 +94,7 @@ jobs:
         run: rustfmt --edition 2024 crates/one-core/src/interop.rs
       - name: Upload rustfmt-normalized implementation artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: sec05-rustfmt-normalized-interop
           path: source/crates/one-core/src/interop.rs
@@ -137,7 +137,7 @@ jobs:
           Get-Command x86_64-w64-mingw32-clang.exe -ErrorAction SilentlyContinue
           Get-Command x86_64-w64-mingw32-gcc.exe -ErrorAction SilentlyContinue
       - name: Checkout verification harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Resolve exact candidate SHA
         id: target
         shell: bash
@@ -151,13 +151,13 @@ jobs:
           echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact ONE candidate
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
       - name: Record exact candidate and toolchain
         working-directory: source
         shell: pwsh

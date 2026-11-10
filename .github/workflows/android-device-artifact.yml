@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout verification harness
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Resolve exact candidate SHA
         id: target
         shell: bash
@@ -34,15 +34,15 @@ jobs:
           printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'
           echo "sha=$target" >> "$GITHUB_OUTPUT"
       - name: Checkout exact ONE candidate
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
       - name: Install Android SDK platform tools
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
         with:
           packages: platform-tools
       - name: Build and inspect AArch64 executable
@@ -89,7 +89,7 @@ jobs:
           cp "$RUNNER_TEMP/ELF-SHA256.txt" "$RUNNER_TEMP/one-android-device-artifact/"
           printf 'source_sha=%s\n' "$ONE_CANDIDATE_SHA" > "$RUNNER_TEMP/one-android-device-artifact/SOURCE.txt"
       - name: Upload Android AArch64 device artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: one-android-aarch64-device-artifact-${{ steps.target.outputs.sha }}
           path: ${{ runner.temp }}/one-android-device-artifact/

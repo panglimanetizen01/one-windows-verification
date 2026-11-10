@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Resolve exact canonical source SHA
         id: target
@@ -30,7 +30,7 @@ jobs:
           echo "sha=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout pinned ONE source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.target.outputs.sha }}
@@ -45,11 +45,11 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
           test "$(uname -m)" = "x86_64"
           printf 'candidate_sha=%s\nhost_arch=%s\n' "$(git rev-parse HEAD)" "$(uname -m)"
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
           toolchain: 1.99.0
 
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
         with:
           packages: platform-tools
 

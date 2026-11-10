@@ -29,7 +29,7 @@ jobs:
         os: [ubuntu-latest, windows-2025]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Read canonical source SHA
         id: canonical
@@ -43,7 +43,7 @@ jobs:
           echo "ref=$target" >> "$GITHUB_OUTPUT"
 
       - name: Checkout canonical One source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.ref }}
@@ -65,7 +65,7 @@ jobs:
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "Canonical commit mismatch: $actual" }
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
         with:
           packages: platform-tools
 
@@ -85,7 +85,7 @@ jobs:
 
       - name: Install cross-compilers (Windows)
         if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@v2
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e
         with:
           msystem: MINGW64
           update: true
@@ -120,7 +120,7 @@ jobs:
 
       - name: Upload local CI report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: local-ci-report-${{ matrix.os }}
           path: source/artifacts/ci-local-report.json
