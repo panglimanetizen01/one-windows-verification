@@ -68,7 +68,18 @@ jobs:
         run: |
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
           clang --version
-          x86_64-w64-mingw32-ld --version
+          $probe = Join-Path $env:RUNNER_TEMP 'one-mingw-probe.c'
+          $probeExe = Join-Path $env:RUNNER_TEMP 'one-mingw-probe.exe'
+          'int main(void) { return 0; }' | Set-Content -Encoding ascii $probe
+          clang --target=x86_64-w64-windows-gnu $probe -o $probeExe
+          if ($LASTEXITCODE -ne 0 -or -not (Test-Path $probeExe)) {
+            throw 'MinGW clang could not produce a Windows GNU executable.'
+          }
+          $probeBytes = [System.IO.File]::ReadAllBytes($probeExe)
+          if ($probeBytes.Length -lt 2 -or $probeBytes[0] -ne 0x4D -or $probeBytes[1] -ne 0x5A) {
+            throw 'MinGW compiler probe is not a PE executable.'
+          }
+          Write-Host 'MinGW clang PE probe PASS.'
 
       - name: Verify Windows Server 2025 host
         shell: pwsh

@@ -50,6 +50,8 @@ class LedgerGateTests(unittest.TestCase):
         self.assertIn("CANONICAL_COMMIT.txt", workflow)
         self.assertIn("CANONICAL_READ_TOKEN", workflow)
         self.assertIn("ONE_WINDOWS_CLANG=clang", workflow)
+        self.assertIn("clang --target=x86_64-w64-windows-gnu", workflow)
+        self.assertIn("MinGW clang PE probe PASS.", workflow)
         self.assertIn("one-native --locked -- build --target windows-x86_64", workflow)
         self.assertIn("Execute Windows native artifact", workflow)
         self.assertIn("runtime_exit_code=$exitCode", workflow)
