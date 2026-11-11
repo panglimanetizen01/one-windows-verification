@@ -1,3 +1,27 @@
+## PR #92 Local CI replacement — latest exact-SHA evidence — 2026-11-11
+
+<badge>INDEPENDENT EXACT-SHA MATRIX: PASS</badge>
+
+- Source PR #92: `tooling/python-local-ci`, current head `29b6558866f7792760bd37140215b32dae9ba3e7`; base `main` at `d35db95153f6ddd79885494c72f5aee16c899751`; PR remains OPEN / DRAFT / UNMERGED. No merge or release.
+- Verifier branch `verification`: commit `f7d8fad53066cfe4fa159968018cd1533e43b4c6`. `LOCAL_CI_CANONICAL_COMMIT.txt` pins exactly `29b6558866f7792760bd37140215b32dae9ba3e7`. The separate `CANONICAL_COMMIT.txt` for PR #94 remains unchanged.
+- Exact-SHA parity run [#42957223785](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/42957223785) completed SUCCESS. Ubuntu job #130315071666 and Windows Server 2025 job #130315071387 both checked out the exact source SHA, passed all 16 Local CI unit tests, passed all 12 Local CI runner checks, passed schema-v2 report validation, and uploaded report+manifest artifacts.
+- Both reports show `source_revision.status=VERIFIED`, exact source SHA, `working_tree_clean=true`, 0 dirty entries; `worktree_after.status=VERIFIED`, same exact SHA, clean=true, 0 dirty entries; total 12, passed 12, failed/unavailable 0; report status PASS and exit code 0.
+- Cargo lockfile is now tracked and no longer ignored. It is 938 lines / 24,201 bytes, format v4, 105 package entries; SHA-256 `bd048056095d5d4e12f0fd6798d13605612f0f01f3db591c244ba1c85bf2d404`. The runner uses `cargo --locked build`, `cargo clippy --locked`, and `cargo --locked test`. Both OS reports show Build workspace, Clippy, and Workspace tests PASS.
+- Regression coverage includes command success/nonzero/timeout/missing executable, tracked lockfile/not ignored, Clippy argument order, Git metadata clean/dirty/non-Git, before/after report provenance, secret redaction, atomic report writing, Python bytecode ignore behavior, and CircleCI config assertions. Unit test output is 16/16 PASS on each OS.
+- Local CI report schema v2 records the pre-run `source_revision` and post-check `worktree_after`, including bounded dirty entries. Runner child processes set `PYTHONDONTWRITEBYTECODE=1`; `.gitignore` ignores Python bytecode so the unit-test step does not dirty a clean checkout. Secret-named environment values are redacted from printed command arguments and captured stdout/stderr. JSON report output uses atomic replacement.
+- Ubuntu artifact #13828205110: 1,714 bytes; archive SHA-256 `a3b5e7094e45bdb0eb22fdb15e230793e3aab23dadcf19b171ea4294e41c9a28`. Report 4,810 bytes, SHA-256 `2684670c0bf8956681685924b58440809cb8e17bf60e54bc8ced3dd8d54d2ca0`. Manifest 654 bytes, valid JSON, `validation_status=PASS`, exact source SHA, verifier SHA, run ID, Linux/X64, and report digest matching the downloaded report bytes.
+- Windows artifact #13826884955: 1,746 bytes; archive SHA-256 `7bf6e62d76fa22a2c76df54a3e3109b755911e7f9d8bb876fc65f0c117f4e98b`. Report 5,054 bytes, SHA-256 `89ce42790db5ed4e8ae7f19bd47cac84224cfc8f47174cab8763a9b198a0e474`. Manifest 676 bytes, valid JSON, `validation_status=PASS`, exact source SHA, verifier SHA, run ID, Windows/X64, and report digest matching the downloaded report bytes.
+- Predecessor run #42956767031 on source SHA `b7737d0...` remains FAILURE and historical: all 12 checks passed, but the report detected Python `__pycache__` files as dirty and the verifier manifest had invalid newline escaping. The current source/verifier commits explicitly fix both issues; predecessor evidence is not promoted to current SHA.
+- Source GitHub Actions run #42957156702 for current predecessor `29b6558866f...` failed before any job steps on Ubuntu and Windows (`steps=null`, logs unavailable). Root cause UNKNOWN; do not attribute it to billing or source code.
+- CircleCI remains NOT VERIFIED / BLOCKED through available access. GitHub status API for source SHA `29b6558866f...` returns zero status contexts; the earlier CircleCI context at `c913f0c...` was FAILURE with authenticated job details/logs inaccessible. The current CircleCI pipeline, job, and artifacts have not been proven. The source branch does contain `.circleci/config.yml`, but presence of config is not proof of an actual run.
+- Android runtime is NOT RUN in this Local CI parity scope. The independent verifier's Android SDK/NDK setup and cross-compiler discovery do not establish Android emulator/runtime execution. Keep Android runtime claims separate.
+- Overall CI replacement acceptance remains NOT PASSED until CircleCI status/log/artifact evidence is obtained or its unavailable status is formally documented as an accepted limitation, missing/corrupt artifact and report-mismatch cases have regression coverage, and the review/required-check limitations are reconciled. Classic branch protection on `main` was observed disabled; ruleset state remains inaccessible due GitHub 403. Do not claim mandatory merge gating.
+- No source merge/release, main-branch change, PR #94 pin change, secrets change, or branch-protection change was performed.
+
+---
+
+## Historical checkpoint — PR #92 CircleCI first added at source SHA c913f0c
+
 ## CircleCI restored for PR #92 and Local CI provenance enforcement — 2026-11-11
 
 - PR #92 branch tooling/python-local-ci advanced to source SHA `c913f0c80d25ced72b8d95f8c570a9c74ea96336`. It now includes `.circleci/config.yml`; previously the main-based PR #92 branch had no CircleCI config, which explains the earlier CircleCI Pipeline ERROR status. After adding the config, GitHub reports context `ci/circleci: linux-verify` as PENDING with target job `https://app.circleci.com/workflow/d6c3f1cc-f7e9-45a8-836c-a4b60f1b8f42/job/8cb31d41-82cd-46c2-bb3d-e0bbbd59eb00`. This is evidence that CircleCI accepted the pipeline; it is not yet a PASS.
@@ -5,7 +29,6 @@
 - All Cargo build, Clippy and test commands in the 12-check Python runner now include `--locked`. Added regression tests enforce that invariant and check CircleCI config invokes the runner and validates exact-SHA provenance. Existing source-revision tests cover clean tree, dirty tree, non-Git directory, and JSON report serialization.
 - The verifier's LOCAL_CI_CANONICAL_COMMIT.txt is being advanced to `c913f0c80d25ced72b8d95f8c570a9c74ea96336`. Its independent Linux/Windows parity run must verify the exact checkout and inspect the report's embedded SHA and clean worktree. The prior 8e505e0 parity PASS (12/12 on both OSes) remains valid only for that previous SHA.
 - CircleCI job logs and artifact payload are not readable from the current connected tools; monitor the GitHub commit status until terminal and obtain authenticated CircleCI API details through the user's read-only Termux helper if the status becomes ERROR or details are needed. Never expose or paste the token itself.
-
 ---
 ## Local CI evidence self-identification — 2026-11-11
 
