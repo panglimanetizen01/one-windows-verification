@@ -4,7 +4,9 @@ Temporary public verification mirror for independent Linux and Windows verificat
 
 The canonical source repository remains private: `panglimanetizen01/one`.
 
-Current verifier pin: `5486c09b746254e65ec647e86db3e48fde975747` (PR #94; the pin is a target pointer, not execution evidence).
+Current PR #92 Local CI verifier target: `461d86da5ac5dd7437c14e49a15db059c213d899` (PR #92, branch `tooling/python-local-ci`). The pin is a target pointer, not execution evidence; Linux/Windows results must complete on this exact SHA before parity is claimed.
+
+The separate `CANONICAL_COMMIT.txt` pin for PR #94 remains unchanged.
 
 This repository exists only to execute the canonical source snapshot on GitHub-hosted runners without requiring a paid GitHub upgrade.
 

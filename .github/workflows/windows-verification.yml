@@ -112,9 +112,17 @@ jobs:
         working-directory: source
         run: python --version
 
-      - name: Test local CI runner
+      - name: Test Local CI runner regression suite
         working-directory: source
-        run: python -m unittest discover -s tests -p test_ci_local.py
+        run: python tools/ci_unittest.py --start-directory tests --pattern test_ci_local.py
+
+      - name: Test CircleCI configuration paths
+        working-directory: source
+        run: python tools/ci_unittest.py --start-directory tests --pattern test_circleci_config_paths.py
+
+      - name: Test fail-closed unittest discovery
+        working-directory: source
+        run: python tools/ci_unittest.py --start-directory tests --pattern test_ci_unittest.py
 
       - name: Run local CI parity runner
         working-directory: source
