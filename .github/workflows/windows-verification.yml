@@ -28,6 +28,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-2025]
     runs-on: ${{ matrix.os }}
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -163,22 +165,25 @@ jobs:
               payload = None
 
           manifest_path.parent.mkdir(parents=True, exist_ok=True)
-          temporary = None
-          try:
-              with tempfile.NamedTemporaryFile(
-                  mode="w", encoding="utf-8", dir=manifest_path.parent,
-                  prefix=".ci-local-manifest.", suffix=".tmp", delete=False
-              ) as stream:
-                  temporary = pathlib.Path(stream.name)
-                  stream.write(json.dumps(manifest, indent=2) + "\\n")
-                  stream.flush()
-                  os.fsync(stream.fileno())
-              os.replace(temporary, manifest_path)
-              temporary = None
-          finally:
-              if temporary is not None:
-                  temporary.unlink(missing_ok=True)
 
+          def persist_manifest():
+              temporary = None
+              try:
+                  with tempfile.NamedTemporaryFile(
+                      mode="w", encoding="utf-8", dir=manifest_path.parent,
+                      prefix=".ci-local-manifest.", suffix=".tmp", delete=False
+                  ) as stream:
+                      temporary = pathlib.Path(stream.name)
+                      stream.write(json.dumps(manifest, indent=2) + "\n")
+                      stream.flush()
+                      os.fsync(stream.fileno())
+                  os.replace(temporary, manifest_path)
+                  temporary = None
+              finally:
+                  if temporary is not None:
+                      temporary.unlink(missing_ok=True)
+
+          persist_manifest()
           if payload is None:
               raise SystemExit(f"Local CI report {manifest['validation_status'].lower()}")
           before = payload["source_revision"]
@@ -190,6 +195,12 @@ jobs:
           assert after["status"] == "VERIFIED" and after["commit_sha"] == os.environ["EXPECTED_SOURCE_SHA"]
           assert after["working_tree_clean"] is True, "post-check worktree is not clean"
           assert payload["summary"] == {"total": 12, "passed": 12, "failed_or_unavailable": 0}
+          manifest["validation_status"] = "PASS"
+          persist_manifest()
+          manifest_roundtrip = json.loads(manifest_path.read_text(encoding="utf-8"))
+          assert manifest_roundtrip["source_sha"] == os.environ["EXPECTED_SOURCE_SHA"]
+          assert manifest_roundtrip["report_sha256"] == manifest["report_sha256"]
+          assert manifest_roundtrip["validation_status"] == "PASS"
           print("Exact-SHA Local CI report, pre/post worktree, 12/12 summary and SHA-256 manifest PASS")
           PY
 
