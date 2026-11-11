@@ -1,6 +1,7 @@
 name: ONE PR92 Cargo Lockfile Bootstrap Evidence
 
 on:
+  workflow_dispatch:
   push:
     branches: [forensics/one92-lockfile-bootstrap]
     paths:
