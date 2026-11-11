@@ -1,52 +1,73 @@
-# Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
-name: ONE Cargo Lockfile Bootstrap Evidence
-# Re-run lockfile bootstrap evidence for the pinned milestone candidate.
+name: ONE PR92 Cargo Lockfile Bootstrap Evidence
 
 on:
   push:
-    branches: [verification]
+    branches: [forensics/one92-lockfile-bootstrap]
     paths:
       - ".github/workflows/emit-cargo-lock.yml"
-      - "CANONICAL_COMMIT.txt"
+      - "LOCAL_CI_CANONICAL_COMMIT.txt"
 
 permissions:
   contents: read
 
 jobs:
   lockfile:
-    name: Generate deterministic Cargo lockfile from exact canonical source
+    name: Generate exact-PR92 Cargo lockfile and upload evidence
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - name: Read canonical source SHA
+      - name: Read PR92 canonical source SHA
         id: canonical
         shell: bash
         run: |
-          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          set -euo pipefail
+          target="$(tr -d '\r\n[:space:]' < LOCAL_CI_CANONICAL_COMMIT.txt)"
           if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
-            echo "invalid canonical commit: $target" >&2
+            echo "invalid PR92 source commit: $target" >&2
             exit 1
           fi
           echo "ref=$target" >> "$GITHUB_OUTPUT"
-      - name: Checkout canonical ONE source
+      - name: Checkout exact PR92 source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.ref }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
-      - name: Verify source SHA and generate lockfile
+      - name: Generate and verify lockfile
         working-directory: source
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
-          rustc --version
-          cargo --version
+          rustc --version | tee ../rustc-version.txt
+          cargo --version | tee ../cargo-version.txt
           cargo generate-lockfile
-          echo "LOCKFILE_SOURCE_SHA=${{ steps.canonical.outputs.ref }}"
-          echo "LOCKFILE_SHA256=$(sha256sum Cargo.lock | cut -d ' ' -f 1)"
-          echo "LOCKFILE_BASE64_BEGIN"
-          base64 -w0 Cargo.lock
-          echo
-          echo "LOCKFILE_BASE64_END"
+          cargo metadata --locked --format-version 1 > ../cargo-metadata.json
+          python3 - <<'PY'
+          import hashlib, json, pathlib, subprocess
+          lock = pathlib.Path("Cargo.lock").read_bytes()
+          metadata = json.loads(pathlib.Path("../cargo-metadata.json").read_text())
+          manifest = [
+              "source_sha=" + subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "rustc=" + pathlib.Path("../rustc-version.txt").read_text().strip(),
+              "cargo=" + pathlib.Path("../cargo-version.txt").read_text().strip(),
+              "cargo_lock_sha256=" + hashlib.sha256(lock).hexdigest(),
+              "package_count=" + str(len(metadata["packages"])),
+              "lockfile_version=" + str(metadata["resolve"] is not None),
+          ]
+          pathlib.Path("../lockfile-evidence.txt").write_text("\n".join(manifest) + "\n")
+          print("\n".join(manifest))
+          PY
+      - name: Upload exact lockfile evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: pr92-cargo-lockfile-${{ steps.canonical.outputs.ref }}
+          path: |
+            source/Cargo.lock
+            rustc-version.txt
+            cargo-version.txt
+            cargo-metadata.json
+            lockfile-evidence.txt
+          if-no-files-found: error
+          retention-days: 7
