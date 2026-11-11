@@ -23,6 +23,7 @@ concurrency:
 jobs:
   ci:
     name: ci (${{ matrix.os }})
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -71,19 +72,38 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Install cross-compilers (Ubuntu)
+      - name: Install Ubuntu cross-compilers
         if: runner.os == 'Linux'
-        working-directory: source
         shell: bash
+        timeout-minutes: 35
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang mingw-w64
-          set +o pipefail
-          yes | sdkmanager --licenses
-          set -o pipefail
-          sdkmanager --install "ndk;27.2.12479018"
-          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=30s 15m sudo apt-get update
+          timeout --signal=TERM --kill-after=30s 20m sudo apt-get install -y --no-install-recommends clang mingw-w64
           echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
+
+      - name: Accept Android SDK licenses (Ubuntu)
+        if: runner.os == 'Linux'
+        shell: bash
+        timeout-minutes: 12
+        run: |
+          set +o pipefail
+          yes | timeout --signal=TERM --kill-after=30s 10m sdkmanager --licenses
+          sdk_status=${PIPESTATUS[1]}
+          set -o pipefail
+          if [ "$sdk_status" -ne 0 ]; then
+            echo "sdkmanager --licenses failed or timed out (exit $sdk_status)" >&2
+            exit "$sdk_status"
+          fi
+
+      - name: Install Android NDK (Ubuntu)
+        if: runner.os == 'Linux'
+        shell: bash
+        timeout-minutes: 32
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=30s 30m sdkmanager --install "ndk;27.2.12479018"
+          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
 
       - name: Install cross-compilers (Windows)
         if: runner.os == 'Windows'
