@@ -67,8 +67,69 @@ jobs:
           $actual = (git rev-parse HEAD).Trim()
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "Canonical commit mismatch: $actual" }
 
-      # ci_local.py runs native-host checks only; it does not invoke Android or
-      # Windows cross-compilers. Avoid provisioning unused SDK/toolchains here.
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: platform-tools
+
+      - name: Install Ubuntu cross-compilers
+        if: runner.os == 'Linux'
+        shell: bash
+        timeout-minutes: 35
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=30s 12m sudo apt-get update
+          timeout --signal=TERM --kill-after=30s 20m sudo apt-get install -y --no-install-recommends clang mingw-w64
+          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
+
+      - name: Accept Android SDK licenses (Ubuntu)
+        if: runner.os == 'Linux'
+        shell: bash
+        timeout-minutes: 12
+        run: |
+          set +o pipefail
+          yes | timeout --signal=TERM --kill-after=30s 10m sdkmanager --licenses
+          sdk_status=${PIPESTATUS[1]}
+          set -o pipefail
+          if [ "$sdk_status" -ne 0 ]; then
+            echo "sdkmanager --licenses failed or timed out (exit $sdk_status)" >&2
+            exit "$sdk_status"
+          fi
+
+      - name: Install Android NDK (Ubuntu)
+        if: runner.os == 'Linux'
+        shell: bash
+        timeout-minutes: 32
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=30s 30m sdkmanager --install "ndk;27.2.12479018"
+          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
+
+      - name: Install cross-compilers (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e
+        timeout-minutes: 35
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
+
+      - name: Install Android NDK (Windows)
+        if: runner.os == 'Windows'
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 45
+        run: |
+          $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+          $sdkmanager = "$env:ANDROID_HOME\cmdline-tools\latest\bin\sdkmanager.bat"
+          1..20 | ForEach-Object { "y" } | & $sdkmanager --licenses
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $sdkmanager --install "ndk;27.2.12479018"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $clang = Join-Path $env:ANDROID_HOME "ndk\27.2.12479018\toolchains\llvm\prebuilt\windows-x86_64\bin\clang.exe"
+          "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
+          "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
+
       - name: Show Python version
         working-directory: source
         run: python --version
