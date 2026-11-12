@@ -1,3 +1,18 @@
+# ACTIVE CHECKPOINT — PR #92 Local CI replacement — 2026-11-12
+
+**CURRENT SOURCE SHA: `46ca4b727d72b79ded7bc6d1e364452de0cad6bf` · CIRCLECI: SUCCESS · INDEPENDENT UBUNTU/WINDOWS: PENDING**
+
+- Source repository: `panglimanetizen01/one`; PR #92; branch `tooling/python-local-ci`; exact source HEAD `46ca4b727d72b79ded7bc6d1e364452de0cad6bf`; base `main` at `d35db95153f6ddd79885494c72f5aee16c899751`.
+- PR #92 remains OPEN / DRAFT / UNMERGED. This is a verification checkpoint only; no merge or release.
+- Exact-source CircleCI commit context `ci/circleci: linux-verify` reports SUCCESS for this SHA. Workflow `e0494863-da65-4bd1-974c-16f97b1102fe`; job UUID `e6324ba3-175f-451c-b878-676a1088e57d`. Detailed CircleCI job log and artifact payload inspection remain unavailable through this session's connector.
+- The verifier's `LOCAL_CI_CANONICAL_COMMIT.txt` is being advanced to this exact SHA. The workflow `.github/workflows/windows-verification.yml` triggers on a push changing that pin and runs its `ubuntu-latest` + `windows-2025` matrix. It checks out the pinned source SHA and asserts `git rev-parse HEAD`, runs three regression suites, Local CI, then report/manifest creation and verification and artifact upload.
+- Previous exact-SHA parity run #43134343558 remains PASS only for predecessor source SHA `461d86da5ac5dd7437c14e49a15db059c213d899`; it must not be promoted to this SHA. Both prior OS jobs completed 12/12 Local CI checks and manifest validation, but are historical evidence.
+- The separate PR #94 candidate pin `CANONICAL_COMMIT.txt` remains `5486c09b746254e65ec647e86db3e48fde975747` and MUST NOT be changed by this PR #92 refresh.
+- Android runtime is NOT RUN for this PR #92 Local CI parity scope.
+- Acceptance remains NOT PASSED until this exact SHA has successful Ubuntu and Windows Server 2025 jobs, verified checkout SHA, terminal logs, reports, manifests, uploaded artifacts and independently matched archive digests.
+
+---
+
 ## PR #92 Local CI replacement — live exact-SHA checkpoint — 2026-11-11
 
 **SOURCE CIRCLECI: PASS · INDEPENDENT LINUX/WINDOWS MATRIX: PENDING**
