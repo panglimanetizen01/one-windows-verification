@@ -72,38 +72,31 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Install Ubuntu cross-compilers
+      - name: Provision Ubuntu native cross-target toolchains
         if: runner.os == 'Linux'
         shell: bash
         timeout-minutes: 35
         run: |
           set -euo pipefail
-          timeout --signal=TERM --kill-after=30s 12m sudo apt-get update
-          timeout --signal=TERM --kill-after=30s 20m sudo apt-get install -y --no-install-recommends clang mingw-w64
-          echo "ONE_WINDOWS_CLANG=clang" >> "$GITHUB_ENV"
-
-      - name: Accept Android SDK licenses (Ubuntu)
-        if: runner.os == 'Linux'
-        shell: bash
-        timeout-minutes: 12
-        run: |
-          set +o pipefail
-          yes | timeout --signal=TERM --kill-after=30s 10m sdkmanager --licenses
-          sdk_status=${PIPESTATUS[1]}
-          set -o pipefail
-          if [ "$sdk_status" -ne 0 ]; then
-            echo "sdkmanager --licenses failed or timed out (exit $sdk_status)" >&2
-            exit "$sdk_status"
+          echo "Runner-provided Clang:"
+          command -v clang
+          clang --version
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            sudo sed -i 's/azure\.archive\.ubuntu\.com/archive.ubuntu.com/g' /etc/apt/apt-mirrors.txt
           fi
-
-      - name: Install Android NDK (Ubuntu)
-        if: runner.os == 'Linux'
-        shell: bash
-        timeout-minutes: 32
-        run: |
-          set -euo pipefail
-          timeout --signal=TERM --kill-after=30s 30m sdkmanager --install "ndk;27.2.12479018"
-          echo "ONE_ANDROID_CLANG=$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" >> "$GITHUB_ENV"
+          timeout --signal=TERM --kill-after=30s 12m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 update
+          timeout --signal=TERM --kill-after=30s 20m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev
+          command -v x86_64-w64-mingw32-ld
+          echo "ONE_WINDOWS_CLANG=$(command -v clang)" >> "$GITHUB_ENV"
+          ndk_root="${ANDROID_NDK_HOME:-${ANDROID_NDK:-}}"
+          if [ -z "$ndk_root" ] || [ ! -x "$ndk_root/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" ]; then
+            ndk_root="$(find "$ANDROID_HOME/ndk" -mindepth 1 -maxdepth 1 -type d -print | sort -V | tail -n 1)"
+          fi
+          android_clang="$ndk_root/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          test -x "$android_clang"
+          echo "Android NDK selected: $ndk_root"
+          if [ -f "$ndk_root/source.properties" ]; then grep '^Pkg.Revision=' "$ndk_root/source.properties"; fi
+          echo "ONE_ANDROID_CLANG=$android_clang" >> "$GITHUB_ENV"
 
       - name: Install cross-compilers (Windows)
         if: runner.os == 'Windows'
