@@ -85,8 +85,12 @@ jobs:
             sudo sed -i 's/azure\\.archive\\.ubuntu\\.com/archive.ubuntu.com/g' /etc/apt/apt-mirrors.txt
           fi
           timeout --signal=TERM --kill-after=30s 10m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 update
-          timeout --signal=TERM --kill-after=30s 15m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev
+          timeout --signal=TERM --kill-after=30s 15m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev gcc-mingw-w64-x86-64-posix
           command -v x86_64-w64-mingw32-ld
+          mingw_gcc="$(command -v x86_64-w64-mingw32-gcc-posix)"
+          mingw_libgcc="$("$mingw_gcc" -print-file-name=libgcc.a)"
+          test -f "$mingw_libgcc"
+          echo "MinGW GCC runtime verified: $mingw_libgcc"
           echo "ONE_WINDOWS_CLANG=$(command -v clang)" >> "$GITHUB_ENV"
           timeout --signal=TERM --kill-after=30s 30m sdkmanager --install "ndk;27.2.12479018"
           ndk_root="$ANDROID_HOME/ndk/27.2.12479018"
