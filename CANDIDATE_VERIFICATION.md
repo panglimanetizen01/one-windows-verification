@@ -1,5 +1,26 @@
 # ACTIVE CHECKPOINT — PR #92 Local CI replacement — 2026-11-12
 
+**CURRENT SOURCE SHA: `01e0ad4a198d8095340da8d10adc3a6fa5ed9fa5` · CIRCLECI: SUCCESS · INDEPENDENT UBUNTU/WINDOWS: PASS · GITHUB ACTIONS SECONDARY: INFRASTRUCTURE FAILURE / LOGS UNAVAILABLE**
+
+- Source repository: `panglimanetizen01/one`; PR #92; branch `tooling/python-local-ci`; exact source HEAD `01e0ad4a198d8095340da8d10adc3a6fa5ed9fa5`; parent `46ca4b727d72b79ded7bc6d1e364452de0cad6bf`; base `main` at `d35db95153f6ddd79885494c72f5aee16c899751`.
+- PR #92 remains OPEN / DRAFT / UNMERGED. No merge or release.
+- CircleCI context `ci/circleci: linux-verify` is SUCCESS for exact source SHA `01e0ad4...`.
+- Independent verifier run #708: `43145814216`, completed SUCCESS; verifier source SHA `d201348f1df62e2a8d9650b4b12e6aafaa5e6dbe`. Run URL: https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43145814216
+- Ubuntu job `130943228010` and Windows Server 2025 job `130943227874` both completed SUCCESS. Both checked out exact source SHA `01e0ad4...`; all three regression suites passed; Local CI runner passed 12/12 with 0 failed/timed-out/unavailable; report and manifest validation PASS with empty validation_errors; pre-run and post-run worktrees clean.
+- New regression tests passed on both platforms: `failed_event_conditional_scope_is_cleaned_up`, `failed_event_while_scope_is_cleaned_up`, and `failed_event_foreach_scope_is_cleaned_up`.
+- Ubuntu artifact ID `13911517179`, name `local-ci-evidence-ubuntu-latest`, 1,711 bytes, ZIP SHA-256 `8a7322eb30fd0b6e32e5a36e02e503bb2ed029ae7df1b9a926a0d0532f1ad7d3`; digest matches GitHub artifact metadata. Embedded report: 4,813 bytes, SHA-256 `c65d58f484aa7bc6581357904de15664cb934cac39e59928c741080150171f7e`. Manifest: 681 bytes, SHA-256 `6067ab64ad6952b609c8680f6569558991feb941ab158739bab3183580e68acd`.
+- Windows artifact ID `13911846747`, name `local-ci-evidence-windows-2025`, 1,746 bytes, ZIP SHA-256 `c38b9883ebabf4ff49a8e93bca8c794d5944718400909dca57a4ab79fc570444`; digest matches GitHub artifact metadata. Embedded report: 5,056 bytes, SHA-256 `1ccc2f98c5b9bb08362ce0bc2c2ee41207469c5c94fd91ef78ff4edc35429b35`. Manifest: 703 bytes, SHA-256 `aa62aeb9e02edceb4a74bd47c770b8d68dbc5eb70ac0695a06f3c4101b707cec`.
+- Both manifests identify source SHA `01e0ad4...`, verifier SHA `d201348...`, run ID `43145814216`, report_status PASS, validation_status PASS, validation_errors [], worktree_after_clean true. Both ZIPs were downloaded and independently hashed; report byte counts and hashes matched manifest values.
+- Windows logs include earlier unit-test fixtures intentionally simulating failure and missing toolchain; the final actual Local CI run is the later terminal 12/12 PASS and its manifest validates. Do not misclassify those test-fixture output lines as the final host result.
+- The PR #92 verifier pin `LOCAL_CI_CANONICAL_COMMIT.txt` now reads `01e0ad4...`. The separate PR #94 pin `CANONICAL_COMMIT.txt` remains `5486c09b746254e65ec647e86db3e48fde975747`; it was not changed.
+- GitHub Actions run #43145380932 on the same source SHA completed FAILURE on Ubuntu and Windows before executable steps; both jobs expose no steps/log URLs and log retrieval returns Azure BlobNotFound/404. This remains infrastructure/verification insufficiency evidence with UNKNOWN root cause, not proof of a source-code failure. Keep it separate from the successful CircleCI and independent verifier evidence.
+- Android runtime remains NOT RUN; SDK/NDK setup is not runtime evidence.
+- PR #92 remains OPEN / DRAFT / UNMERGED; no merge or release. This checkpoint establishes CircleCI + independent Ubuntu/Windows parity for this exact SHA, not full v0.1 acceptance or support across all target platforms.
+
+---
+
+# ACTIVE CHECKPOINT — PR #92 Local CI replacement — 2026-11-12
+
 **CURRENT SOURCE SHA: `46ca4b727d72b79ded7bc6d1e364452de0cad6bf` · CIRCLECI: SUCCESS · INDEPENDENT UBUNTU/WINDOWS: PENDING**
 
 - Source repository: `panglimanetizen01/one`; PR #92; branch `tooling/python-local-ci`; exact source HEAD `46ca4b727d72b79ded7bc6d1e364452de0cad6bf`; base `main` at `d35db95153f6ddd79885494c72f5aee16c899751`.
