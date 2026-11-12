@@ -82,7 +82,7 @@ jobs:
           command -v clang
           clang --version
           if [ -f /etc/apt/apt-mirrors.txt ]; then
-            sudo sed -i 's/azure\.archive\.ubuntu\.com/archive.ubuntu.com/g' /etc/apt/apt-mirrors.txt
+            sudo sed -i 's/azure\\.archive\\.ubuntu\\.com/archive.ubuntu.com/g' /etc/apt/apt-mirrors.txt
           fi
           timeout --signal=TERM --kill-after=30s 10m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 update
           timeout --signal=TERM --kill-after=30s 15m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev
@@ -93,7 +93,7 @@ jobs:
           android_clang="$ndk_root/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
           test -x "$android_clang"
           echo "Android NDK selected: $ndk_root"
-          grep '^Pkg.Revision=27.2.12479018
+          echo "ONE_ANDROID_CLANG=$android_clang" >> "$GITHUB_ENV"
 
       - name: Install cross-compilers (Windows)
         if: runner.os == 'Windows'
