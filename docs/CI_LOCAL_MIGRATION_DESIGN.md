@@ -1,9 +1,11 @@
 # Standalone ci-local verifier migration design
+> **Current-state override — 2026-11-13:** The remaining sections preserve the original design-time baseline and are historical where they mention the old single pin, ONE PR #92 SHA `66a94d4...`, or prohibit any draft workflow change. The current draft implementation is PR #41 on branch `migration/ci-local-dual-pin-20261113`, head `fef38965408cae13592d225f203e643e07f8c6d6`. It has separate candidate pins (ONE `47ac10686e6aac023941e72ec6fb3ad22d18f19b`; ci-local `c07c8896ac332e0dab88a666dada6ba2d212aaf4`) and verifier `github.sha` identity. The old single pin is removed only on this isolated draft branch; the `verification` base branch and product-verification pin remain unchanged. The workflow is blocked because the current Actions token returns HTTP 404 for private ci-local. No package/product tests ran and no PASS is claimed. Do not merge or promote until `CI_LOCAL_READ_TOKEN` with Contents: read access to `panglimanetizen01/ci-local` is configured and both OS jobs plus artifacts pass.
 
-**Status: design only — not implemented, not verified.**  
+
+**Status: original design snapshot superseded by the draft implementation below; production verification remains unverified.**  
 **Scope:** `panglimanetizen01/one-windows-verification`, branch `verification`.
 
-This note records the safe migration boundary for replacing the verifier's direct dependency on ONE's legacy generic Local CI scripts. It does not change either pin, the workflow, the product verifier, or any legacy source file.
+This note records the original migration boundary and the current implementation status; see the current-state override above.
 
 ## Exact baseline inspected
 
