@@ -1,5 +1,5 @@
 # Standalone ci-local verifier migration design
-> **Current-state override — 2026-11-13:** The remaining sections preserve the original design-time baseline and are historical where they mention the old single pin, ONE PR #92 SHA `66a94d4...`, or prohibit any draft workflow change. The current draft implementation is PR #41 on branch `migration/ci-local-dual-pin-20261113`, head `fef38965408cae13592d225f203e643e07f8c6d6`. It has separate candidate pins (ONE `47ac10686e6aac023941e72ec6fb3ad22d18f19b`; ci-local `c07c8896ac332e0dab88a666dada6ba2d212aaf4`) and verifier `github.sha` identity. The old single pin is removed only on this isolated draft branch; the `verification` base branch and product-verification pin remain unchanged. The workflow is blocked because the current Actions token returns HTTP 404 for private ci-local. No package/product tests ran and no PASS is claimed. Do not merge or promote until `CI_LOCAL_READ_TOKEN` with Contents: read access to `panglimanetizen01/ci-local` is configured and both OS jobs plus artifacts pass.
+> **Current-state override — 2026-11-13:** The remaining sections preserve the original design-time baseline and are historical where they mention the old single pin, ONE PR #92 SHA `66a94d4...`, or prohibit any draft workflow change. The current draft implementation is PR #41 on branch `migration/ci-local-dual-pin-20261113`, head `fef38965408cae13592d225f203e643e07f8c6d6`. It has separate candidate pins (ONE `59f8a651b693d6fbdadc03ff398290486bee35e2`; ci-local `ddad4a290937735d261f3608f2448632b180b90a`) and verifier `github.sha` identity. The old single pin is removed only on this isolated draft branch; the `verification` base branch and product-verification pin remain unchanged. The workflow is blocked because the current Actions token returns HTTP 404 for private ci-local. No package/product tests ran and no PASS is claimed. Do not merge or promote until `CI_LOCAL_READ_TOKEN` with Contents: read access to `panglimanetizen01/ci-local` is configured and both OS jobs plus artifacts pass.
 
 
 **Status: original design snapshot superseded by the draft implementation below; production verification remains unverified.**  
@@ -107,7 +107,7 @@ This addendum supersedes earlier candidate/test-inventory values above; it does 
 The extraction scope has been corrected: no CI Local implementation, consumer plan, or operational dependency may remain in ONE. The ONE-specific product-check plan therefore lives in the verifier repository at `plans/one-product-checks.json`, not in the ONE checkout. ONE keeps only product-owned CircleCI commands and product contract tests.
 
 An isolated draft branch `migration/ci-local-dual-pin-20261113` was created from verifier `verification` at exact SHA `f364ba99b3ff8eeccd166bf6a1e8c57f3af0a288`. It contains candidate pins:
-- ONE source: `47ac10686e6aac023941e72ec6fb3ad22d18f19b`.
+- ONE source: `59f8a651b693d6fbdadc03ff398290486bee35e2`.
 - ci-local runner: `a34e07429ec686b91e74ef9c719cd499c7d2dd8a`.
 - verifier workflow: `github.sha` from the actual workflow checkout.
 
