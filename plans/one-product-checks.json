@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "name": "one-product-verification",
+  "steps": [
+    {
+      "name": "User documentation validation",
+      "command": [
+        "python",
+        "tools/check_user_docs.py"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "User documentation regression",
+      "command": [
+        "python",
+        "tools/check_user_docs_test.py"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "ONE product CI contracts",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_product_ci_contract.py",
+        "-v"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "Contract artifacts",
+      "command": [
+        "python",
+        "tools/check_contract.py"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "Build workspace",
+      "command": [
+        "cargo",
+        "--locked",
+        "build",
+        "--workspace",
+        "--all-targets"
+      ],
+      "timeout_seconds": 3600
+    },
+    {
+      "name": "Clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "timeout_seconds": 3600
+    },
+    {
+      "name": "Workspace tests",
+      "command": [
+        "cargo",
+        "--locked",
+        "test",
+        "--workspace",
+        "--all-targets"
+      ],
+      "timeout_seconds": 3600
+    },
+    {
+      "name": "Deterministic .oneir and .onepkg artifacts",
+      "command": [
+        "cargo",
+        "--locked",
+        "test",
+        "-p",
+        "one-cli",
+        "--test",
+        "cli",
+        "build_and_package_artifacts_are_byte_deterministic"
+      ],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "DNS success and failure classification",
+      "command": [
+        "cargo",
+        "--locked",
+        "test",
+        "-p",
+        "one-core",
+        "--all-targets",
+        "dns_adapter"
+      ],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "Orchestration policy paths",
+      "command": [
+        "cargo",
+        "--locked",
+        "test",
+        "-p",
+        "one-core",
+        "--all-targets",
+        "orchestrator"
+      ],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "Database vertical slice",
+      "command": [
+        "cargo",
+        "--locked",
+        "test",
+        "-p",
+        "one-core",
+        "--test",
+        "database_vertical_slice"
+      ],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "HTTP GET vertical slice",
+      "command": [
+        "cargo",
+        "--locked",
+        "test",
+        "-p",
+        "one-core",
+        "--test",
+        "http_get_vertical_slice"
+      ],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "HTTP GET CLI vertical slice",
+      "command": [
+        "cargo",
+        "--locked",
+        "test",
+        "-p",
+        "one-cli",
+        "--test",
+        "http_get_orchestration"
+      ],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "Build standalone trusted CLI",
+      "command": [
+        "cargo",
+        "--locked",
+        "build",
+        "-p",
+        "one-cli"
+      ],
+      "env": {
+        "CARGO_TARGET_DIR": "target/one-health-cli"
+      },
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "Trusted CLI single-link invariant",
+      "command": [
+        "python",
+        "-c",
+        "import os,pathlib,shutil,sys; root=pathlib.Path.cwd(); suffix='.exe' if os.name=='nt' else ''; source=root/'target'/'one-health-cli'/'debug'/('one'+suffix); target=root/'target'/'debug'/('one'+suffix); target.parent.mkdir(parents=True,exist_ok=True); target.unlink(missing_ok=True); shutil.copy2(source,target); links=os.stat(target).st_nlink; print('trusted CLI hard-link count:',links); sys.exit(0 if links==1 else 1)"
+      ],
+      "timeout_seconds": 60
+    }
+  ]
+}
