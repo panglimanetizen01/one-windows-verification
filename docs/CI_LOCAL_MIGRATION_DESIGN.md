@@ -61,3 +61,15 @@ Do not implement or advance pins until the ci-local candidate has completed its 
 - ci-local candidate `25cee22354e6eb04ab1ef8fc6bc3e2c044963056` remains unverified.
 - No CI result is inferred from empty status/workflow-run collections.
 - No merge, release, pin advance, or legacy deletion is authorized by this note.
+
+
+## Reconciliation checkpoint — 2026-11-13
+
+This addendum supersedes only the older candidate snapshot values above; it does not change the design-only disposition.
+
+- Current ONE PR #92 source candidate: `66a94d4ffc69240b5303745eaab02fcb5b31aa47` (verification pending). The verifier's existing source pin remains `56ef8babfbc35808d82b930d8dd9baa92afb26af`, the last source SHA recorded as verified. It must not be advanced on the basis of pending or unrelated evidence.
+- Current standalone ci-local branch `fix/evidence-single-read-integrity-20261112`: exact source/test checkpoint `188ce087391ae1ef37c4baa107c7cecd77b9751c`; latest documentation-only HEAD `2049fcd52f5861b967c019f30fefbc0cbf0c7a42`. PR #2 remains OPEN / DRAFT / UNMERGED.
+- Current standalone source inventory is 90 authored test methods (54 runner + 34 evidence + 2 CI/build contract). No tests have been executed or reported as passing at these exact SHAs. Latest exact HEAD has zero GitHub check-runs and zero Actions runs; CircleCI and hosted Windows results are NOT VERIFIED.
+- Finding #61: Windows `taskkill /T /F` nonzero return code now triggers an immediate direct-child `proc.kill()` fallback, with a mocked regression test. This remains best-effort and does not prove descendant cleanup; real Windows hosted validation is still required.
+- The current verifier workflow and single source pin are intentionally unchanged. Workflow still invokes the legacy ONE-owned generic runner, unittest helper, and evidence helper. Dual-pin migration (ONE source + standalone ci-local + verifier workflow SHA) remains NOT IMPLEMENTED.
+- No consumer pin changes, workflow switch, merge, release, or legacy deletion. Continue only after exact-SHA ci-local Gate A and Gate B are proven; then migrate verifier atomically and prove Linux/Windows parity before ONE consumer migration.
