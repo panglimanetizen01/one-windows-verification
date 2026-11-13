@@ -54,6 +54,27 @@ jobs:
           echo "one=$one_sha" >> "$GITHUB_OUTPUT"
           echo "ci_local=$ci_local_sha" >> "$GITHUB_OUTPUT"
 
+      - name: Verify read access to pinned private ci-local repository
+        shell: bash
+        env:
+          CI_LOCAL_READ_TOKEN: ${{ secrets.CI_LOCAL_READ_TOKEN || secrets.CANONICAL_READ_TOKEN }}
+          CI_LOCAL_SHA: ${{ steps.pins.outputs.ci_local }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CI_LOCAL_READ_TOKEN" ]; then
+            echo "Missing CI_LOCAL_READ_TOKEN (or fallback CANONICAL_READ_TOKEN)." >&2
+            exit 1
+          fi
+          status="$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $CI_LOCAL_READ_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/panglimanetizen01/ci-local/commits/$CI_LOCAL_SHA")"
+          echo "Pinned private ci-local commit API status: $status"
+          if [ "$status" != "200" ]; then
+            echo "The configured token must have Contents: read access to panglimanetizen01/ci-local." >&2
+            exit 1
+          fi
+
       - name: Checkout canonical ONE source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -67,7 +88,7 @@ jobs:
         with:
           repository: panglimanetizen01/ci-local
           ref: ${{ steps.pins.outputs.ci_local }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          token: ${{ secrets.CI_LOCAL_READ_TOKEN || secrets.CANONICAL_READ_TOKEN }}
           path: ci-local
 
       - name: Verify all three repository identities
