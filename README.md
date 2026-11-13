@@ -4,7 +4,7 @@ Temporary public verification mirror for independent Linux and Windows verificat
 
 The canonical source repository remains private: `panglimanetizen01/one`.
 
-A draft extraction-validation branch, `migration/ci-local-dual-pin-20261113`, now carries separate candidate pins for ONE source (`47ac10686e6aac023941e72ec6fb3ad22d18f19b`) and standalone ci-local (`a34e07429ec686b91e74ef9c719cd499c7d2dd8a`). The workflow checkout SHA is a third, independent identity. These are draft validation candidates only: the `verification` branch has not been advanced, no PR has been merged, and no parity PASS is claimed. The ONE candidate currently has a failing CircleCI status whose job logs are unavailable; the dual-platform verifier workflow is intended to expose the exact Linux/Windows result.
+A draft extraction-validation branch, `migration/ci-local-dual-pin-20261113`, now carries separate candidate pins for ONE source (`47ac10686e6aac023941e72ec6fb3ad22d18f19b`) and standalone ci-local (`c07c8896ac332e0dab88a666dada6ba2d212aaf4`). The workflow checkout SHA is a third, independent identity. These are draft validation candidates only: the `verification` branch has not been advanced, no PR has been merged, and no parity PASS is claimed. The ONE candidate currently has a failing CircleCI status whose job logs are unavailable; the dual-platform verifier workflow is intended to expose the exact Linux/Windows result.
 
 The separate `CANONICAL_COMMIT.txt` pin for PR #94 remains unchanged.
 
