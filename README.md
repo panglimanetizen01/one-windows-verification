@@ -4,7 +4,7 @@ Temporary public verification mirror for independent Linux and Windows verificat
 
 The canonical source repository remains private: `panglimanetizen01/one`.
 
-A draft extraction-validation branch, `migration/ci-local-dual-pin-20261113`, now carries separate candidate pins for ONE source (`ebb11f8da5e8af7b0baf2e3785754e656b542777`) and standalone ci-local (`df592ae615f573e1b3ecec178a3daf0d1009b1ba`). The workflow checkout SHA is a third, independent identity. These are draft validation candidates only: the `verification` branch has not been advanced, no PR has been merged, and no parity PASS is claimed. The ONE candidate currently has a failing CircleCI status whose job logs are unavailable; the dual-platform verifier workflow is intended to expose the exact Linux/Windows result.
+A draft extraction-validation branch, `migration/ci-local-dual-pin-20261113`, now carries separate candidate pins for ONE source (`fb58a7f7bd357b469452c19379b6b07ad133535b`) and standalone ci-local (`df592ae615f573e1b3ecec178a3daf0d1009b1ba`). The workflow checkout SHA is a third, independent identity. These are draft validation candidates only: the `verification` branch has not been advanced, no PR has been merged, and no parity PASS is claimed. The ONE candidate currently has a failing CircleCI status whose job logs are unavailable; the dual-platform verifier workflow is intended to expose the exact Linux/Windows result.
 
 The separate `CANONICAL_COMMIT.txt` pin for PR #94 remains unchanged.
 
@@ -37,3 +37,5 @@ See [CI Local migration implementation](docs/CI_LOCAL_MIGRATION_IMPLEMENTATION.m
 
 
 The current pinned ci-local checkpoint includes the extraction inventory reconciliation: 96 authored test methods (55 runner, 34 evidence, 3 CI config/build, 2 discovery, 2 path-contract). This is static inventory, not a test PASS.
+
+The current ONE candidate pin includes the final targeted cleanup of the retired branch-name reference in the runtime governance audit; the eight extracted runner/config/guide/test paths remain absent.
