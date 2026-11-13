@@ -1,5 +1,18 @@
 # CI Local migration implementation — draft validation
 
+## LIVE CHECKPOINT — 2026-11-14 (iteration 13: exact-pin cross-platform verification PASS)
+
+- Independent verifier run #758: `43489905888`, terminal SUCCESS on Ubuntu and Windows Server 2025. Both jobs passed the standalone ci-local compile/test suite, build/install, installed import-origin and console entry-point checks, smoke plan, all 15 ONE product-plan checks, manifest v2 validation, and artifact upload.
+- Exact identities: ONE source `fb58a7f7bd357b469452c19379b6b07ad133535b`; ci-local runner `5e09517b80d77ce417c3f752c75e37ce24638943`; verifier workflow merge identity `491afefcba6d99dd58765fbe11df90cfa80515d2`. Verifier PR head tested: `fcd0d972d0da5d7f96d5c6d97e8ba2ed984a69b3`.
+- Both evidence ZIPs were downloaded and inspected. Each contains only the smoke report, ONE product report, and manifest. Both reports are PASS; each product report has 15/15 steps PASS and exit code 0. Both manifest v2 validations PASS with empty errors; report SHA-256 values were independently recomputed and matched. ZIP hashes also match GitHub artifact metadata.
+- The run #757 Windows manifest mismatch was fixed in the verifier-owned plan by renaming the local Python variable `root` to `workspace`; behavior and strict evidence validation were preserved.
+- ci-local PR #5 and verifier PR #41 remain OPEN / DRAFT / UNMERGED. Production verifier branch/pin remains unchanged. This is successful exact-pin draft validation, not authorization to merge, release, or promote production pins. Standalone CircleCI pipeline status is a separate check and is not inferred from this GitHub Actions run.
+
+Historical checkpoint entries below are retained as chronology and are superseded where they conflict with this live state.
+
+---
+
+
 ## Scope
 
 Replace the verifier's dependency on ONE's legacy generic Local CI scripts with the standalone `panglimanetizen01/ci-local` package. Keep ONE product verification independent from the runner implementation. The plan is verifier-owned so ONE contains no CI Local plan/configuration or operational dependency.
