@@ -36,7 +36,7 @@ Keep `CANONICAL_COMMIT.txt` and `.github/workflows/one-cross-platform-verificati
 5. Assert each checkout's `git rev-parse HEAD` equals its own pin, and assert the verifier checkout HEAD equals `github.sha`.
 6. Provision the same pinned Python 3 version on Ubuntu and Windows. Assert `python --version` and `python -c "import sys; assert sys.version_info.major == 3"`. Do not assume `python3` exists on Windows.
 7. Install the package from the pinned ci-local checkout using its exact build-backend pin (`setuptools==80.9.0` as inspected in the current candidate's `pyproject.toml`). Verify `ci_local.__file__` resolves to the intended pinned install, not a shadow import from ONE or another environment location.
-8. Resolve the ONE-owned profile (target path `source/ci/ci-local-plan.json`) and assert it remains inside the pinned ONE checkout. Record its SHA-256.
+8. Resolve the ONE-owned profile (target path `plans/one-product-checks.json` in the verifier repository) and assert it remains inside the pinned ONE checkout. Record its SHA-256.
 9. Run `ci-local --plan <absolute-plan-path> --cwd <absolute-source-root> --report <absolute-external-report-path>`. Reports and manifests must be outside the ONE source worktree.
 10. Create and verify evidence atomically with the matching standalone `ci-local-evidence` CLI. Supply the plan path and all three expected identities: ONE source SHA, verifier SHA, and ci-local runner SHA. Require manifest v2 and a matching runner SHA; a v1 manifest is not acceptable when runner identity is expected.
 11. Upload the report, manifest, and provenance containing all three SHAs, profile SHA-256, Python version, OS/architecture, workflow/run/attempt/job IDs, and report/manifest digests.
@@ -46,13 +46,13 @@ Use immutable action references and least-privilege private-repository checkout 
 
 ## Product checks that must remain
 
-The generic 12-step plan is not a replacement for the complete ONE CI workflow. Preserve Android SDK/NDK setup, native toolchain provisioning and probes, user documentation validation, ONE-owned fail-closed discovery/config/path tests, trusted CLI build and hard-link invariant, product cross-platform checks, Android runtime/emulator checks, repository-health checks, and their separate evidence/artifacts. The migration change must include a before/after ownership inventory proving every check has exactly one owner.
+The generic 12-step plan is not a replacement for the complete ONE CI workflow. Preserve Android SDK/NDK setup, native toolchain provisioning and probes, user documentation validation, ONE-owned product contract tests; generic runner, evidence, unittest-discovery and path-contract tests in ci-local, trusted CLI build and hard-link invariant, product cross-platform checks, Android runtime/emulator checks, repository-health checks, and their separate evidence/artifacts. The migration change must include a before/after ownership inventory proving every check has exactly one owner.
 
 ## Atomic switch and validation gates
 
 The old ONE runner report schema and standalone ci-local report schema are incompatible. In one workflow change, switch execution, evidence creation/verification, output paths, artifact paths, workflow tests, and docs together. Never validate a generic ci-local report using the legacy ONE evidence helper.
 
-Do not implement or advance pins until the ci-local candidate has completed its own exact-SHA test, compile, install, console, smoke, evidence roundtrip, and artifact gates, plus hosted CircleCI Linux and independent hosted Linux/Windows verification. Then migrate this verifier on an isolated draft PR/branch and prove the exact dual-pin execution before changing the ONE consumer.
+Candidate pins and workflow changes may be prepared only on an isolated draft branch to run the migration-specific verification described in the implementation addendum. Do not merge or advance the `verification` branch until exact-SHA Linux and Windows package/product-plan tests, manifest verification, and artifacts pass. No unrelated ci-local backlog or release certification is required for this extraction.
 
 ## Current disposition
 
@@ -85,7 +85,7 @@ This addendum supersedes earlier candidate/test-inventory values above; it does 
 - The standalone CircleCI config now declares Linux `test` and Windows `test-windows` jobs. The supplementary GitHub Actions workflow was removed after runner allocation failures with no steps/logs; CircleCI remains the canonical standalone CI route. Actual CircleCI pipeline/log/artifact status is not readable in this session.
 - The Local CI consumer workflow to migrate is `.github/workflows/windows-verification.yml`, not `.github/workflows/one-cross-platform-verification.yml`. The latter and its `CANONICAL_COMMIT.txt` pin are separate product cross-platform verification and must remain unchanged.
 - Current legacy `LOCAL_CI_CANONICAL_COMMIT.txt` still contains ONE source SHA `56ef8babfbc35808d82b930d8dd9baa92afb26af`. Keep the required dual-pin model from this design: `ONE_SOURCE_CANONICAL_COMMIT.txt` for ONE, `CI_LOCAL_CANONICAL_COMMIT.txt` for standalone ci-local, plus verifier workflow SHA as third identity. No pin or workflow change until standalone Gate B passes.
-- Preserve ONE-specific toolchain provisioning, contract/user-doc checks, Rust build/Clippy/tests, product checks, and evidence. The generic runner/evidence/test-discovery implementation moves to ci-local; ONE-specific checks become the ONE-owned plan at `source/ci/ci-local-plan.json` as already specified above.
+- Preserve ONE-specific toolchain provisioning, contract/user-doc checks, Rust build/Clippy/tests, product checks, and evidence. The generic runner/evidence/test-discovery implementation moves to ci-local; ONE-specific checks become the ONE-owned plan at `plans/one-product-checks.json` in the verifier repository as already specified above.
 - No ONE or verifier workflow/pin changes, no merge/release, no legacy deletion. Gate B incomplete; verifier migration and ONE consumer migration remain blocked.
 
 
@@ -98,3 +98,17 @@ This addendum supersedes earlier candidate/test-inventory values above; it does 
 - The verifier migration target remains `.github/workflows/windows-verification.yml`; keep `.github/workflows/one-cross-platform-verification.yml` and `CANONICAL_COMMIT.txt` unchanged. Dual-pin design and ownership boundaries remain as specified in the previous addendum.
 - Existing `LOCAL_CI_CANONICAL_COMMIT.txt` still contains ONE SHA `56ef8babfbc35808d82b930d8dd9baa92afb26af`; do not change it until a reviewed dual-pin workflow change is ready and ci-local Gate B passes.
 - No verifier workflow/pin change, no ONE consumer change, no merge/release, and no legacy deletion.
+
+
+## Draft implementation checkpoint — 2026-11-13
+
+The extraction scope has been corrected: no CI Local implementation, consumer plan, or operational dependency may remain in ONE. The ONE-specific product-check plan therefore lives in the verifier repository at `plans/one-product-checks.json`, not in the ONE checkout. ONE keeps only product-owned CircleCI commands and product contract tests.
+
+An isolated draft branch `migration/ci-local-dual-pin-20261113` was created from verifier `verification` at exact SHA `f364ba99b3ff8eeccd166bf6a1e8c57f3af0a288`. It contains candidate pins:
+- ONE source: `47ac10686e6aac023941e72ec6fb3ad22d18f19b`.
+- ci-local runner: `a34e07429ec686b91e74ef9c719cd499c7d2dd8a`.
+- verifier workflow: `github.sha` from the actual workflow checkout.
+
+The dual-pin workflow checks out the two repositories independently, verifies all three identities, tests and installs the standalone package, runs its smoke plan, executes the verifier-owned ONE product plan, and creates/verifies a manifest requiring the exact ONE SHA, ci-local runner SHA, and verifier SHA. The legacy `LOCAL_CI_CANONICAL_COMMIT.txt` is removed only on this draft branch; the separate product-verification pin and workflow are unchanged.
+
+This is an implementation candidate, not a passing verification result. No source pin on the `verification` branch has changed; no merge, release, or production promotion occurred. Exact Linux/Windows workflow results remain pending.
