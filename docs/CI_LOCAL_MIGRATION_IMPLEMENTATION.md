@@ -8,8 +8,8 @@ Replace the verifier's dependency on ONE's legacy generic Local CI scripts with 
 
 | Identity | Candidate |
 | --- | --- |
-| ONE source | `47ac10686e6aac023941e72ec6fb3ad22d18f19b` |
-| ci-local package | `c07c8896ac332e0dab88a666dada6ba2d212aaf4` |
+| ONE source | `59f8a651b693d6fbdadc03ff398290486bee35e2` |
+| ci-local package | `ddad4a290937735d261f3608f2448632b180b90a` |
 | verifier workflow | `github.sha` captured from the verifier checkout |
 
 These are draft validation pins only. They do not update the `verification` branch's production pin or establish PASS.
