@@ -59,3 +59,8 @@ The standalone ci-local repository is private. The verifier workflow checks the 
 ## Exact current authored regression inventory
 
 At ci-local candidate SHA `df592ae615f573e1b3ecec178a3daf0d1009b1ba`, static GitHub-readback counting found 96 methods across the five test modules (55 runner, 34 evidence, 3 CI/build, 2 discovery, 2 path-contract). This is not runtime evidence. The exact-SHA dual-pin workflow must execute the suite before preservation is accepted.
+
+
+## ONE residual reference cleanup
+
+The ONE PR #92 candidate was advanced to `fb58a7f7bd357b469452c19379b6b07ad133535b` to remove the retired working-branch name from `docs/verification/runtime-governance-audit-2026-11-12.md`. The source branch's known legacy CI Local paths remain absent. Re-run the dual-pin workflow on the new exact ONE SHA after the private ci-local checkout credential is available.
