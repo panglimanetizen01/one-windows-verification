@@ -55,25 +55,41 @@ jobs:
           echo "ci_local=$ci_local_sha" >> "$GITHUB_OUTPUT"
 
       - name: Verify read access to pinned private ci-local repository
+        id: ci_local_auth
         shell: bash
         env:
-          CI_LOCAL_READ_TOKEN: ${{ secrets.CI_LOCAL_READ_TOKEN || secrets.CANONICAL_READ_TOKEN }}
+          CI_LOCAL_READ_TOKEN: ${{ secrets.CI_LOCAL_READ_TOKEN }}
+          CANONICAL_READ_TOKEN: ${{ secrets.CANONICAL_READ_TOKEN }}
           CI_LOCAL_SHA: ${{ steps.pins.outputs.ci_local }}
         run: |
           set -euo pipefail
-          if [ -z "$CI_LOCAL_READ_TOKEN" ]; then
-            echo "Missing CI_LOCAL_READ_TOKEN (or fallback CANONICAL_READ_TOKEN)." >&2
+          api_url="https://api.github.com/repos/panglimanetizen01/ci-local/commits/$CI_LOCAL_SHA"
+          selected=""
+          if [ -n "$CI_LOCAL_READ_TOKEN" ]; then
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H "Authorization: Bearer $CI_LOCAL_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" "$api_url")"
+            echo "CI_LOCAL_READ_TOKEN access status: $status"
+            if [ "$status" = "200" ]; then selected="ci_local"; fi
+          else
+            echo "CI_LOCAL_READ_TOKEN is not configured."
+          fi
+          if [ -z "$selected" ] && [ -n "$CANONICAL_READ_TOKEN" ]; then
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H "Authorization: Bearer $CANONICAL_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" "$api_url")"
+            echo "CANONICAL_READ_TOKEN fallback access status: $status"
+            if [ "$status" = "200" ]; then selected="canonical"; fi
+          else
+            if [ -z "$selected" ]; then echo "CANONICAL_READ_TOKEN is not configured."; fi
+          fi
+          if [ -z "$selected" ]; then
+            echo "Neither configured token can read the pinned private ci-local commit." >&2
+            echo "Grant one existing token Contents: read access to panglimanetizen01/ci-local." >&2
             exit 1
           fi
-          status="$(curl -sS -o /dev/null -w '%{http_code}' \
-            -H "Authorization: Bearer $CI_LOCAL_READ_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/panglimanetizen01/ci-local/commits/$CI_LOCAL_SHA")"
-          echo "Pinned private ci-local commit API status: $status"
-          if [ "$status" != "200" ]; then
-            echo "The configured token must have Contents: read access to panglimanetizen01/ci-local." >&2
-            exit 1
-          fi
+          echo "token_source=$selected" >> "$GITHUB_OUTPUT"
+          echo "Private ci-local access verified using $selected credential."
 
       - name: Checkout canonical ONE source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -89,7 +105,7 @@ jobs:
         with:
           repository: panglimanetizen01/ci-local
           ref: ${{ steps.pins.outputs.ci_local }}
-          token: ${{ secrets.CI_LOCAL_READ_TOKEN || secrets.CANONICAL_READ_TOKEN }}
+          token: ${{ steps.ci_local_auth.outputs.token_source == 'ci_local' && secrets.CI_LOCAL_READ_TOKEN || secrets.CANONICAL_READ_TOKEN }}
           path: ci-local
 
       - name: Verify all three repository identities
