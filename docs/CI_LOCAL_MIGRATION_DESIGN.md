@@ -119,3 +119,14 @@ This is an implementation candidate, not a passing verification result. No sourc
 ### Run identity qualification
 
 Run `43387442873` was executed against the previous candidate pins (ONE `ebb11f8da5e8af7b0baf2e3785754e656b542777`, ci-local `99822c27730038659679099080ac839d11e03d4e`, verifier `508383a7668f696451be6c9a8e15e77555a1f1ab`). It failed at the private ci-local access check before tests. It is not evidence for the current pins. The current candidate pins are ONE `fb58a7f7bd357b469452c19379b6b07ad133535b` and ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`; no run has executed on this exact candidate set.
+
+
+## Latest exact-current-pin execution — 2026-11-13
+
+- Workflow run: `43389690604`, on current verifier workflow commit `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
+- Exact pins used: ONE `fb58a7f7bd357b469452c19379b6b07ad133535b`; ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`; verifier workflow SHA `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
+- Ubuntu job `131766380963` and Windows job `131766381519` both failed at `Verify read access to pinned private ci-local repository`.
+- Logs show `CI_LOCAL_READ_TOKEN` is present (redacted in logs), but the private commit API endpoint returns HTTP `404`. Therefore the secret exists but its token does not currently have effective read access to the private ci-local repository, or its repository authorization is otherwise insufficient.
+- Both ONE/ci-local checkout steps and all package tests, compile/install, smoke, ONE product-plan, and evidence verification steps were skipped. The successful manifest step only emitted the explicit “skipped because runner/report not produced” notice; it is not evidence or a PASS.
+- Required correction: replace/update the existing verifier Actions secret `CI_LOCAL_READ_TOKEN` with a token authorized for `panglimanetizen01/ci-local` and Contents: read. Do not paste the token into chat or make the repository public.
+- This is an access blocker, not a package/test failure. No runtime preservation or parity PASS is claimed.
