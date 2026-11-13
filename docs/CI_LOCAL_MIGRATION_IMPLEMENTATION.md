@@ -87,3 +87,8 @@ The ONE PR #92 candidate was advanced to `fb58a7f7bd357b469452c19379b6b07ad13353
 - Both source checkout steps and all package tests, compile/install, smoke, ONE product-plan, and evidence verification steps were skipped. The green manifest step emitted an explicit skipped notice; it is not evidence or a PASS.
 - Required correction: replace/update `CI_LOCAL_READ_TOKEN` with a token authorized for `panglimanetizen01/ci-local` and Contents: read. Do not paste the token into chat or make the repository public.
 - No workflow run has executed on the current verifier HEAD `479a12cc029a71b116890c8d9b3d332b159513f5` with the current three identities. No runtime preservation or parity PASS is claimed.
+
+
+## Artifact publication guard — 2026-11-13
+
+Run `43389915562` exposed that the unconditional upload step packaged only the verifier-owned product plan when private ci-local checkout failed; the artifact name implied that reports/evidence existed. The workflow now gives the ci-local checkout and install steps explicit IDs, runs artifact upload only after both succeed, and uploads only generated smoke/product reports and the manifest (not the always-present plan). The manifest step name now states that creation is conditional on a report. This prevents a plan-only ZIP from appearing as verification evidence. The source plan remains versioned in the verifier repository. No tests or evidence PASS is inferred from this workflow correction.
