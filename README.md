@@ -4,7 +4,7 @@ Temporary public verification mirror for independent Linux and Windows verificat
 
 The canonical source repository remains private: `panglimanetizen01/one`.
 
-A draft extraction-validation branch, `migration/ci-local-dual-pin-20261113`, now carries separate candidate pins for ONE source (`ebb11f8da5e8af7b0baf2e3785754e656b542777`) and standalone ci-local (`99822c27730038659679099080ac839d11e03d4e`). The workflow checkout SHA is a third, independent identity. These are draft validation candidates only: the `verification` branch has not been advanced, no PR has been merged, and no parity PASS is claimed. The ONE candidate currently has a failing CircleCI status whose job logs are unavailable; the dual-platform verifier workflow is intended to expose the exact Linux/Windows result.
+A draft extraction-validation branch, `migration/ci-local-dual-pin-20261113`, now carries separate candidate pins for ONE source (`ebb11f8da5e8af7b0baf2e3785754e656b542777`) and standalone ci-local (`df592ae615f573e1b3ecec178a3daf0d1009b1ba`). The workflow checkout SHA is a third, independent identity. These are draft validation candidates only: the `verification` branch has not been advanced, no PR has been merged, and no parity PASS is claimed. The ONE candidate currently has a failing CircleCI status whose job logs are unavailable; the dual-platform verifier workflow is intended to expose the exact Linux/Windows result.
 
 The separate `CANONICAL_COMMIT.txt` pin for PR #94 remains unchanged.
 
@@ -34,3 +34,6 @@ Implementation candidate branch: `migration/ci-local-dual-pin-20261113`, based o
 - The workflow has not yet completed on this draft branch. Do not claim Linux/Windows parity, do not advance the `verification` branch, and do not merge this PR until exact-SHA jobs and artifacts are reviewed.
 
 See [CI Local migration implementation](docs/CI_LOCAL_MIGRATION_IMPLEMENTATION.md) for the exact workflow and artifact contract.
+
+
+The current pinned ci-local checkpoint includes the extraction inventory reconciliation: 96 authored test methods (55 runner, 34 evidence, 3 CI config/build, 2 discovery, 2 path-contract). This is static inventory, not a test PASS.
