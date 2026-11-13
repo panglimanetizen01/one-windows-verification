@@ -21,47 +21,33 @@ The 2026-10-28 refresh is recorded in [Exact-SHA revalidation note](docs/verific
 See [Continuous Repository Health & Repair System](docs/CONTINUOUS_REPOSITORY_HEALTH_AND_REPAIR_SYSTEM.md) for the proposed detector catalogue, evidence model, guarded repair lifecycle, safety tiers, and incremental implementation roadmap. The canonical source currently contains the scanner, detector regression tests, baseline triage, guarded Markdown repair, and reviewed quality-ledger code. The independent exact-SHA scanner workflow is defined in this repository; its execution artifacts and outcomes must be inspected before claiming acceptance.
 
 
-## Draft standalone ci-local dual-pin migration — 2026-11-13
+## Standalone ci-local extraction verifier — live checkpoint 2026-11-13
 
-Implementation candidate branch: `migration/ci-local-dual-pin-20261113`, based on verifier branch `verification` at exact SHA `f364ba99b3ff8eeccd166bf6a1e8c57f3af0a288`.
+### Exact candidate identities
 
-- ONE source candidate: `fb58a7f7bd357b469452c19379b6b07ad133535b` (PR #92, `tooling/python-local-ci`). This includes the final targeted cleanup of a retired branch-name reference; no runtime PASS is claimed for this new SHA.
-- Standalone runner candidate: `df592ae615f573e1b3ecec178a3daf0d1009b1ba` (ci-local PR #2, `fix/evidence-single-read-integrity-20261112`). Static readback counts 96 authored regression methods; none has been executed by this verifier yet.
-- New `ONE_SOURCE_CANONICAL_COMMIT.txt` and `CI_LOCAL_CANONICAL_COMMIT.txt` pins are candidate-only and exist on this isolated branch. The old ambiguous `LOCAL_CI_CANONICAL_COMMIT.txt` is removed from this branch.
-- `.github/workflows/windows-verification.yml` now checks out ONE and ci-local separately, asserts both source SHAs plus the verifier workflow SHA, runs the standalone package test/compile/install/console/smoke checks, executes the verifier-owned `plans/one-product-checks.json`, and creates/verifies a manifest bound to all three identities.
-- The ONE product-check plan is owned by this verifier repository, not ONE. This respects the extraction boundary: ONE retains product-owned CircleCI commands and product contract tests, but no CI Local runner, package, or consumer plan.
-- The separate `CANONICAL_COMMIT.txt` and `.github/workflows/one-cross-platform-verification.yml` product-verification route remain untouched.
-- The workflow has not yet completed on this draft branch. Do not claim Linux/Windows parity, do not advance the `verification` branch, and do not merge this PR until exact-SHA jobs and artifacts are reviewed.
+- ONE PR #92 source: `fb58a7f7bd357b469452c19379b6b07ad133535b`.
+- ci-local PR #2 package: `df592ae615f573e1b3ecec178a3daf0d1009b1ba`.
+- Verifier branch: `migration/ci-local-dual-pin-20261113`; use live PR #41 metadata for its current HEAD. The workflow binds the verifier identity to `github.sha`.
+- PR #41 remains OPEN / DRAFT / UNMERGED. The production `verification` branch and separate product-verification pin/workflow remain unchanged.
 
-See [CI Local migration implementation](docs/CI_LOCAL_MIGRATION_IMPLEMENTATION.md) for the exact workflow and artifact contract.
+### Extraction boundary and static inventory
 
+- ONE's eight known legacy runner/config/guide/test paths are absent at its candidate SHA. The ONE product plan is held in this verifier repository, not in ONE.
+- The ci-local candidate has 96 authored regression methods: 55 runner, 34 evidence, 3 CI/build contract, 2 discovery, 2 path-contract. This is static inventory only; no runtime PASS is claimed.
+- ONE PR #94's separate CircleCI workflow is product-owned and has no CI Local runner/evidence/import/path markers. It remains outside this extraction.
+- PR #92's remaining product code/test/docs diff is not an extraction deliverable and is explicitly separated in that PR's description.
 
-The current pinned ci-local checkpoint includes the extraction inventory reconciliation: 96 authored test methods (55 runner, 34 evidence, 3 CI config/build, 2 discovery, 2 path-contract). This is static inventory, not a test PASS.
+### Latest exact-head run and blocker
 
-The current ONE candidate pin includes the final targeted cleanup of the retired branch-name reference in the runtime governance audit; the eight extracted runner/config/guide/test paths remain absent.
+- Workflow run `43390289272` ran on verifier commit `dd353b68cf0bf7cd8ced10d1a7fd91bd5fc26f07`, with ONE `fb58a7f7bd357b469452c19379b6b07ad133535b` and ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`.
+- Ubuntu job `131768291523` and Windows job `131768291055` both failed at the private ci-local access diagnostic. The existing `CI_LOCAL_READ_TOKEN` secret is present but returns HTTP 404 for the pinned private commit endpoint. It lacks effective access to `panglimanetizen01/ci-local` or is otherwise not authorized for that repository.
+- Both repository checkouts and all package tests, compile/install, smoke, ONE product-plan, and manifest verification steps were skipped. No runtime preservation or parity PASS is claimed.
+- Corrective action: replace/update the existing verifier Actions secret `CI_LOCAL_READ_TOKEN` with a token explicitly authorized for the private ci-local repository and Contents: read. Do not paste it into chat or make the repository public.
 
+### Artifact publication correction
 
-**Run-to-pin reconciliation:** workflow run `43387442873` tested an earlier candidate state (ONE `ebb11f8da5e8af7b0baf2e3785754e656b542777`, ci-local `99822c27730038659679099080ac839d11e03d4e`, verifier `508383a7668f696451be6c9a8e15e77555a1f1ab`) and failed at private ci-local access. It is not an execution of the current pins. Current pins are ONE `fb58a7f7bd357b469452c19379b6b07ad133535b` and ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`; no workflow run has executed on this exact candidate set.
+Run `43389915562` produced misleading plan-only ZIPs because the upload path included the verifier-owned plan even when runner checkout was blocked. Both ZIPs were inspected and contained only `plans/one-product-checks.json`, not reports or manifests. The workflow was corrected in commit `5875d1b7f5b57512ca17934145ce010b8a3e4339`: report upload now requires successful ci-local checkout and install, and only generated reports/manifests are uploaded. On run `43390289272`, the upload step was correctly SKIPPED and no artifacts were produced. The plan remains versioned in this repository and is not treated as evidence.
 
+### Promotion rule
 
-## Latest exact-current-pin execution — 2026-11-13
-
-- Workflow run: `43389690604`, on current verifier workflow commit `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
-- Exact pins used: ONE `fb58a7f7bd357b469452c19379b6b07ad133535b`; ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`; verifier workflow SHA `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
-- Ubuntu job `131766380963` and Windows job `131766381519` both failed at `Verify read access to pinned private ci-local repository`.
-- Logs show `CI_LOCAL_READ_TOKEN` is present (redacted in logs), but the private commit API endpoint returns HTTP `404`. Therefore the secret exists but its token does not currently have effective read access to the private ci-local repository, or its repository authorization is otherwise insufficient.
-- Both ONE/ci-local checkout steps and all package tests, compile/install, smoke, ONE product-plan, and evidence verification steps were skipped. The successful manifest step only emitted the explicit “skipped because runner/report not produced” notice; it is not evidence or a PASS.
-- Required correction: replace/update the existing verifier Actions secret `CI_LOCAL_READ_TOKEN` with a token authorized for `panglimanetizen01/ci-local` and Contents: read. Do not paste the token into chat or make the repository public.
-- This is an access blocker, not a package/test failure. No runtime preservation or parity PASS is claimed.
-
-
-## Latest run on current source pins — verifier SHA superseded
-
-- Workflow run: `43389690604`, workflow checkout/verifier SHA `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
-- It used the current ONE source pin `fb58a7f7bd357b469452c19379b6b07ad133535b` and ci-local pin `df592ae615f573e1b3ecec178a3daf0d1009b1ba`.
-- The verifier branch has since advanced through documentation-only commits to `479a12cc029a71b116890c8d9b3d332b159513f5`. Therefore run `43389690604` is **not** a run on the current exact three-identity set; its verifier identity is superseded.
-- Ubuntu job `131766380963` and Windows job `131766381519` both failed at the private ci-local read-access diagnostic.
-- Logs show `CI_LOCAL_READ_TOKEN` is present (redacted), but the private commit API endpoint returns HTTP `404`. The secret exists, but its token lacks effective read access to private ci-local or its repository authorization is otherwise insufficient.
-- Both source checkout steps and all package tests, compile/install, smoke, ONE product-plan, and evidence verification steps were skipped. The green manifest step emitted an explicit skipped notice; it is not evidence or a PASS.
-- Required correction: replace/update `CI_LOCAL_READ_TOKEN` with a token authorized for `panglimanetizen01/ci-local` and Contents: read. Do not paste the token into chat or make the repository public.
-- No workflow run has executed on the current verifier HEAD `479a12cc029a71b116890c8d9b3d332b159513f5` with the current three identities. No runtime preservation or parity PASS is claimed.
+Do not merge PR #41, advance the `verification` branch, or claim migration preservation until the token has effective private-repository read access and both Linux/Windows jobs complete on the exact three identities with package/product reports and a verified manifest. No unrelated ci-local roadmap/backlog work is required.
