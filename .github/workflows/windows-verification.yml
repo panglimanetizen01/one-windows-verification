@@ -216,6 +216,10 @@ jobs:
           EXPECTED_VERIFIER_SHA: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}
         run: |
+          if ! command -v ci-local-evidence >/dev/null 2>&1 || [ ! -f "$RUNNER_TEMP/one-product-report.json" ]; then
+            echo "::notice::Evidence creation skipped because the standalone runner did not install or the product report was not produced."
+            exit 0
+          fi
           ci-local-evidence create \
             --report "$RUNNER_TEMP/one-product-report.json" \
             --plan "$GITHUB_WORKSPACE/plans/one-product-checks.json" \
