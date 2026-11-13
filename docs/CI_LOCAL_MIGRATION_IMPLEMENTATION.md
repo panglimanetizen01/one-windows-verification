@@ -49,3 +49,8 @@ For both `ubuntu-latest` and `windows-2025`:
 ## Promotion rule
 
 Do not merge the draft PR or update the `verification` branch until both OS jobs complete on the exact three identities and the report/manifest artifacts verify. Do not modify the separate product-verification workflow or pin. No release or unrelated ci-local backlog work is part of this task.
+
+
+## Private repository checkout credential
+
+The standalone ci-local repository is private. The verifier workflow checks the pinned commit API endpoint before checkout and uses the repository secret `CI_LOCAL_READ_TOKEN`, falling back to `CANONICAL_READ_TOKEN` for compatibility. The selected token must have Contents: read access to `panglimanetizen01/ci-local`. The diagnostic prints only the HTTP status, never the token. If the pinned commit endpoint is not HTTP 200, update the verifier repository secret; do not make ci-local public or weaken repository visibility.
