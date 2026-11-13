@@ -54,3 +54,8 @@ Do not merge the draft PR or update the `verification` branch until both OS jobs
 ## Private repository checkout credential
 
 The standalone ci-local repository is private. The verifier workflow checks the pinned commit API endpoint before checkout and uses the repository secret `CI_LOCAL_READ_TOKEN`, falling back to `CANONICAL_READ_TOKEN` for compatibility. The selected token must have Contents: read access to `panglimanetizen01/ci-local`. The diagnostic prints only the HTTP status, never the token. If the pinned commit endpoint is not HTTP 200, update the verifier repository secret; do not make ci-local public or weaken repository visibility.
+
+
+## Exact current authored regression inventory
+
+At ci-local candidate SHA `df592ae615f573e1b3ecec178a3daf0d1009b1ba`, static GitHub-readback counting found 96 methods across the five test modules (55 runner, 34 evidence, 3 CI/build, 2 discovery, 2 path-contract). This is not runtime evidence. The exact-SHA dual-pin workflow must execute the suite before preservation is accepted.
