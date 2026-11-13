@@ -53,3 +53,15 @@ The current ONE candidate pin includes the final targeted cleanup of the retired
 - Both ONE/ci-local checkout steps and all package tests, compile/install, smoke, ONE product-plan, and evidence verification steps were skipped. The successful manifest step only emitted the explicit “skipped because runner/report not produced” notice; it is not evidence or a PASS.
 - Required correction: replace/update the existing verifier Actions secret `CI_LOCAL_READ_TOKEN` with a token authorized for `panglimanetizen01/ci-local` and Contents: read. Do not paste the token into chat or make the repository public.
 - This is an access blocker, not a package/test failure. No runtime preservation or parity PASS is claimed.
+
+
+## Latest run on current source pins — verifier SHA superseded
+
+- Workflow run: `43389690604`, workflow checkout/verifier SHA `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
+- It used the current ONE source pin `fb58a7f7bd357b469452c19379b6b07ad133535b` and ci-local pin `df592ae615f573e1b3ecec178a3daf0d1009b1ba`.
+- The verifier branch has since advanced through documentation-only commits to `479a12cc029a71b116890c8d9b3d332b159513f5`. Therefore run `43389690604` is **not** a run on the current exact three-identity set; its verifier identity is superseded.
+- Ubuntu job `131766380963` and Windows job `131766381519` both failed at the private ci-local read-access diagnostic.
+- Logs show `CI_LOCAL_READ_TOKEN` is present (redacted), but the private commit API endpoint returns HTTP `404`. The secret exists, but its token lacks effective read access to private ci-local or its repository authorization is otherwise insufficient.
+- Both source checkout steps and all package tests, compile/install, smoke, ONE product-plan, and evidence verification steps were skipped. The green manifest step emitted an explicit skipped notice; it is not evidence or a PASS.
+- Required correction: replace/update `CI_LOCAL_READ_TOKEN` with a token authorized for `panglimanetizen01/ci-local` and Contents: read. Do not paste the token into chat or make the repository public.
+- No workflow run has executed on the current verifier HEAD `479a12cc029a71b116890c8d9b3d332b159513f5` with the current three identities. No runtime preservation or parity PASS is claimed.
