@@ -175,7 +175,7 @@
       "command": [
         "python",
         "-c",
-        "import os,pathlib,shutil,sys; root=pathlib.Path.cwd(); suffix='.exe' if os.name=='nt' else ''; source=root/'target'/'one-health-cli'/'debug'/('one'+suffix); target=root/'target'/'debug'/('one'+suffix); target.parent.mkdir(parents=True,exist_ok=True); target.unlink(missing_ok=True); shutil.copy2(source,target); links=os.stat(target).st_nlink; print('trusted CLI hard-link count:',links); sys.exit(0 if links==1 else 1)"
+        "import os,pathlib,shutil,sys; workspace=pathlib.Path.cwd(); suffix='.exe' if os.name=='nt' else ''; source=workspace/'target'/'one-health-cli'/'debug'/('one'+suffix); target=workspace/'target'/'debug'/('one'+suffix); target.parent.mkdir(parents=True,exist_ok=True); target.unlink(missing_ok=True); shutil.copy2(source,target); links=os.stat(target).st_nlink; print('trusted CLI hard-link count:',links); sys.exit(0 if links==1 else 1)"
       ],
       "timeout_seconds": 60
     }
