@@ -64,3 +64,14 @@ At ci-local candidate SHA `df592ae615f573e1b3ecec178a3daf0d1009b1ba`, static Git
 ## ONE residual reference cleanup
 
 The ONE PR #92 candidate was advanced to `fb58a7f7bd357b469452c19379b6b07ad133535b` to remove the retired working-branch name from `docs/verification/runtime-governance-audit-2026-11-12.md`. The source branch's known legacy CI Local paths remain absent. Re-run the dual-pin workflow on the new exact ONE SHA after the private ci-local checkout credential is available.
+
+
+## Latest exact-current-pin execution — 2026-11-13
+
+- Workflow run: `43389690604`, on current verifier workflow commit `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
+- Exact pins used: ONE `fb58a7f7bd357b469452c19379b6b07ad133535b`; ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`; verifier workflow SHA `8c66b541549ab88446ed43cd0d832d3a3c9e6324`.
+- Ubuntu job `131766380963` and Windows job `131766381519` both failed at `Verify read access to pinned private ci-local repository`.
+- Logs show `CI_LOCAL_READ_TOKEN` is present (redacted in logs), but the private commit API endpoint returns HTTP `404`. Therefore the secret exists but its token does not currently have effective read access to the private ci-local repository, or its repository authorization is otherwise insufficient.
+- Both ONE/ci-local checkout steps and all package tests, compile/install, smoke, ONE product-plan, and evidence verification steps were skipped. The successful manifest step only emitted the explicit “skipped because runner/report not produced” notice; it is not evidence or a PASS.
+- Required correction: replace/update the existing verifier Actions secret `CI_LOCAL_READ_TOKEN` with a token authorized for `panglimanetizen01/ci-local` and Contents: read. Do not paste the token into chat or make the repository public.
+- This is an access blocker, not a package/test failure. No runtime preservation or parity PASS is claimed.
