@@ -25,8 +25,8 @@ See [Continuous Repository Health & Repair System](docs/CONTINUOUS_REPOSITORY_HE
 
 Implementation candidate branch: `migration/ci-local-dual-pin-20261113`, based on verifier branch `verification` at exact SHA `f364ba99b3ff8eeccd166bf6a1e8c57f3af0a288`.
 
-- ONE source candidate: `47ac10686e6aac023941e72ec6fb3ad22d18f19b` (PR #92, `tooling/python-local-ci`). Its CircleCI context currently reports FAILURE; no root cause is inferred without job logs.
-- Standalone runner candidate: `a34e07429ec686b91e74ef9c719cd499c7d2dd8a` (ci-local PR #2, `fix/evidence-single-read-integrity-20261112`). Its exact-SHA tests and CircleCI status are not verified yet.
+- ONE source candidate: `fb58a7f7bd357b469452c19379b6b07ad133535b` (PR #92, `tooling/python-local-ci`). This includes the final targeted cleanup of a retired branch-name reference; no runtime PASS is claimed for this new SHA.
+- Standalone runner candidate: `df592ae615f573e1b3ecec178a3daf0d1009b1ba` (ci-local PR #2, `fix/evidence-single-read-integrity-20261112`). Static readback counts 96 authored regression methods; none has been executed by this verifier yet.
 - New `ONE_SOURCE_CANONICAL_COMMIT.txt` and `CI_LOCAL_CANONICAL_COMMIT.txt` pins are candidate-only and exist on this isolated branch. The old ambiguous `LOCAL_CI_CANONICAL_COMMIT.txt` is removed from this branch.
 - `.github/workflows/windows-verification.yml` now checks out ONE and ci-local separately, asserts both source SHAs plus the verifier workflow SHA, runs the standalone package test/compile/install/console/smoke checks, executes the verifier-owned `plans/one-product-checks.json`, and creates/verifies a manifest bound to all three identities.
 - The ONE product-check plan is owned by this verifier repository, not ONE. This respects the extraction boundary: ONE retains product-owned CircleCI commands and product contract tests, but no CI Local runner, package, or consumer plan.
