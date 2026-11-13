@@ -39,3 +39,6 @@ See [CI Local migration implementation](docs/CI_LOCAL_MIGRATION_IMPLEMENTATION.m
 The current pinned ci-local checkpoint includes the extraction inventory reconciliation: 96 authored test methods (55 runner, 34 evidence, 3 CI config/build, 2 discovery, 2 path-contract). This is static inventory, not a test PASS.
 
 The current ONE candidate pin includes the final targeted cleanup of the retired branch-name reference in the runtime governance audit; the eight extracted runner/config/guide/test paths remain absent.
+
+
+**Run-to-pin reconciliation:** workflow run `43387442873` tested an earlier candidate state (ONE `ebb11f8da5e8af7b0baf2e3785754e656b542777`, ci-local `99822c27730038659679099080ac839d11e03d4e`, verifier `508383a7668f696451be6c9a8e15e77555a1f1ab`) and failed at private ci-local access. It is not an execution of the current pins. Current pins are ONE `fb58a7f7bd357b469452c19379b6b07ad133535b` and ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`; no workflow run has executed on this exact candidate set.
