@@ -1,0 +1,3 @@
+Prompt 3 exact-SHA trigger for Android API 35 arm64-v8a runtime attempt with bounded software-acceleration fallback.
+Candidate source SHA: 26d3d30be773cfc403daa002f7116c176ef31fc8
+Refresh runtime trigger after adding explicit API 35 AVD creation; candidate SHA remains 26d3d30be773cfc403daa002f7116c176ef31fc8.
