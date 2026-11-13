@@ -84,6 +84,7 @@ jobs:
           path: source
 
       - name: Checkout standalone ci-local
+        id: checkout_ci_local
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/ci-local
@@ -171,6 +172,7 @@ jobs:
           python -m unittest discover -s tests -v
 
       - name: Build and install pinned ci-local distribution
+        id: install_ci_local
         shell: bash
         run: python -m pip install --no-deps ./ci-local
 
@@ -207,7 +209,7 @@ jobs:
             --cwd "$GITHUB_WORKSPACE/source" \
             --report "$RUNNER_TEMP/one-product-report.json"
 
-      - name: Create and verify exact three-identity evidence manifest
+      - name: Create and verify exact three-identity evidence manifest when report exists
         if: always()
         shell: bash
         env:
@@ -236,8 +238,8 @@ jobs:
             --expected-verifier-sha "$EXPECTED_VERIFIER_SHA" \
             --expected-runner-sha "$EXPECTED_RUNNER_SHA"
 
-      - name: Upload standalone ci-local and ONE verification evidence
-        if: always()
+      - name: Upload generated standalone ci-local and ONE verification reports
+        if: always() && steps.checkout_ci_local.outcome == 'success' && steps.install_ci_local.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ci-local-evidence-${{ matrix.os }}
@@ -245,5 +247,4 @@ jobs:
             ${{ runner.temp }}/ci-local-smoke-report.json
             ${{ runner.temp }}/one-product-report.json
             ${{ runner.temp }}/one-product-manifest.json
-            plans/one-product-checks.json
           if-no-files-found: warn
