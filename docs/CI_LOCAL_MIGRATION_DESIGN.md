@@ -114,3 +114,8 @@ An isolated draft branch `migration/ci-local-dual-pin-20261113` was created from
 The dual-pin workflow checks out the two repositories independently, verifies all three identities, tests and installs the standalone package, runs its smoke plan, executes the verifier-owned ONE product plan, and creates/verifies a manifest requiring the exact ONE SHA, ci-local runner SHA, and verifier SHA. The legacy `LOCAL_CI_CANONICAL_COMMIT.txt` is removed only on this draft branch; the separate product-verification pin and workflow are unchanged.
 
 This is an implementation candidate, not a passing verification result. No source pin on the `verification` branch has changed; no merge, release, or production promotion occurred. Exact Linux/Windows workflow results remain pending.
+
+
+### Run identity qualification
+
+Run `43387442873` was executed against the previous candidate pins (ONE `ebb11f8da5e8af7b0baf2e3785754e656b542777`, ci-local `99822c27730038659679099080ac839d11e03d4e`, verifier `508383a7668f696451be6c9a8e15e77555a1f1ab`). It failed at the private ci-local access check before tests. It is not evidence for the current pins. The current candidate pins are ONE `fb58a7f7bd357b469452c19379b6b07ad133535b` and ci-local `df592ae615f573e1b3ecec178a3daf0d1009b1ba`; no run has executed on this exact candidate set.
