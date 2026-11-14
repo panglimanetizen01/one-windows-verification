@@ -57,3 +57,16 @@ This addendum supersedes earlier candidate/test-inventory values above; it does 
 - The verifier migration target remains `.github/workflows/windows-verification.yml`; keep `.github/workflows/one-cross-platform-verification.yml` and `CANONICAL_COMMIT.txt` unchanged. Dual-pin design and ownership boundaries remain as specified in the previous addendum.
 - Existing `LOCAL_CI_CANONICAL_COMMIT.txt` still contains ONE SHA `56ef8babfbc35808d82b930d8dd9baa92afb26af`; do not change it until a reviewed dual-pin workflow change is ready and ci-local Gate B passes.
 - No verifier workflow/pin change, no ONE consumer change, no merge/release, and no legacy deletion.
+
+
+## Independent Windows exact-SHA verification — 2026-11-14
+
+- Dedicated workflow: `.github/workflows/windows-native-backend-runtime.yml`.
+- Exact canonical source pin: `WINDOWS_SOURCE_COMMIT.txt`; current candidate `195755054bb733f44ff30acf8d3281b4efc820bf` (Project ONE PR #95 branch `ci/circleci-migration-20261113`).
+- The workflow checks out the private canonical repository at that full 40-character commit and fails unless `git rev-parse HEAD` equals the pin. It records both source and verifier SHA values.
+- Windows Server 2025 executes the source contract and user-document checks, workspace build, Clippy, full tests, deterministic artifacts, DNS/orchestration/database/HTTP checks, real-network tests, offline verification, and the Windows native backend build.
+- The native executable is checked for MZ, PE signature, AMD64 machine `0x8664`, PE32+ optional-header magic `0x20B`, then executed and checked for the expected `Budi` output.
+- The workflow uploads the executable and a manifest containing source SHA, verifier SHA, run identity, host, toolchain, runtime result, and binary SHA-256.
+- The source pin is a target pointer, not evidence. This candidate remains unverified until the exact-SHA workflow reaches terminal SUCCESS and the uploaded manifest/artifact are inspected. No CircleCI result is inferred from this GitHub Actions workflow.
+
+See [Windows verification contract](docs/WINDOWS_VERIFICATION.md) for the workflow and evidence boundary.
