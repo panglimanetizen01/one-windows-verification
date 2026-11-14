@@ -1,10 +1,15 @@
-name: ONE Windows Native Backend Runtime — Windows Server 2025
+name: ONE Windows Server 2025 Exact-SHA Verification
 
 on:
   push:
     branches: [ verification ]
     paths:
-      - "CANONICAL_COMMIT.txt"
+      - "WINDOWS_SOURCE_COMMIT.txt"
+      - ".github/workflows/windows-native-backend-runtime.yml"
+  pull_request:
+    branches: [ verification ]
+    paths:
+      - "WINDOWS_SOURCE_COMMIT.txt"
       - ".github/workflows/windows-native-backend-runtime.yml"
   workflow_dispatch:
 
@@ -12,95 +17,239 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-windows-native-runtime-${{ github.ref_name }}
+  group: one-windows-exact-sha-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
-  windows-native-runtime:
-    name: Build and execute exact-SHA Windows native backend
+  windows-verification:
+    name: Full product and native runtime verification (Windows Server 2025)
     runs-on: windows-2025
-    timeout-minutes: 60
+    timeout-minutes: 240
     steps:
       - name: Checkout verification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - name: Read canonical source SHA
+      - name: Read and validate canonical source pin
         id: canonical
-        shell: bash
+        shell: pwsh
         run: |
-          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
-          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
-            echo "invalid canonical commit: $target" >&2
-            exit 1
-          fi
-          echo "ref=$target" >> "$GITHUB_OUTPUT"
+          $sourceSha = (Get-Content WINDOWS_SOURCE_COMMIT.txt -Raw).Trim()
+          if ($sourceSha -notmatch '^[0-9a-f]{40}$') {
+            throw "Invalid canonical source SHA: $sourceSha"
+          }
+          "sha=$sourceSha" >> $env:GITHUB_OUTPUT
+          Write-Host "canonical_source_sha=$sourceSha"
 
-      - name: Checkout exact canonical source
+      - name: Checkout exact canonical ONE source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
-          ref: ${{ steps.canonical.outputs.ref }}
+          ref: ${{ steps.canonical.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
-      - name: Verify exact source SHA
-        working-directory: source
+      - name: Verify source and verifier identities
+        id: identities
         shell: pwsh
         run: |
-          $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
-          "source_sha=$actual"
+          $actualSource = (git -C source rev-parse HEAD).Trim()
+          $expectedSource = '${{ steps.canonical.outputs.sha }}'
+          if ($actualSource -ne $expectedSource) {
+            throw "Canonical source SHA mismatch: expected $expectedSource, got $actualSource"
+          }
+          $actualVerifier = (git rev-parse HEAD).Trim()
+          if ($actualVerifier -ne '${{ github.sha }}') {
+            throw "Verifier checkout SHA mismatch: expected ${{ github.sha }}, got $actualVerifier"
+          }
+          "source_sha=$actualSource" >> $env:GITHUB_OUTPUT
+          "verifier_sha=$actualVerifier" >> $env:GITHUB_OUTPUT
+          Write-Host "source_sha=$actualSource"
+          Write-Host "verifier_sha=$actualVerifier"
 
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          toolchain: 1.99.0
+          python-version: "3.12"
+
+      - name: Set up stable Rust toolchain
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+        with:
+          toolchain: stable
           components: rustfmt, clippy
 
-      - name: Install MinGW clang and linker
+      - name: Install MinGW-w64 Clang and linker
         uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e
+        timeout-minutes: 35
         with:
           msystem: MINGW64
           update: true
           install: mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
 
-      - name: Configure Windows native compiler override
-        shell: pwsh
-        run: |
-          "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
-          clang --version
-          $probe = Join-Path $env:RUNNER_TEMP 'one-mingw-probe.c'
-          $probeExe = Join-Path $env:RUNNER_TEMP 'one-mingw-probe.exe'
-          'int main(void) { return 0; }' | Set-Content -Encoding ascii $probe
-          clang --target=x86_64-w64-windows-gnu $probe -o $probeExe
-          if ($LASTEXITCODE -ne 0 -or -not (Test-Path $probeExe)) {
-            throw 'MinGW clang could not produce a Windows GNU executable.'
-          }
-          $probeBytes = [System.IO.File]::ReadAllBytes($probeExe)
-          if ($probeBytes.Length -lt 2 -or $probeBytes[0] -ne 0x4D -or $probeBytes[1] -ne 0x5A) {
-            throw 'MinGW compiler probe is not a PE executable.'
-          }
-          Write-Host 'MinGW clang PE probe PASS.'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: platform-tools
 
-      - name: Verify Windows Server 2025 host
+      - name: Install and verify pinned Android NDK r27c
+        shell: pwsh
+        timeout-minutes: 45
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+          $sdkmanager = Join-Path $env:ANDROID_HOME 'cmdline-tools\latest\bin\sdkmanager.bat'
+          if (-not (Test-Path $sdkmanager)) {
+            throw "Android sdkmanager is missing: $sdkmanager"
+          }
+          1..20 | ForEach-Object { 'y' } | & $sdkmanager --licenses
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $sdkmanager --install 'ndk;27.2.12479018'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $androidClang = Join-Path $env:ANDROID_HOME 'ndk\27.2.12479018\toolchains\llvm\prebuilt\windows-x86_64\bin\clang.exe'
+          if (-not (Test-Path $androidClang)) {
+            throw "Pinned Android NDK Clang is missing: $androidClang"
+          }
+          "ONE_ANDROID_CLANG=$androidClang" >> $env:GITHUB_ENV
+          'ONE_WINDOWS_CLANG=clang' >> $env:GITHUB_ENV
+          Write-Host "ONE_ANDROID_CLANG=$androidClang"
+          clang --version
+
+      - name: Verify Windows host and toolchains
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          if ($env:PROCESSOR_ARCHITECTURE -ne 'AMD64') {
+            throw "Expected AMD64 Windows runner, got $env:PROCESSOR_ARCHITECTURE"
+          }
           Write-Host "OS: $([System.Environment]::OSVersion.VersionString)"
           Write-Host "Architecture: $env:PROCESSOR_ARCHITECTURE"
-          if ($env:PROCESSOR_ARCHITECTURE -ne 'AMD64') {
-            throw "Expected AMD64 Windows runner."
-          }
+          rustc --version
+          cargo --version
+          clang --version
+          & $env:ONE_ANDROID_CLANG --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Build Windows native backend artifact
+      - name: Validate source contracts and user documentation
         working-directory: source
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          rustc --version
-          cargo --version
-          # one-native resolves a relative output path beneath the input .one file's directory (examples/).
-          cargo run -p one-cli --bin one-native --locked -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
-          if (-not (Test-Path examples/one-windows-native.exe)) {
+          python tools/check_contract.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/check_user_docs.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/check_user_docs_test.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build all workspace targets
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 60
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo build --workspace --all-targets
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run Clippy with warnings denied
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 60
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo clippy --workspace --all-targets -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run complete workspace test suite
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 75
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test --workspace --all-targets
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify deterministic .oneir and .onepkg artifacts
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 30
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test -p one-cli --test cli build_and_package_artifacts_are_byte_deterministic
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify DNS success and failure classification
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 30
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test -p one-core --all-targets dns_adapter
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify orchestration policy paths
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 30
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test -p one-core --all-targets orchestrator
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify database vertical slice
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 30
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test -p one-core --test database_vertical_slice
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify HTTP GET vertical slice
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 30
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test -p one-core --test http_get_vertical_slice
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify HTTP GET CLI vertical slice
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 30
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test -p one-cli --test http_get_orchestration
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify real-network runtime tests
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 60
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo test -p one-core --features real-network --all-targets
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify offline behavior
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 45
+        run: |
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          .\tools\verify_offline.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build Windows native backend artifact
+        id: native_build
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 45
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo run -p one-cli --bin one-native -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path 'examples\one-windows-native.exe')) {
             throw 'Windows native artifact was not produced.'
           }
 
@@ -109,13 +258,14 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $bytes = [System.IO.File]::ReadAllBytes('examples/one-windows-native.exe')
+          $artifact = 'examples\one-windows-native.exe'
+          $bytes = [System.IO.File]::ReadAllBytes($artifact)
           if ($bytes.Length -lt 64 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
             throw 'Artifact does not have a valid PE MZ header.'
           }
           $peOffset = [BitConverter]::ToInt32($bytes, 0x3C)
-          if ($peOffset -lt 0 -or $peOffset + 24 -gt $bytes.Length) {
-            throw 'Invalid PE header offset.'
+          if ($peOffset -lt 0 -or $peOffset + 26 -gt $bytes.Length) {
+            throw 'Invalid PE header offset or truncated optional header.'
           }
           if ($bytes[$peOffset] -ne 0x50 -or $bytes[$peOffset + 1] -ne 0x45 -or $bytes[$peOffset + 2] -ne 0x00 -or $bytes[$peOffset + 3] -ne 0x00) {
             throw 'Missing PE signature.'
@@ -123,6 +273,10 @@ jobs:
           $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
           if ($machine -ne 0x8664) {
             throw ("Expected AMD64 PE machine 0x8664, got 0x{0:X4}." -f $machine)
+          }
+          $optionalMagic = [BitConverter]::ToUInt16($bytes, $peOffset + 24)
+          if ($optionalMagic -ne 0x20B) {
+            throw ("Expected PE32+ optional-header magic 0x20B, got 0x{0:X4}." -f $optionalMagic)
           }
           Write-Host 'PE32+ AMD64 artifact verified.'
 
@@ -132,46 +286,75 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $output = & .\examples\one-windows-native.exe 2>&1
+          $output = & '.\examples\one-windows-native.exe' 2>&1
           $exitCode = $LASTEXITCODE
           $outputText = ($output | Out-String).Trim()
+          $singleLine = ($outputText -replace '[\r\n]+', ' ').Trim()
           Write-Host "runtime_exit_code=$exitCode"
-          Write-Host "runtime_output=$outputText"
+          Write-Host "runtime_output=$singleLine"
           if ($exitCode -ne 0) {
             throw "Windows native artifact exited with code $exitCode."
           }
-          if (-not $outputText.Contains('Budi')) {
-            throw "Expected program output was not observed: $outputText"
+          if (-not $singleLine.Contains('Budi')) {
+            throw "Expected program output was not observed: $singleLine"
           }
-          "runtime_exit_code=$exitCode" >> $env:GITHUB_OUTPUT
-          "runtime_output=$outputText" >> $env:GITHUB_OUTPUT
+          "exit_code=$exitCode" >> $env:GITHUB_OUTPUT
+          "output=$singleLine" >> $env:GITHUB_OUTPUT
 
-      - name: Write exact-SHA runtime manifest
+      - name: Verify source revision remained pinned and write evidence manifest
+        if: always()
         working-directory: source
         shell: pwsh
+        env:
+          EXPECTED_SOURCE_SHA: ${{ steps.canonical.outputs.sha }}
+          EXPECTED_VERIFIER_SHA: ${{ steps.identities.outputs.verifier_sha }}
+          JOB_STATUS: ${{ job.status }}
+          NATIVE_EXIT_CODE: ${{ steps.runtime.outputs.exit_code }}
+          NATIVE_OUTPUT: ${{ steps.runtime.outputs.output }}
         run: |
-          $ErrorActionPreference = 'Stop'
-          $hash = (Get-FileHash examples/one-windows-native.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          $ErrorActionPreference = 'Continue'
+          $actualSource = (git rev-parse HEAD).Trim()
+          if ($actualSource -ne $env:EXPECTED_SOURCE_SHA) {
+            throw "Source revision drifted: expected $env:EXPECTED_SOURCE_SHA, got $actualSource"
+          }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { throw 'Tracked source files changed during verification.' }
+          git diff --cached --exit-code
+          if ($LASTEXITCODE -ne 0) { throw 'Tracked source index changed during verification.' }
+          $binary = 'examples\one-windows-native.exe'
+          $binaryHash = ''
+          if (Test-Path $binary) {
+            $binaryHash = (Get-FileHash $binary -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          $rustcVersion = if (Get-Command rustc -ErrorAction SilentlyContinue) { (rustc --version | Out-String).Trim() } else { 'unavailable' }
+          $cargoVersion = if (Get-Command cargo -ErrorAction SilentlyContinue) { (cargo --version | Out-String).Trim() } else { 'unavailable' }
+          $clangVersion = if (Get-Command clang -ErrorAction SilentlyContinue) { (clang --version | Select-Object -First 1).Trim() } else { 'unavailable' }
           @(
-            "source_sha=${{ steps.canonical.outputs.ref }}"
+            "source_sha=$actualSource"
+            "verifier_sha=$env:EXPECTED_VERIFIER_SHA"
+            "workflow_run_id=${{ github.run_id }}"
+            "workflow_run_attempt=${{ github.run_attempt }}"
+            "job_status=$env:JOB_STATUS"
             "host_os=$([System.Environment]::OSVersion.VersionString)"
             "host_arch=$env:PROCESSOR_ARCHITECTURE"
             "target=x86_64-pc-windows-gnu"
-            "rustc=$(rustc --version)"
-            "cargo=$(cargo --version)"
+            "rustc=$rustcVersion"
+            "cargo=$cargoVersion"
+            "clang=$clangVersion"
             "binary=examples/one-windows-native.exe"
-            "binary_sha256=$hash"
-            "runtime_exit_code=${{ steps.runtime.outputs.runtime_exit_code }}"
-            "runtime_output=${{ steps.runtime.outputs.runtime_output }}"
+            "binary_sha256=$binaryHash"
+            "native_runtime_exit_code=$env:NATIVE_EXIT_CODE"
+            "native_runtime_output=$env:NATIVE_OUTPUT"
           ) | Set-Content -Encoding utf8 one-windows-native-runtime-manifest.txt
           Get-Content one-windows-native-runtime-manifest.txt
 
-      - name: Upload exact-SHA Windows native runtime evidence
+      - name: Upload exact-SHA Windows verification evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: one-windows-native-runtime-${{ steps.canonical.outputs.ref }}
+          name: one-windows-verification-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             source/examples/one-windows-native.exe
             source/one-windows-native-runtime-manifest.txt
-          if-no-files-found: ignore
+          if-no-files-found: warn
+          retention-days: 14
