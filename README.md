@@ -1,59 +1,47 @@
-# One — Cross-Platform Verification
+# Project ONE — Independent Verification Harness
 
-Temporary public verification mirror for independent Linux and Windows verification of the One programming language.
+This repository hosts isolated GitHub Actions workflows for independent verification of selected snapshots of the canonical Project ONE source repository.
 
-The canonical source repository remains private: `panglimanetizen01/one`.
+- Canonical source: `panglimanetizen01/one` (private).
+- Canonical product CI: CircleCI, Linux host only.
+- Independent Windows host verification: this repository, on GitHub-hosted Windows Server 2025 AMD64.
+- GitHub remains the source-control and review host; this repository does not replace the canonical source repository.
 
-Current PR #92 Local CI verifier target: `56ef8babfbc35808d82b930d8dd9baa92afb26af` (PR #92, branch `tooling/python-local-ci`). The pin file `LOCAL_CI_CANONICAL_COMMIT.txt` is authoritative for the actual workflow checkout. The pin is a target pointer, not execution evidence. Linux/Windows results must complete on this exact SHA before parity is claimed. This is the last source SHA recorded as independently verified; newer PR #92 commits must not inherit that evidence.
+## Project ONE Windows host verification
 
-The separate `CANONICAL_COMMIT.txt` pin for PR #94 remains unchanged.
+The Windows verification workflow is `.github/workflows/windows-native-backend-runtime.yml`. Its source target is the full commit SHA in `WINDOWS_SOURCE_COMMIT.txt`; it does not follow a branch name.
 
-This repository exists only to execute the canonical source snapshot on GitHub-hosted runners without requiring a paid GitHub upgrade.
+The workflow:
+1. Validates the 40-character source pin.
+2. Checks out the private canonical repository at that exact SHA using the repository-scoped `CANONICAL_READ_TOKEN` secret.
+3. Asserts both the canonical source SHA and the verifier checkout SHA before running product commands.
+4. Runs source contract and user-document checks, Rust build, Clippy, the full workspace test suite, deterministic artifacts, DNS/orchestration/database/HTTP checks, real-network tests, and offline verification.
+5. Builds the Windows native backend, inspects the PE32+ AMD64 artifact, executes it, and requires the expected `Budi` output.
+6. Writes a manifest with source/verifier identities and the executable SHA-256, then uploads the manifest and binary.
 
-## Current candidate evidence
+### Demonstrated exact-SHA evidence — run #12
 
-See [CANDIDATE_VERIFICATION.md](CANDIDATE_VERIFICATION.md) for the exact source SHA, current verification runs, runner diagnostics, and release-gate rules.
+- Canonical source SHA: `f85375e279257dcbb7d4ded9632800fcd1b78cc9`.
+- Verifier SHA used by the run: `e765113b66eca514aa4759ddcc7215fc09254554`.
+- Windows run [#12](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43593490063): terminal **SUCCESS**; job `132442986608`; Windows Server 2025 / AMD64.
+- Manifest: `job_status=success`, target `x86_64-pc-windows-gnu`, native exit code `0`, output `Budi`.
+- Artifact ID `14113646474`; ZIP SHA-256 `551df64ac4ee00f1a2a7c9a65140b091cc956a2024d5ff23e12112cc3ade9201`; manifest SHA-256 `bfed07d536ce7d95a9b09140075c954877411922d5e85e12d79a69fd3f1dd638`; executable SHA-256 `ceaa2996f70a03cb69fb08b4b4d4edf63a2db453e5c13cfc7e356235fbb04e81`.
+- The downloaded ZIP digest, embedded manifest and executable hashes, MZ/PE signatures, AMD64 machine `0x8664`, and PE32+ magic `0x20B` were independently checked.
 
-The 2026-10-28 refresh is recorded in [Exact-SHA revalidation note](docs/verification/EXACT_SHA_REVALIDATION_2026-10-28.md). It documents successful Linux/Windows cross-platform checks for the pinned source SHA, the still-pending Android runtime at last observation, and why the acceptance gate remains NOT PASSED.
+The tested source SHA was the PR #95 head when run #12 started. PR #95 later advanced to `5d50f42d76a071800dd84ee5faa8b216335c1ced`; the single intervening commit changes only documentation/evidence files (no product source, tests, or CI configuration). The Windows PASS remains explicitly bound to `f85375e...`, not silently transferred to the later SHA.
 
-## Continuous diagnostic and repair system
+CircleCI Linux is a separate result. The current PR #95 head `5d50f42...` reports `ci/circleci: one-linux` FAILURE (workflow `d98d94fa-cb59-4487-84e9-582d889f6143`, job `b4427cc0-8253-4d95-8b5d-51f2f2778ca6`, failure report `aebbf019-e2c7-4c61-b0ce-e63a6b373832`). The authenticated first-failure output is not available in the current execution session, so the failed step/root cause is unknown. **No Linux PASS or overall cross-platform PASS is claimed.**
 
-See [Continuous Repository Health & Repair System](docs/CONTINUOUS_REPOSITORY_HEALTH_AND_REPAIR_SYSTEM.md) for the proposed detector catalogue, evidence model, guarded repair lifecycle, safety tiers, and incremental implementation roadmap. The canonical source currently contains the scanner, detector regression tests, baseline triage, guarded Markdown repair, and reviewed quality-ledger code. The independent exact-SHA scanner workflow is defined in this repository; its execution artifacts and outcomes must be inspected before claiming acceptance.
+PR #95 and the independent verifier PR #42 remain open, draft, and unmerged. The canonical `main` branch remains unchanged.
 
+## Other verification workflows
 
-## Standalone ci-local migration checkpoint — 2026-11-13
+This repository also contains separate Android, Linux, scanner, package, and other verification workflows. The Project ONE Windows workflow above is scoped to Windows-host verification of the pinned canonical source snapshot; it does not redefine or remove those unrelated workflows.
 
-The migration design is recorded in [CI_LOCAL_MIGRATION_DESIGN.md](docs/CI_LOCAL_MIGRATION_DESIGN.md). **It remains design-only and the verifier workflow has not been migrated.**
+- See [Candidate verification](CANDIDATE_VERIFICATION.md) for the broader candidate and release-gate process.
+- The 2026-10-28 refresh is recorded in [Exact-SHA revalidation](docs/verification/EXACT_SHA_REVALIDATION_2026-10-28.md).
+- See [Continuous Repository Health & Repair System](docs/CONTINUOUS_REPOSITORY_HEALTH_AND_REPAIR_SYSTEM.md) for the scanner and guarded-repair design.
 
-- PR #92 current ONE source candidate: `66a94d4ffc69240b5303745eaab02fcb5b31aa47` on `tooling/python-local-ci`; its exact-SHA verification is pending. The existing `LOCAL_CI_CANONICAL_COMMIT.txt` still points to the older last-verified baseline `56ef8babfbc35808d82b930d8dd9baa92afb26af`. Do not treat that old pin as validation of the newer candidate.
-- Standalone runner candidate: `panglimanetizen01/ci-local`, branch `fix/evidence-single-read-integrity-20261112`, exact source/test checkpoint `188ce087391ae1ef37c4baa107c7cecd77b9751c`; current docs-only branch HEAD `2049fcd52f5861b967c019f30fefbc0cbf0c7a42`. PR #2 is OPEN / DRAFT / UNMERGED.
-- The standalone candidate has 90 authored test methods (54 runner + 34 evidence + 2 CI/build contract). This is an inventory only; no execution PASS is claimed. Exact latest HEAD has no GitHub check-runs or Actions runs at the checkpoint.
-- Finding #61 hardens Windows `taskkill` nonzero-exit fallback and adds a mocked regression test. Hosted Windows process-tree validation remains pending.
-- The current verifier workflow still checks out only ONE and invokes `source/tools/ci_unittest.py`, `source/tools/ci_local.py`, and `source/tools/ci_local_evidence.py`. It still has one legacy ONE-source pin, not the required separate ONE and ci-local pins.
-- Keep both current pins and workflow unchanged until ci-local completes its own exact-SHA tests, compile/install/console/smoke/evidence/artifact gates and hosted Linux/Windows verification. Then implement the dual-pin verifier workflow on an isolated draft branch and prove it before changing ONE's consumer.
-- No verifier workflow, pin, product verifier, or legacy implementation has been changed. No merge, release, or deletion.
+## Historical checkpoint handling
 
-
-## Standalone ci-local migration reconciliation — 2026-11-13
-
-This addendum supersedes earlier candidate/test-inventory values above; it does not authorize pin or workflow changes.
-
-- ONE PR #92 remains OPEN / DRAFT / UNMERGED. Candidate branch `tooling/python-local-ci`, exact HEAD `66a94d4ffc69240b5303745eaab02fcb5b31aa47`, base `main` SHA `d35db95153f6ddd79885494c72f5aee16c899751`.
-- Standalone ci-local candidate branch `fix/evidence-single-read-integrity-20261112`, latest source/test SHA `b33f1a68f54e44fee24c275a5439c654689905fd`; latest documentation branch HEAD `c2b7b9b8388d9aad5727979dbeb76ae8fa111daf` at the time of this note. PR #2 remains OPEN / DRAFT / UNMERGED. Candidate is NOT VERIFIED: 92 authored test methods (55 runner, 34 evidence, 3 config/build) are inventory only. No full test, compile, package install, console, smoke, evidence roundtrip, or CircleCI Linux/Windows evidence is available for the candidate.
-- Windows process-tree implementation now uses a suspended process assigned to a kill-on-close Windows Job Object before resume. Regressions cover parent-exits-first with inherited pipes and descendant cleanup on timeout; neither has hosted Windows execution evidence yet.
-- The standalone CircleCI config now declares Linux `test` and Windows `test-windows` jobs. The supplementary GitHub Actions workflow was removed after runner allocation failures with no steps/logs; CircleCI remains the canonical standalone CI route. Actual CircleCI pipeline/log/artifact status is not readable in this session.
-- The Local CI consumer workflow to migrate is `.github/workflows/windows-verification.yml`, not `.github/workflows/one-cross-platform-verification.yml`. The latter and its `CANONICAL_COMMIT.txt` pin are separate product cross-platform verification and must remain unchanged.
-- Current legacy `LOCAL_CI_CANONICAL_COMMIT.txt` still contains ONE source SHA `56ef8babfbc35808d82b930d8dd9baa92afb26af`. Keep the required dual-pin model from this design: `ONE_SOURCE_CANONICAL_COMMIT.txt` for ONE, `CI_LOCAL_CANONICAL_COMMIT.txt` for standalone ci-local, plus verifier workflow SHA as third identity. No pin or workflow change until standalone Gate B passes.
-- Preserve ONE-specific toolchain provisioning, contract/user-doc checks, Rust build/Clippy/tests, product checks, and evidence. The generic runner/evidence/test-discovery implementation moves to ci-local; ONE-specific checks become the ONE-owned plan at `source/ci/ci-local-plan.json` as already specified above.
-- No ONE or verifier workflow/pin changes, no merge/release, no legacy deletion. Gate B incomplete; verifier migration and ONE consumer migration remain blocked.
-
-
-## Latest standalone ci-local candidate refresh — 2026-11-13 12:20 WIB
-
-- ci-local branch `fix/evidence-single-read-integrity-20261112` latest source commit: `a68960d8b1bf6ebe31793692bad81b77652541c0`; latest documentation branch HEAD at this refresh: `452fcb8d1f39cdb97c0480e95f97799c632f5dbd`. PR #2 remains OPEN / DRAFT / UNMERGED.
-- The candidate now owns Windows process trees with suspended launch + kill-on-close Job Object assignment before resume. Cleanup explicitly calls `TerminateJobObject` then `CloseHandle`; delayed-marker regressions cover parent-exits-first inherited pipes and timeout descendant termination. Both are authored only, NOT EXECUTED on hosted Windows.
-- Authored test inventory: 92 methods (55 runner, 34 evidence, 3 config/build). No full tests, compile, package build/install, console entry-point, smoke, evidence roundtrip, or CircleCI Linux/Windows artifacts have been verified for this candidate.
-- Standalone CircleCI config declares Linux `test` and Windows `test-windows`; the redundant GitHub Actions Windows workflow was removed. No CircleCI API connector is exposed in this session, and no exact-SHA CircleCI run/log/artifact can be read back. Candidate remains NOT VERIFIED.
-- The verifier migration target remains `.github/workflows/windows-verification.yml`; keep `.github/workflows/one-cross-platform-verification.yml` and `CANONICAL_COMMIT.txt` unchanged. Dual-pin design and ownership boundaries remain as specified in the previous addendum.
-- Existing `LOCAL_CI_CANONICAL_COMMIT.txt` still contains ONE SHA `56ef8babfbc35808d82b930d8dd9baa92afb26af`; do not change it until a reviewed dual-pin workflow change is ready and ci-local Gate B passes.
-- No verifier workflow/pin change, no ONE consumer change, no merge/release, and no legacy deletion.
+Older Local CI extraction notes previously embedded in this README are superseded by the canonical Project ONE Notion checkpoint. They are not instructions for the current Windows verifier and must not be used to change its source pin or workflow.
