@@ -19,6 +19,16 @@ The workflow:
 5. Builds the Windows native backend, inspects the PE32+ AMD64 artifact, executes it, and requires the expected `Budi` output.
 6. Writes a manifest with source/verifier identities and the executable SHA-256, then uploads the manifest and binary.
 
+### Latest successful exact-SHA evidence — run #17
+
+- Canonical source SHA: `f85375e279257dcbb7d4ded9632800fcd1b78cc9`.
+- Verifier branch HEAD at trigger: `e9bc77696b1d48902de7947c61eb532eb9287fe0`.
+- Verifier SHA recorded in the run manifest: `c07114c5ff1ea04fbce0767301650515c9d0fde8` (GitHub pull-request merge-ref checkout).
+- Windows run [#17](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43665622971): terminal **SUCCESS**; job `132665370187`; Windows Server 2025 / AMD64.
+- All 28 substantive steps succeeded, including exact source/verifier identity, contract/document validation, workspace build, Clippy with warnings denied, full workspace tests, deterministic artifacts, DNS/orchestration/database/HTTP, real-network/offline, Windows native build, PE32+ AMD64 inspection, execution, manifest, and evidence upload.
+- Manifest: `job_status=success`, target `x86_64-pc-windows-gnu`, native exit code `0`, output `Budi`; executable SHA-256 `70f9a08505d456c24119e3e24379e960c49c704799bb8aebc33836e6ffa0c3e0`.
+- Artifact ID `14142430864`; ZIP size 15,865 bytes; ZIP SHA-256 `5a44e5e857ae899977e8f80d6196cb15f4f1315dcf257a8cf6d1070c329fa944`. Downloaded ZIP digest independently recomputed and matched GitHub's digest; embedded manifest and executable were inspected, executable hash independently recomputed, and binary identified as PE32+ x86-64.
+
 ### Latest successful exact-SHA evidence — run #15
 
 - Canonical source SHA: `f85375e279257dcbb7d4ded9632800fcd1b78cc9`.
