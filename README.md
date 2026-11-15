@@ -65,3 +65,16 @@ This repository also contains separate Android, Linux, scanner, package, and oth
 ## Historical checkpoint handling
 
 Older Local CI extraction notes previously embedded in this README are superseded by the canonical Project ONE Notion checkpoint. They are not instructions for the current Windows verifier and must not be used to change its source pin or workflow.
+
+
+### Latest successful exact-SHA evidence — run #19
+
+- Canonical source SHA: `f85375e279257dcbb7d4ded9632800fcd1b78cc9` (the exact pin in `WINDOWS_SOURCE_COMMIT.txt`).
+- Verifier branch HEAD at trigger: `89700258033c16bf6bad7ef983b0f442703d5a4c`.
+- Verifier SHA recorded in the run manifest: `40b7087bbd30dbf9c30cfec2c1d4af94e2796505` (GitHub pull-request merge-ref checkout).
+- Windows run [#19](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43666673348): terminal **SUCCESS**; job `132668616929`; Windows Server 2025 / AMD64.
+- All 28 substantive workflow steps succeeded, including exact source/verifier identity, toolchain setup (Rust 1.100.0, Clang 20.1.8, Android NDK r27c), contract/document checks, workspace build, Clippy with warnings denied, full workspace tests, deterministic artifacts, DNS/orchestration/database/HTTP, real-network/offline checks, Windows native build, PE32+ AMD64 inspection, native execution, manifest, and artifact upload.
+- Manifest: `job_status=success`, target `x86_64-pc-windows-gnu`, native exit code `0`, output `Budi`; executable SHA-256 `ef996ba9a1229afca36fcf9767042a1eb0032fc44b279588dfb5de59d74e3d34`.
+- Artifact ID `14142329450`; ZIP size 15,868 bytes; ZIP SHA-256 `1c51ca84a1396d25585d30a65295821ce5c8ac545cf8e29787e16bae64f53a0e`. The downloaded ZIP was independently hashed and matched GitHub's digest; the embedded manifest and executable were inspected, the executable hash independently recomputed and matched the manifest, and the binary was identified as PE32+ x86-64.
+- This Windows PASS applies only to canonical source SHA `f85375e...`; it does not transfer to PR #95's later documentation-only HEAD `5d50f42...`.
+- CircleCI `ci/circleci: one-linux` on current PR #95 HEAD `5d50f42...` remains **FAILURE** (workflow `d98d94fa-cb59-4487-84e9-582d889f6143`, job `b4427cc0-8253-4d95-8b5d-51f2f2778ca6`). Its first failing step/root cause is still unknown in this session. **No Linux PASS or overall cross-platform PASS is claimed.**
