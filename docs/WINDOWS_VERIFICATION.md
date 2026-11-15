@@ -25,9 +25,10 @@ The manifest records `source_sha` and `verifier_sha` independently. The source p
 - Source repository: `panglimanetizen01/one`.
 - Source branch at verification time: `ci/circleci-migration-20261113`.
 - Exact source pin: `f85375e279257dcbb7d4ded9632800fcd1b78cc9`.
-- Verifier commit used by the successful run: `e765113b66eca514aa4759ddcc7215fc09254554`.
+- Verifier commit used by run #12: `e765113b66eca514aa4759ddcc7215fc09254554`.
+- Verifier PR branch head for run #15: `f0ad340e97f3b66319ba4331636a205747ba523e`; run #15's manifest records the GitHub pull-request merge ref `81f5d38a098614f77475951aec6454865238d11b` as the verifier SHA.
 
-The canonical PR #95 branch subsequently advanced to `5d50f42d76a071800dd84ee5faa8b216335c1ced`. A GitHub compare of `f85375e...` to `5d50f42...` shows one documentation-only commit affecting `CHANGELOG.md`, `docs/CI.md`, and `docs/verification/*`; no product source, tests, or CI configuration changed. The successful Windows result remains bound to the exact `f85375e...` snapshot and is not represented as a run on `5d50f42...`.
+The canonical PR #95 branch subsequently advanced to `5d50f42d76a071800dd84ee5faa8b216335c1ced`. A GitHub compare of `f85375e...` to `5d50f42...` shows one documentation-only commit affecting eight documentation paths: `CHANGELOG.md`, `docs/CI.md`, and six files under `docs/verification/`. No product source, tests, or CI configuration changed. The successful Windows results remain bound to the exact `f85375e...` snapshot and are not represented as runs on `5d50f42...`.
 
 ## Windows verification contract
 
@@ -47,7 +48,23 @@ The workflow performs the following checks on the exact pinned source:
 
 The workflow intentionally does not use Cargo's `--locked` flag while the canonical repository does not commit `Cargo.lock`.
 
-## Successful exact-SHA evidence — run #12
+## Latest successful exact-SHA evidence — run #15
+
+Windows run [#15](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43595298718) completed terminal **SUCCESS**:
+
+- Run ID: `43595298718`; attempt: `1`.
+- Verifier PR branch head: `f0ad340e97f3b66319ba4331636a205747ba523e`.
+- Verifier SHA asserted and recorded in the manifest: `81f5d38a098614f77475951aec6454865238d11b` (GitHub pull-request merge ref).
+- Job ID: `132449491722`.
+- Canonical source SHA: `f85375e279257dcbb7d4ded9632800fcd1b78cc9`.
+- Host: Windows Server 2025 / AMD64 (`Microsoft Windows NT 10.0.26100.0`).
+- All substantive steps succeeded, including source/verifier identity checks, contract/document checks, workspace build, Clippy, complete workspace tests, deterministic artifacts, DNS/orchestration/database/HTTP, real-network/offline checks, Windows native build, PE32+ AMD64 inspection, execution, manifest creation, and artifact upload.
+- Manifest: `job_status=success`, target `x86_64-pc-windows-gnu`, native exit code `0`, output `Budi`.
+- Executable: `examples/one-windows-native.exe`, 52,918 bytes, SHA-256 `2af866c764c9effb9f4a8aca8c3e8eac4750e908eeddfebbbe3280ed126cb23f`.
+- Artifact ID: `14114262180`; ZIP size: 15,870 bytes; ZIP SHA-256: `9d4d3f31f635a260ac4143351ee0b996cb81863fe1e5d8e0f47efb129e6459f1`.
+- The artifact ZIP was downloaded. Its SHA-256 was independently recomputed and matched GitHub's digest. The embedded manifest was read back, the executable hash was independently recomputed, and the executable was identified as PE32+ x86-64.
+
+## Earlier successful exact-SHA evidence — run #12
 
 Windows run [#12](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43593490063) completed terminal **SUCCESS**:
 
