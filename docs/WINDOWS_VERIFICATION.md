@@ -1,17 +1,21 @@
 # Project ONE independent Windows exact-SHA verification
 
 
-## Current exact-SHA candidate — 2026-11-16
+## Current exact-SHA Windows verification — 2026-11-16 — PASS
 
-The verifier pin has been advanced to the current canonical Project ONE PR #95 head:
+Windows run [#22](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43852530420) completed terminal **SUCCESS** for canonical Project ONE PR #95 source SHA `e92d3a3003b68283d5f0fe1315dcb41dcc33bd62`, exactly matching `WINDOWS_SOURCE_COMMIT.txt` and the downloaded evidence manifest.
 
-- Canonical source: `panglimanetizen01/one`.
-- Canonical branch: `ci/circleci-migration-20261113`.
-- Canonical PR: [#95](https://github.com/panglimanetizen01/one/pull/95).
-- Exact source SHA: `e92d3a3003b68283d5f0fe1315dcb41dcc33bd62`.
-- Pin file: `WINDOWS_SOURCE_COMMIT.txt`.
+- Verifier PR #42 branch HEAD at trigger: `0ab3f090b8d147ed6faba9fdb276b8a382d6a97a`.
+- Manifest verifier SHA: `5552080dd0cb84425898e479f8c01596199148a8` (GitHub PR merge-ref checkout; matches the PR's `merge_commit_sha`). These are distinct identities and are recorded separately.
+- Run ID `43852530420`; attempt 1; job ID `133248457535`; Windows Server 2025 / AMD64.
+- All 32 workflow steps succeeded, including exact source/verifier identity, contract/docs, workspace build, Clippy with warnings denied, full workspace tests, deterministic .oneir/.onepkg, DNS, orchestration, database, HTTP GET and CLI, real-network, offline behavior, Windows native build, PE32+ AMD64 inspection, native execution, manifest generation, upload, and cleanup.
+- Manifest: `job_status=success`; target `x86_64-pc-windows-gnu`; host `Microsoft Windows NT 10.0.26100.0` / AMD64; Rust 1.100.0; Cargo 1.100.0; Clang 20.1.8.
+- Native executable: `examples/one-windows-native.exe`, 52,918 bytes; SHA-256 `cc98b3c7c32371cc3eb361c3334152fbb4d6de4bd6880305cd8ddf31d6f6b55f`.
+- PE header independently inspected: MZ, PE signature `PE\0\0`, AMD64 machine `0x8664`, PE32+ optional-header magic `0x20B`.
+- Native runtime exit code `0`; output `Budi`.
+- Artifact ID `14217154781`; ZIP size 15,866 bytes; GitHub digest and independently recomputed downloaded ZIP SHA-256 both `2fc75b59b8088454fd1638455cbad3b8a37f0de6d47b8fb16a0e7b8b84bc980a`. The embedded manifest and executable were inspected; executable SHA-256 matches the manifest.
 
-Earlier successful Windows runs on `f85375e279257dcbb7d4ded9632800fcd1b78cc9` remain valid only for that older source snapshot. They must not be carried forward as evidence for the current candidate. The current candidate is **PENDING** until a terminal Windows workflow SUCCESS is accompanied by a manifest that records this exact source SHA and the verifier SHA, and the native artifact evidence is inspected.
+This PASS is bound only to source SHA `e92d3a3...`. Older successful runs pinned to `f85375e...` remain historical evidence. Do not transfer evidence between source SHAs.
 
 
 ## Ownership and provider boundary
