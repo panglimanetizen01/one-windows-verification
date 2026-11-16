@@ -1,5 +1,20 @@
 # Project ONE — Independent Verification Harness
 
+
+## Current exact-SHA candidate — 2026-11-16
+
+The Windows verification target has been advanced to the current canonical Project ONE PR #95 head. The authoritative pin is `WINDOWS_SOURCE_COMMIT.txt` and contains exactly:
+
+`e92d3a3003b68283d5f0fe1315dcb41dcc33bd62`
+
+- Canonical repository: `panglimanetizen01/one`.
+- Canonical PR: [#95](https://github.com/panglimanetizen01/one/pull/95), branch `ci/circleci-migration-20261113`.
+- Canonical source SHA at pin update: `e92d3a3003b68283d5f0fe1315dcb41dcc33bd62`.
+- This is a new verification target. Earlier Windows SUCCESS runs pinned to `f85375e279257dcbb7d4ded9632800fcd1b78cc9` remain historical evidence and do not establish a result for this SHA.
+- The exact-SHA Windows workflow is expected to run from this verifier PR update. Do not claim PASS until a terminal successful run manifest records this exact source SHA and the actual verifier SHA.
+- The workflow must independently validate the source SHA, verifier SHA, complete checks, Windows native executable, PE32+ AMD64 identity, runtime output, and uploaded evidence manifest.
+
+
 This repository hosts isolated GitHub Actions workflows for independent verification of selected snapshots of the canonical Project ONE source repository.
 
 - Canonical source: `panglimanetizen01/one` (private).
