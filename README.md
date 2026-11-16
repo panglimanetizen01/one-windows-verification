@@ -1,18 +1,20 @@
 # Project ONE — Independent Verification Harness
 
 
-## Current exact-SHA candidate — 2026-11-16
+## Current exact-SHA Windows verification — 2026-11-16 — PASS
 
-The Windows verification target has been advanced to the current canonical Project ONE PR #95 head. The authoritative pin is `WINDOWS_SOURCE_COMMIT.txt` and contains exactly:
+Windows run [#22](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43852530420) is terminal **SUCCESS** for the current canonical Project ONE PR #95 head.
 
-`e92d3a3003b68283d5f0fe1315dcb41dcc33bd62`
-
-- Canonical repository: `panglimanetizen01/one`.
-- Canonical PR: [#95](https://github.com/panglimanetizen01/one/pull/95), branch `ci/circleci-migration-20261113`.
-- Canonical source SHA at pin update: `e92d3a3003b68283d5f0fe1315dcb41dcc33bd62`.
-- This is a new verification target. Earlier Windows SUCCESS runs pinned to `f85375e279257dcbb7d4ded9632800fcd1b78cc9` remain historical evidence and do not establish a result for this SHA.
-- The exact-SHA Windows workflow is expected to run from this verifier PR update. Do not claim PASS until a terminal successful run manifest records this exact source SHA and the actual verifier SHA.
-- The workflow must independently validate the source SHA, verifier SHA, complete checks, Windows native executable, PE32+ AMD64 identity, runtime output, and uploaded evidence manifest.
+- Canonical source pin: `e92d3a3003b68283d5f0fe1315dcb41dcc33bd62` (matches `WINDOWS_SOURCE_COMMIT.txt` and the downloaded evidence manifest).
+- Canonical PR #95: [Migrate Project ONE CI execution to CircleCI](https://github.com/panglimanetizen01/one/pull/95), branch `ci/circleci-migration-20261113`.
+- Verifier PR #42 branch HEAD at trigger: `0ab3f090b8d147ed6faba9fdb276b8a382d6a97a`; the manifest records verifier merge-ref SHA `5552080dd0cb84425898e479f8c01596199148a8`, matching the PR's `merge_commit_sha`.
+- Run ID `43852530420`; job ID `133248457535`; Windows Server 2025 / AMD64; all 32 steps succeeded.
+- Successful checks include contract/docs validation, workspace build, Clippy with warnings denied, full workspace tests, deterministic artifacts, DNS/orchestration/database/HTTP, real-network and offline checks, Windows native build, PE32+ AMD64 inspection, native execution, manifest, and artifact upload.
+- Native target `x86_64-pc-windows-gnu`; output `Budi`; exit code `0`.
+- Executable `examples/one-windows-native.exe`, 52,918 bytes; SHA-256 `cc98b3c7c32371cc3eb361c3334152fbb4d6de4bd6880305cd8ddf31d6f6b55f`.
+- PE inspection independently confirmed MZ, PE signature, AMD64 machine `0x8664`, and PE32+ magic `0x20B`.
+- Artifact ID `14217154781`, name `one-windows-verification-43852530420-1`, size 15,866 bytes. GitHub ZIP digest and independently recomputed downloaded ZIP SHA-256 match: `2fc75b59b8088454fd1638455cbad3b8a37f0de6d47b8fb16a0e7b8b84bc980a`. The ZIP manifest and executable were read back; executable hash matches the manifest.
+- This is Windows exact-SHA PASS for `e92d3a3...` only. Earlier runs on `f85375e...` remain historical and separate.
 
 
 This repository hosts isolated GitHub Actions workflows for independent verification of selected snapshots of the canonical Project ONE source repository.
