@@ -1,7 +1,21 @@
 # Project ONE — Independent Verification Harness
 
 
-## Current exact-SHA Windows verification — 2026-11-16 — PASS
+## Current exact-SHA candidate — PENDING — 2026-11-16
+
+The canonical Project ONE PR #95 source pin has advanced after a documentation-only synchronization commit. The authoritative `WINDOWS_SOURCE_COMMIT.txt` now contains exactly:
+
+`3cd71c6637169367109cf03d88911132c17dbf8b`
+
+- Canonical repository: `panglimanetizen01/one`.
+- Canonical PR: [#95](https://github.com/panglimanetizen01/one/pull/95), branch `ci/circleci-migration-20261113`.
+- Candidate source SHA: `3cd71c6637169367109cf03d88911132c17dbf8b`.
+- The previous terminal Windows PASS (runs #22–#24) tested source SHA `e92d3a3003b68283d5f0fe1315dcb41dcc33bd62`; it is historical for that exact source and is not carried forward to this new SHA.
+- A new exact-SHA Windows run must complete terminal SUCCESS and its manifest/artifact must be inspected before this candidate can be marked PASS.
+- No ONE product source, tests, or CircleCI config changed in this documentation-only source revision. Exact-SHA verification is still required.
+
+
+## Previous exact-SHA Windows verification — source e92d3a3 — PASS
 
 Windows run [#22](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43852530420) is terminal **SUCCESS** for the current canonical Project ONE PR #95 head.
 
