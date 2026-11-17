@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout verification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
 
       - name: Read and validate canonical source pin
         id: canonical
@@ -49,8 +51,8 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.sha }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
+          persist-credentials: false
 
       - name: Verify source and verifier identities
         id: identities
