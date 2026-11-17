@@ -109,3 +109,12 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - PR #95 added a docs-only evidence commit `54bf0973f59c2705decd91a8457cf08d6bbb7f8e`. This verifier pin is advanced to `54bf0973f59c2705decd91a8457cf08d6bbb7f8e` for a fresh exact-SHA check.
 - The PR-branch push trigger covers this pin/doc path. New run should start without modifying base `verification` or default `main`.
 - Run #35 remains PASS only for source `048f87...`; do not transfer it to `54bf097...`.
+
+
+### Latest exact-SHA run #36 — 2026-11-17 — PASS
+
+- Canonical ONE source SHA: `54bf0973f59c2705decd91a8457cf08d6bbb7f8e`; verifier SHA: `c40752bd134c83a671e928a0a2aab25953e4ad6e`.
+- GitHub Actions run #36 / `44031839506`, Windows Server 2025 job `133865371299`: terminal SUCCESS. The job's locked-Cargo workflow guard, exact pin validation, source checkout, toolchain setup, contract check, workspace build/Clippy/tests, deterministic artifacts, DNS/orchestration/database/HTTP/CLI slices, real-network and offline tests, Windows native backend build, PE32+ inspection, execution, manifest and artifact upload all succeeded.
+- Artifact `14304669534`, ZIP SHA-256 `b281dc52a781063fdda0570e357d5f1cee30a86fc6b77fa4c287b52514c8adb2`; executable SHA-256 `515bb17d95223108934dbedce435d93ab823f231a3d6ce1be95ab2c532e51dd4`; manifest SHA-256 `73472141307457975dcc10dc9e923afa5be7e6d1b83e796cba05168de02f86f4`.
+- Manifest records Windows Server 2025 AMD64, target `x86_64-pc-windows-gnu`, native runtime exit 0, output `Budi`.
+- CircleCI Linux for the same ONE source SHA is terminal SUCCESS (workflow `4e04be28-3664-4842-a4c8-6844d1d45817`, job `cc67ef7a-1df1-4a31-a694-05725f702652`). This closes the independent Windows gate for this exact source SHA only.
