@@ -68,3 +68,11 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - The pin file was advanced in this verifier branch. Updating the PR branch does not trigger the base `verification` branch workflow. No exact-SHA Windows run is claimed.
 - Windows verification remains NOT VERIFIED. Historical run #32 remains PASS only for `a10a69afdf8675e703f38f1620abc935d8361897`.
 - The base workflow's push trigger and the PR workflow-dispatch path cannot be invoked through the current connected GitHub actions. No merge or base-branch mutation was performed to trigger it.
+
+
+### Locked dependency verification update — 2026-11-17
+
+- PR #95 source pin advanced to `d42689718870236694f6cab841f8b7be1afccfcc` after adding explicit `--locked` to all Cargo commands in both offline verification scripts and enforcing this contract in `tools/check_contract.py`.
+- Independent Windows verifier workflow commit `19188f888ba5e2c7d65f8e06069ba1b65bbb1917` now applies `--locked` to all Cargo build, Clippy, test, real-network, and native-backend build commands.
+- The PR #95 candidate's CircleCI status must be checked on the final exact source SHA; prior SUCCESS/PENDING statuses are not transferred.
+- No Windows run is observed for `d426897...`; status NOT VERIFIED until a matching exact-SHA workflow run and artifact/manifest inspection complete.
