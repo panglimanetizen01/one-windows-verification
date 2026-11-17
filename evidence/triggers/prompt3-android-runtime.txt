@@ -1,0 +1,2 @@
+Trigger Android API 35 arm64-v8a runtime verification after bounded software-acceleration fallback.
+Canonical source SHA: c30f42b4841638459846f2b3d79ed351a6f94b03
