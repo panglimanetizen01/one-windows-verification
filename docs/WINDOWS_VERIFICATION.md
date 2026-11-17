@@ -144,3 +144,10 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - Manifest confirms native exit 0/output `Budi`; CLI `one 0.1.0`, exit 0/output `Budi`.
 - CircleCI attribution correction: Pipeline #558 belongs to PR #102 SHA `5ee645507199bdd94955099f6633aa67bb697ee5`, not PR #95. PR #95 source `ed2382...` had no CircleCI context visible in GitHub. Do not attribute #558 to this source; its root cause remains NOT VERIFIED without authenticated CircleCI logs.
 - PR #95 documentation-only descendant/current source is `993f76351c7a119bea2e66f7d9e5bca07f392fbc`; the pin file is advanced to this exact SHA. Run #39 remains bound to `ed2382...`; a new verifier run will validate this descendant. No status is transferred.
+
+
+### Latest-source-wins verifier concurrency — 2026-11-17
+
+- The workflow concurrency group is `one-windows-exact-sha-${{ github.event.pull_request.number || github.ref_name }}`. Changed `cancel-in-progress` from `false` to `true` so a newer verifier commit/source pin supersedes queued or running older evidence jobs on the same branch instead of waiting behind stale source candidates.
+- Run #39 / `44046670869` already passed exact source `ed2382...`; run #40 was a documentation-only successor on that same source and run #41 is for current source `993f763...`. This latest-wins setting is intended to let the newest exact source candidate be checked first and avoid spending runner time on superseded queued jobs.
+- This is verifier/CI orchestration only; it does not change ONE language/runtime behavior or weaken any verification step, timeout, required test, or artifact check. The new workflow commit triggers a fresh run against the current pin `993f763...`; do not claim PASS until that run is terminal and its artifact/manifest is inspected.
