@@ -33,6 +33,8 @@ jobs:
         version: ["24.04"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Read canonical target
         id: canonical
         shell: bash
@@ -104,6 +106,8 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git python3 build-essential pkg-config clang
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Read canonical target
         id: canonical
         shell: bash
