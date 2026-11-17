@@ -35,3 +35,10 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - The source includes the targeted CircleCI APT mirror mitigation: replace the stale regional GCE archive hostname with `archive.ubuntu.com`, clean/update APT indexes, and retain the required MinGW package set.
 - The triggering failure was a CircleCI provisioning step with multiple MinGW package HTTP 404 responses from `us-east1.gce.archive.ubuntu.com`; source/config mitigation is not yet validated by a terminal CircleCI run.
 - This pin update does not itself establish a Windows run. Record an independent Windows result only after a run reports this exact source SHA; prior run #32 remains tied to its historical SHA.
+
+
+### PR #95 latest APT provisioning correction pin — 2026-11-17
+
+- Canonical source pin advanced to `4db76fbaf651dd069c7000fb46a4dea61b11fbd8` (PR #95 latest HEAD at pin update).
+- This source includes the Ubuntu regional APT mirror fallback and the follow-up shell-quoting correction to the `find` expression used to rewrite APT source entries.
+- CircleCI exact-SHA status was not yet available at pin time; no Linux PASS is claimed. No independent Windows run for this source SHA is yet observed.
