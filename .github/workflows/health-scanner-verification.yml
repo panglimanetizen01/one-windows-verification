@@ -4,7 +4,7 @@ on:
   push:
     branches: [verification]
     paths:
-      - 'CANONICAL_COMMIT.txt'
+      - 'HEALTH_SCANNER_SOURCE_COMMIT.txt'
       - '.github/workflows/health-scanner-verification.yml'
   workflow_dispatch:
 
@@ -34,7 +34,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          sha="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          sha="$(tr -d '\r\n[:space:]' < HEALTH_SCANNER_SOURCE_COMMIT.txt)"
           if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
             echo "Invalid canonical source SHA" >&2
             exit 2
@@ -46,7 +46,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $sha = (Get-Content CANONICAL_COMMIT.txt -Raw).Trim()
+          $sha = (Get-Content HEALTH_SCANNER_SOURCE_COMMIT.txt -Raw).Trim()
           if ($sha -notmatch '^[0-9a-f]{40}$') { throw "Invalid canonical source SHA" }
           "sha=$sha" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
