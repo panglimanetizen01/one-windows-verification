@@ -84,3 +84,11 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - Guard implementation and regex correction are in commits `2ee373263c434340143005ad2061884e818f0005` and `ff3511d005ffd40036162dbcc1b0744c83a22289` respectively.
 - The workflow and offline source scripts now explicitly use the tracked `Cargo.lock`. This change has not yet been executed by the Windows workflow; it is a pending verification improvement, not a PASS claim.
 - Canonical source pin remains `d42689718870236694f6cab841f8b7be1afccfcc`. No exact-SHA Windows run is observed.
+
+
+### Latest documented PR #95 source pin — 2026-11-17
+
+- Canonical ONE source SHA: `c207fb15bc19889a8c8e60923581ef1b1f7a6374` (documentation-only descendant of the CircleCI-verified locked-offline candidate `d426897...`).
+- CircleCI terminal SUCCESS is recorded for `d426897...` only. The new docs-only source SHA must be checked independently; no status is transferred automatically.
+- Pin file updated to `c207fb...` in verifier commit `8db417749753009ad5dbc69f8b4d2bb00c5d1642`. The current verifier workflow applies `--locked` to every Cargo command and self-checks that invariant.
+- No Windows workflow run is observed for `c207fb...`; Windows status remains NOT VERIFIED. Historical run #32 applies only to `a10a69...`.
