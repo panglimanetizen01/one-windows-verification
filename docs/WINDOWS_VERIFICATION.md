@@ -3,7 +3,7 @@
 
 ## Current exact-SHA Windows verification — PASS — 2026-11-17
 
-<badge>PASS</badge> Exact source checkout, Windows native build, PE inspection, runtime execution, and evidence upload all succeeded.
+**PASS** Exact source checkout, Windows native build, PE inspection, runtime execution, and evidence upload all succeeded.
 
 - Canonical ONE source SHA: `a10a69afdf8675e703f38f1620abc935d8361897` (PR #102 lockfile candidate).
 - Verifier workflow run #32: [Windows native runtime — Windows Server 2025](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43999096244).
