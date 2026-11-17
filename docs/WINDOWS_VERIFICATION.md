@@ -125,3 +125,13 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - CircleCI PR #95 config now runs `tools/check_user_docs.py` and its tests, builds `one` in release mode with `--locked`, and executes a sample program on Linux as part of both default and optional release workflows.
 - This verifier workflow now builds `one.exe` in release mode with `--locked`, validates `one version` = `one 0.1.0`, executes a temporary `halo.one` expecting `Budi`, and records CLI binary SHA-256/version/exit/output in the evidence manifest and uploaded artifact.
 - The verifier source pin is synchronized to the exact PR #95 head. No result is claimed until the new Windows run completes.
+
+
+### Terminal Windows release CLI verification — run #38 — 2026-11-17
+
+- Exact ONE source `876b83170af2e77adcc43e408901e99ea37f6b0f`; verifier SHA `564fd1e0853dd424eb8d451678faaa77aaa59d11`; GitHub Actions run #38 / `44045612644`; Windows Server 2025 job `133910422388`; terminal SUCCESS.
+- All 31 primary steps passed, including locked Cargo guard, exact source pin/identity, contracts and user docs, workspace build/Clippy/tests, release CLI build/smoke, all product vertical slices, real-network/offline checks, Windows native backend build, PE32+ inspection, native execution, manifest and artifact upload.
+- Artifact `14310959518`, ZIP SHA-256 `8e10e35d04709eee8429f143ef8bde0ca358941b51a4785f49e934e94f9f163c`. Native EXE SHA-256 `11ed652bd05e09145c8ca304762b72391de952eb2f441344dd259efda38221c7`; release CLI EXE SHA-256 `61a5e8166831153c2b98f69e09ceeda84759cee53e8d060f406c5d8a7ea12dba`; manifest SHA-256 `9844c92e89ed1ac805adbf757c8a111ba66163acf265f00f428ba587f090ba23`.
+- Artifact readback and local hashing confirm both executable hashes match the manifest; both binaries have PE signature, machine `0x8664`, and PE32+ optional header `0x020b`. Manifest records native exit 0/output `Budi`, CLI version `one 0.1.0`, CLI exit 0/output `Budi`.
+- PR #95 docs now include this run evidence in commit `ed2382eed9022a8c67a13d72a5de6a4d9134f631`. The verifier pin is advanced to this docs-only descendant; run #38 remains bound to source `876b831...` only. A fresh Windows run is expected from the verifier branch push; no result is transferred.
+- CircleCI Pipeline #558 remains a separate pipeline-level ERROR with no exposed `one-linux` context/job details. This is not a source-test diagnosis. Optional release-check remains NOT VERIFIED.
