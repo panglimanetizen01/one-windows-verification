@@ -92,3 +92,11 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - CircleCI terminal SUCCESS is recorded for `d426897...` only. The new docs-only source SHA must be checked independently; no status is transferred automatically.
 - Pin file updated to `c207fb...` in verifier commit `8db417749753009ad5dbc69f8b4d2bb00c5d1642`. The current verifier workflow applies `--locked` to every Cargo command and self-checks that invariant.
 - No Windows workflow run is observed for `c207fb...`; Windows status remains NOT VERIFIED. Historical run #32 applies only to `a10a69...`.
+
+
+### Re-pin after recording terminal run #34 evidence — 2026-11-17
+
+- Previous canonical source `c207fb15bc19889a8c8e60923581ef1b1f7a6374` passed CircleCI Linux and independent Windows run #34. Windows evidence: run `44030597595`, verifier `3f8e9b662805a89fd5145e8691a221218b098e11`, job `133861337521`, artifact `14305081962`, ZIP SHA-256 `7cbbf251efe2f56ba24965a76cd420ccddae8e84e8f0dcd727b09943014f3b8f`, executable SHA-256 `0c79f06f37f793061884acf43c9ba419bb0fc4ccf48c4a487f511e462cf55af5`, manifest SHA-256 `7ac05a71f1f5e5149f1dd721d2ca9c610bfe7504acb6b164938a51255c60b1d6`. Runtime exit 0 / `Budi`.
+- PR #95 received a documentation-only evidence commit `048f87f5e9c14fdda33c7fa7a3d6dd77f469b9d4`; new canonical source pin is updated to `048f87f5e9c14fdda33c7fa7a3d6dd77f469b9d4` for a fresh exact-SHA verification.
+- The PR-branch push trigger is enabled for this branch and pin/docs paths; this update should start a new Windows run without merging or mutating base `verification`.
+- Prior run #34 remains PASS only for source `c207fb...`; it is not relabeled as a run on `048f87...`.
