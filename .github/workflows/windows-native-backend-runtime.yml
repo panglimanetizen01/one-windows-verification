@@ -4,7 +4,7 @@ on:
   push:
     branches: [ verification ]
     paths:
-      - "CANONICAL_COMMIT.txt"
+      - "WINDOWS_SOURCE_COMMIT.txt"
       - ".github/workflows/windows-native-backend-runtime.yml"
   workflow_dispatch:
 
@@ -24,11 +24,11 @@ jobs:
       - name: Checkout verification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - name: Read canonical source SHA
+      - name: Read Windows source SHA
         id: canonical
         shell: bash
         run: |
-          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
+          target="$(tr -d '\r\n[:space:]' < WINDOWS_SOURCE_COMMIT.txt)"
           if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
             echo "invalid canonical commit: $target" >&2
             exit 1
