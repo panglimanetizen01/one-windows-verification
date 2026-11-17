@@ -100,3 +100,12 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - PR #95 received a documentation-only evidence commit `048f87f5e9c14fdda33c7fa7a3d6dd77f469b9d4`; new canonical source pin is updated to `048f87f5e9c14fdda33c7fa7a3d6dd77f469b9d4` for a fresh exact-SHA verification.
 - The PR-branch push trigger is enabled for this branch and pin/docs paths; this update should start a new Windows run without merging or mutating base `verification`.
 - Prior run #34 remains PASS only for source `c207fb...`; it is not relabeled as a run on `048f87...`.
+
+
+### Latest exact-SHA run #35 evidence and next pin — 2026-11-17
+
+- Source `048f87f5e9c14fdda33c7fa7a3d6dd77f469b9d4` passed CircleCI Linux and independent Windows run #35 / `44031205160`; verifier `62f401db17e5bc2ff3ae4c53e02cc721ed1d191e`; job `133863311567`; artifact `14304459543`.
+- Run #35 artifact: ZIP SHA-256 `0238718f261ba9f9840d26eb243ce3196931f1f9927c98e438b3077f7cf1a58b`; executable SHA-256 `7d9eaa745e561bafe4203404c9d6b0601b584ff93eec46a379e5fa1d0e9afd0a`; manifest SHA-256 `eace9930574e939e94a3f5d18c75901ffe883a43852ff43c281b236ece22543e`; native exit 0 / `Budi`.
+- PR #95 added a docs-only evidence commit `54bf0973f59c2705decd91a8457cf08d6bbb7f8e`. This verifier pin is advanced to `54bf0973f59c2705decd91a8457cf08d6bbb7f8e` for a fresh exact-SHA check.
+- The PR-branch push trigger covers this pin/doc path. New run should start without modifying base `verification` or default `main`.
+- Run #35 remains PASS only for source `048f87...`; do not transfer it to `54bf097...`.
