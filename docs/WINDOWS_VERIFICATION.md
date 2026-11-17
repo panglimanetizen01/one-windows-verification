@@ -19,3 +19,11 @@ The earlier run #31 on source SHA `e50748a...` remains a blocked attempt caused 
 
 Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authorized.
 
+
+
+## Latest PR #95 candidate — Windows verification PENDING — 2026-11-17
+
+- Canonical ONE source SHA pinned for the next independent run: `c71d81a60f7792ed8536ba2b70464b9922f33c18` (PR #95 current HEAD at pin update).
+- The candidate includes a committed workspace `Cargo.lock` and matching target-specific `libc` / `windows-sys` dependencies. The independent Windows verifier must validate this exact SHA; run #32 remains historical PASS for `a10a69afdf8675e703f38f1620abc935d8361897` only.
+- No Windows run for `c71d81a...` has been observed yet. The PR's updated workflow defines `workflow_dispatch`, but the available GitHub integration in this session does not expose a workflow-dispatch action. Do not merge PR #42 merely to trigger verification; keep the result PENDING until a manual dispatch or eligible trigger runs the exact pin.
+- Required result: exact source SHA assertion, Windows Server 2025 AMD64 build, PE32+ inspection, native execution, manifest and artifact hash verification. No PASS is claimed for this candidate.
