@@ -61,7 +61,6 @@ jobs:
           ref: ${{ steps.canonical_linux.outputs.sha }}
           path: one-source
           persist-credentials: false
-          persist-credentials: false
 
       - name: Checkout exact canonical ONE source (Windows)
         id: checkout_source_windows
@@ -71,7 +70,6 @@ jobs:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical_windows.outputs.sha }}
           path: one-source
-          persist-credentials: false
           persist-credentials: false
 
       - name: Verify exact source checkout (Linux)
