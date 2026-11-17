@@ -48,8 +48,8 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.ref }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
+          persist-credentials: false
       - name: Verify canonical target
         working-directory: source
         shell: bash
