@@ -42,3 +42,10 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - Canonical source pin advanced to `4db76fbaf651dd069c7000fb46a4dea61b11fbd8` (PR #95 latest HEAD at pin update).
 - This source includes the Ubuntu regional APT mirror fallback and the follow-up shell-quoting correction to the `find` expression used to rewrite APT source entries.
 - CircleCI exact-SHA status was not yet available at pin time; no Linux PASS is claimed. No independent Windows run for this source SHA is yet observed.
+
+
+### PR #95 APT rerun checkpoint pin — 2026-11-17
+
+- Canonical source SHA advanced to `9b233dfe75da8c0752c203af3711bf3da319dc02`, a documentation-only descendant of the APT shell-correction source `4db76fb...`.
+- CircleCI for `4db76fb...` is pending at workflow `d436555e-6a03-4167-a844-acc2ac5e50d6`, job `b8478a26-15f6-457c-b8e4-f30e461e17e9`; no terminal result yet. The documentation-only descendant has no status reported at pin time.
+- The verifier is pinned for a fresh exact-source check. No Windows run for `9b233df...` is claimed until a terminal run reports that SHA.
