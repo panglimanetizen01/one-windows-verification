@@ -27,3 +27,11 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - The candidate includes a committed workspace `Cargo.lock` and matching target-specific `libc` / `windows-sys` dependencies. The independent Windows verifier must validate this exact SHA; run #32 remains historical PASS for `a10a69afdf8675e703f38f1620abc935d8361897` only.
 - No Windows run for `dd9960f...` has been observed yet. The prior code/config candidate `c71d81a...` also has no Windows run. The PR's updated workflow defines `workflow_dispatch`, but the available GitHub integration in this session does not expose a workflow-dispatch action. Do not merge PR #42 merely to trigger verification; keep the result PENDING until a manual dispatch or eligible trigger runs the exact pin.
 - Required result: exact source SHA assertion, Windows Server 2025 AMD64 build, PE32+ inspection, native execution, manifest and artifact hash verification. No PASS is claimed for this candidate.
+
+
+### PR #95 Ubuntu APT mirror mitigation pin — 2026-11-17
+
+- Canonical source SHA pinned: `23bb9ef79df129edaa848aa3388d8dbe39309fa2` (PR #95 current HEAD).
+- The source includes the targeted CircleCI APT mirror mitigation: replace the stale regional GCE archive hostname with `archive.ubuntu.com`, clean/update APT indexes, and retain the required MinGW package set.
+- The triggering failure was a CircleCI provisioning step with multiple MinGW package HTTP 404 responses from `us-east1.gce.archive.ubuntu.com`; source/config mitigation is not yet validated by a terminal CircleCI run.
+- This pin update does not itself establish a Windows run. Record an independent Windows result only after a run reports this exact source SHA; prior run #32 remains tied to its historical SHA.
