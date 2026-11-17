@@ -23,7 +23,7 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 
 ## Latest PR #95 candidate — Windows verification PENDING — 2026-11-17
 
-- Canonical ONE source SHA pinned for the next independent run: `c71d81a60f7792ed8536ba2b70464b9922f33c18` (PR #95 current HEAD at pin update).
+- Canonical ONE source SHA pinned for the next independent run: `dd9960ff52d005c4c5bf02bc11fc3c8ef8482ab9` (latest PR #95 documentation-only descendant; underlying code/config candidate `c71d81a...` has CircleCI FAILURE).
 - The candidate includes a committed workspace `Cargo.lock` and matching target-specific `libc` / `windows-sys` dependencies. The independent Windows verifier must validate this exact SHA; run #32 remains historical PASS for `a10a69afdf8675e703f38f1620abc935d8361897` only.
-- No Windows run for `c71d81a...` has been observed yet. The PR's updated workflow defines `workflow_dispatch`, but the available GitHub integration in this session does not expose a workflow-dispatch action. Do not merge PR #42 merely to trigger verification; keep the result PENDING until a manual dispatch or eligible trigger runs the exact pin.
+- No Windows run for `dd9960f...` has been observed yet. The prior code/config candidate `c71d81a...` also has no Windows run. The PR's updated workflow defines `workflow_dispatch`, but the available GitHub integration in this session does not expose a workflow-dispatch action. Do not merge PR #42 merely to trigger verification; keep the result PENDING until a manual dispatch or eligible trigger runs the exact pin.
 - Required result: exact source SHA assertion, Windows Server 2025 AMD64 build, PE32+ inspection, native execution, manifest and artifact hash verification. No PASS is claimed for this candidate.
