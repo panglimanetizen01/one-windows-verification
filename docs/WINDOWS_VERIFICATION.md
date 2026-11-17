@@ -76,3 +76,11 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - Independent Windows verifier workflow commit `19188f888ba5e2c7d65f8e06069ba1b65bbb1917` now applies `--locked` to all Cargo build, Clippy, test, real-network, and native-backend build commands.
 - The PR #95 candidate's CircleCI status must be checked on the final exact source SHA; prior SUCCESS/PENDING statuses are not transferred.
 - No Windows run is observed for `d426897...`; status NOT VERIFIED until a matching exact-SHA workflow run and artifact/manifest inspection complete.
+
+
+### Verifier lockfile guard — 2026-11-17
+
+- Added a workflow self-check that scans every Cargo `build`, `clippy`, `test`, and `run` command in `.github/workflows/windows-native-backend-runtime.yml` and fails if any command omits `--locked`.
+- Guard implementation and regex correction are in commits `2ee373263c434340143005ad2061884e818f0005` and `ff3511d005ffd40036162dbcc1b0744c83a22289` respectively.
+- The workflow and offline source scripts now explicitly use the tracked `Cargo.lock`. This change has not yet been executed by the Windows workflow; it is a pending verification improvement, not a PASS claim.
+- Canonical source pin remains `d42689718870236694f6cab841f8b7be1afccfcc`. No exact-SHA Windows run is observed.
