@@ -2,7 +2,7 @@ name: ONE Windows Server 2025 Exact-SHA Verification
 
 on:
   push:
-    branches: [ verification ]
+    branches: [ verification, verify/windows-pr95-20261114 ]
     paths:
       - "WINDOWS_SOURCE_COMMIT.txt"
       - ".github/workflows/windows-native-backend-runtime.yml"
