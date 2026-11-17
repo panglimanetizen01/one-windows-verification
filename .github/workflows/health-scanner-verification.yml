@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Checkout verifier harness
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Read and validate canonical source SHA (Linux)
         id: canonical_linux
@@ -57,8 +59,8 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical_linux.outputs.sha }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: one-source
+          persist-credentials: false
           persist-credentials: false
 
       - name: Checkout exact canonical ONE source (Windows)
@@ -68,8 +70,8 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical_windows.outputs.sha }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: one-source
+          persist-credentials: false
           persist-credentials: false
 
       - name: Verify exact source checkout (Linux)
