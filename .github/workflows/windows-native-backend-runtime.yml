@@ -40,9 +40,9 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $workflow = Get-Content '.github/workflows/windows-native-backend-runtime.yml' -Raw
-          $commands = [regex]::Matches($workflow, '(?m)^\\s*cargo\\s+(?:build|clippy|test|run)\\b[^\\r\\n]*')
+          $commands = [regex]::Matches($workflow, '(?m)^\s*cargo\s+(?:build|clippy|test|run)\b[^\r\n]*')
           if ($commands.Count -eq 0) { throw 'No Cargo build, Clippy, test, or run commands were found in the verifier workflow.' }
-          $unlocked = @($commands | Where-Object { $_.Value -notmatch '(^|\\s)--locked(\\s|$)' })
+          $unlocked = @($commands | Where-Object { $_.Value -notmatch '(^|\s)--locked(\s|$)' })
           if ($unlocked.Count -gt 0) {
             throw ('Verifier Cargo commands must all use --locked: ' + (($unlocked | ForEach-Object { $_.Value.Trim() }) -join '; '))
           }
