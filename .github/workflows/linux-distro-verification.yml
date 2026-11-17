@@ -47,8 +47,8 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.ref }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
+          persist-credentials: false
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
@@ -118,8 +118,8 @@ jobs:
         with:
           repository: panglimanetizen01/one
           ref: ${{ steps.canonical.outputs.ref }}
-          token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
+          persist-credentials: false
       - name: Verify exact source SHA
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
