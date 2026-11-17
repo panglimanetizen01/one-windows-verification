@@ -152,7 +152,7 @@ jobs:
         timeout-minutes: 60
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo build --workspace --all-targets
+          cargo build --locked --workspace --all-targets
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run Clippy with warnings denied
@@ -161,7 +161,7 @@ jobs:
         timeout-minutes: 60
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo clippy --workspace --all-targets -- -D warnings
+          cargo clippy --locked --workspace --all-targets -- -D warnings
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run complete workspace test suite
@@ -170,7 +170,7 @@ jobs:
         timeout-minutes: 75
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test --workspace --all-targets
+          cargo test --locked --workspace --all-targets
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify deterministic .oneir and .onepkg artifacts
@@ -179,7 +179,7 @@ jobs:
         timeout-minutes: 30
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test -p one-cli --test cli build_and_package_artifacts_are_byte_deterministic
+          cargo test --locked -p one-cli --test cli build_and_package_artifacts_are_byte_deterministic
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify DNS success and failure classification
@@ -188,7 +188,7 @@ jobs:
         timeout-minutes: 30
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test -p one-core --all-targets dns_adapter
+          cargo test --locked -p one-core --all-targets dns_adapter
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify orchestration policy paths
@@ -197,7 +197,7 @@ jobs:
         timeout-minutes: 30
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test -p one-core --all-targets orchestrator
+          cargo test --locked -p one-core --all-targets orchestrator
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify database vertical slice
@@ -206,7 +206,7 @@ jobs:
         timeout-minutes: 30
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test -p one-core --test database_vertical_slice
+          cargo test --locked -p one-core --test database_vertical_slice
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify HTTP GET vertical slice
@@ -215,7 +215,7 @@ jobs:
         timeout-minutes: 30
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test -p one-core --test http_get_vertical_slice
+          cargo test --locked -p one-core --test http_get_vertical_slice
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify HTTP GET CLI vertical slice
@@ -224,7 +224,7 @@ jobs:
         timeout-minutes: 30
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test -p one-cli --test http_get_orchestration
+          cargo test --locked -p one-cli --test http_get_orchestration
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify real-network runtime tests
@@ -233,7 +233,7 @@ jobs:
         timeout-minutes: 60
         run: |
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo test -p one-core --features real-network --all-targets
+          cargo test --locked -p one-core --features real-network --all-targets
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Verify offline behavior
@@ -253,7 +253,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
-          cargo run -p one-cli --bin one-native -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
+          cargo run --locked -p one-cli --bin one-native -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if (-not (Test-Path 'examples\one-windows-native.exe')) {
             throw 'Windows native artifact was not produced.'
