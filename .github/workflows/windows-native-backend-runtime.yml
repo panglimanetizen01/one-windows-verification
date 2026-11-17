@@ -186,6 +186,41 @@ jobs:
           cargo test --locked --workspace --all-targets
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Build release CLI
+        working-directory: source
+        shell: pwsh
+        timeout-minutes: 30
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;C:\msys64\mingw64\bin;$env:PATH"
+          cargo build --release --locked -p one-cli --bin one
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Smoke-test release CLI
+        id: cli_runtime
+        working-directory: source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $binary = Join-Path $PWD 'target/release/one.exe'
+          if (-not (Test-Path $binary)) { throw 'Release CLI binary was not produced.' }
+          $version = (& $binary version | Out-String).Trim()
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'one 0.1.0') { throw "Unexpected CLI version output: $version" }
+          $tempDir = Join-Path $env:RUNNER_TEMP ("one-cli-smoke-" + [guid]::NewGuid().ToString('N'))
+          New-Item -ItemType Directory -Path $tempDir | Out-Null
+          try {
+            $source = Join-Path $tempDir 'halo.one'
+            [System.IO.File]::WriteAllText($source, "nama adalah `"Budi`"`ntampilkan nama`n", [System.Text.UTF8Encoding]::new($false))
+            $output = & $binary jalankan $source
+            $exitCode = $LASTEXITCODE
+            $outputText = ($output | Out-String).Trim()
+            if ($exitCode -ne 0 -or $outputText -ne 'Budi') { throw "CLI smoke test failed: $outputText" }
+            "version=$version" >> $env:GITHUB_OUTPUT
+            "exit_code=$exitCode" >> $env:GITHUB_OUTPUT
+            "output=$outputText" >> $env:GITHUB_OUTPUT
+          } finally {
+            Remove-Item -LiteralPath $tempDir -Recurse -Force
+          }
       - name: Verify deterministic .oneir and .onepkg artifacts
         working-directory: source
         shell: pwsh
@@ -330,6 +365,9 @@ jobs:
           JOB_STATUS: ${{ job.status }}
           NATIVE_EXIT_CODE: ${{ steps.runtime.outputs.exit_code }}
           NATIVE_OUTPUT: ${{ steps.runtime.outputs.output }}
+          CLI_VERSION: ${{ steps.cli_runtime.outputs.version }}
+          CLI_EXIT_CODE: ${{ steps.cli_runtime.outputs.exit_code }}
+          CLI_OUTPUT: ${{ steps.cli_runtime.outputs.output }}
         run: |
           $ErrorActionPreference = 'Continue'
           $actualSource = (git rev-parse HEAD).Trim()
@@ -345,6 +383,8 @@ jobs:
           if (Test-Path $binary) {
             $binaryHash = (Get-FileHash $binary -Algorithm SHA256).Hash.ToLowerInvariant()
           }
+          $cliBinary = 'target\release\one.exe'
+          $cliBinaryHash = if (Test-Path $cliBinary) { (Get-FileHash $cliBinary -Algorithm SHA256).Hash.ToLowerInvariant() } else { '' }
           $rustcVersion = if (Get-Command rustc -ErrorAction SilentlyContinue) { (rustc --version | Out-String).Trim() } else { 'unavailable' }
           $cargoVersion = if (Get-Command cargo -ErrorAction SilentlyContinue) { (cargo --version | Out-String).Trim() } else { 'unavailable' }
           $clangVersion = if (Get-Command clang -ErrorAction SilentlyContinue) { (clang --version | Select-Object -First 1).Trim() } else { 'unavailable' }
@@ -364,6 +404,11 @@ jobs:
             "binary_sha256=$binaryHash"
             "native_runtime_exit_code=$env:NATIVE_EXIT_CODE"
             "native_runtime_output=$env:NATIVE_OUTPUT"
+            "cli_binary=target/release/one.exe"
+            "cli_binary_sha256=$cliBinaryHash"
+            "cli_version=$env:CLI_VERSION"
+            "cli_runtime_exit_code=$env:CLI_EXIT_CODE"
+            "cli_runtime_output=$env:CLI_OUTPUT"
           ) | Set-Content -Encoding utf8 one-windows-native-runtime-manifest.txt
           Get-Content one-windows-native-runtime-manifest.txt
 
@@ -374,6 +419,7 @@ jobs:
           name: one-windows-verification-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             source/examples/one-windows-native.exe
+            source/target/release/one.exe
             source/one-windows-native-runtime-manifest.txt
           if-no-files-found: warn
           retention-days: 14

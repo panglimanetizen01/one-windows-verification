@@ -118,3 +118,10 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - Artifact `14304669534`, ZIP SHA-256 `b281dc52a781063fdda0570e357d5f1cee30a86fc6b77fa4c287b52514c8adb2`; executable SHA-256 `515bb17d95223108934dbedce435d93ab823f231a3d6ce1be95ab2c532e51dd4`; manifest SHA-256 `73472141307457975dcc10dc9e923afa5be7e6d1b83e796cba05168de02f86f4`.
 - Manifest records Windows Server 2025 AMD64, target `x86_64-pc-windows-gnu`, native runtime exit 0, output `Budi`.
 - CircleCI Linux for the same ONE source SHA is terminal SUCCESS (workflow `4e04be28-3664-4842-a4c8-6844d1d45817`, job `cc67ef7a-1df1-4a31-a694-05725f702652`). This closes the independent Windows gate for this exact source SHA only.
+
+### Current PR #95 candidate with CircleCI docs/CLI gates — 2026-11-17
+
+- Canonical ONE source pin advanced to `876b83170af2e77adcc43e408901e99ea37f6b0f`.
+- CircleCI PR #95 config now runs `tools/check_user_docs.py` and its tests, builds `one` in release mode with `--locked`, and executes a sample program on Linux as part of both default and optional release workflows.
+- This verifier workflow now builds `one.exe` in release mode with `--locked`, validates `one version` = `one 0.1.0`, executes a temporary `halo.one` expecting `Budi`, and records CLI binary SHA-256/version/exit/output in the evidence manifest and uploaded artifact.
+- The verifier source pin is synchronized to the exact PR #95 head. No result is claimed until the new Windows run completes.
