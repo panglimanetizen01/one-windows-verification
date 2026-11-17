@@ -49,3 +49,13 @@ Verifier PR #42 remains OPEN / DRAFT / UNMERGED. No merge or release is authoriz
 - Canonical source SHA advanced to `9b233dfe75da8c0752c203af3711bf3da319dc02`, a documentation-only descendant of the APT shell-correction source `4db76fb...`.
 - CircleCI for `4db76fb...` is pending at workflow `d436555e-6a03-4167-a844-acc2ac5e50d6`, job `b8478a26-15f6-457c-b8e4-f30e461e17e9`; no terminal result yet. The documentation-only descendant has no status reported at pin time.
 - The verifier is pinned for a fresh exact-source check. No Windows run for `9b233df...` is claimed until a terminal run reports that SHA.
+
+
+### Latest CircleCI-verified PR #95 source — Windows verification PENDING — 2026-11-17
+
+- Canonical ONE source SHA: `cef1f41c97585b6e25bf91af6e8b4281efe299c4`.
+- This exact PR #95 HEAD has CircleCI context `ci/circleci: one-linux` SUCCESS (workflow `930378d8-49bb-416e-a42c-63e1797b991c`, job `0e2642b0-bd94-4892-baca-df5b6c8fa4ed`).
+- The verifier pin file has been advanced to this exact SHA in verifier commit `f5113c084fa978f275bc8426a4ca1e4d74376549`.
+- No Windows run for this exact source SHA is observed. Historical run #32 remains PASS only for source `a10a69afdf8675e703f38f1620abc935d8361897`; it must not be reused for `cef1f41...`.
+- The verifier workflow's eligible push trigger watches `WINDOWS_SOURCE_COMMIT.txt` on branch `verification`, or can be manually dispatched. This PR branch is `verify/windows-pr95-20261114`; updating its pin does not trigger the base-branch workflow. The currently available GitHub integration exposes no workflow-dispatch action. Do not merge PR #42 or modify the verifier base branch just to trigger a run.
+- Required Windows result remains NOT VERIFIED until an authorized exact-SHA workflow run completes and its native artifact/manifest/checksum are inspected. PR #42 remains OPEN / DRAFT / UNMERGED; no merge or release.
