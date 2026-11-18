@@ -56,3 +56,15 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - Follow-up source candidate in draft PR #112 is now `181ad350d8f0db53cda654c4d378425fbdd6ab24`. The Windows output-limit probes return to PowerShell byte writes, but use the private test-only 30-second timeout budget; production `run_process` remains fixed at 10 seconds.
 - Verifier candidate pin advanced to `181ad350d8f0db53cda654c4d378425fbdd6ab24`; verifier pin commit `a790668f266ba23ac730cf018655a6035a0399db`.
 - A new exact-SHA matrix is triggered. This remains non-acceptance baseline testing, not E4 security evidence.
+
+
+## Exact-SHA cross-platform baseline PASS — 2026-11-18
+
+- Independent verifier run [44285138516](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44285138516) completed with overall conclusion SUCCESS.
+- Exact ONE candidate source SHA checked out and identity-verified by both jobs: `181ad350d8f0db53cda654c4d378425fbdd6ab24`.
+- Linux Ubuntu 24.04 job `134735739281`: SUCCESS. Parsed per-test-binary totals from the complete job log: 239 passed, 0 failed, 1 ignored.
+- Windows Server 2025 job `134735739823`: SUCCESS. Parsed per-test-binary totals from the complete job log: 232 passed, 0 failed, 1 ignored.
+- The platform totals differ because platform-gated test binaries/cases differ. Both jobs completed the candidate `cargo test --locked -p one-core -- --nocapture` workflow successfully.
+- Verifier workflow-run HEAD is `a790668f266ba23ac730cf018655a6035a0399db`; this is the verifier repository commit, not the ONE source candidate SHA.
+- This is a non-acceptance compile/test baseline only. It does not satisfy Issue #104, E4, symlink/TOCTOU/reparse-point adversarial testing, or Android runtime execution.
+- Candidate remains draft PR #112 pending independent CircleCI status and further review. Do not merge on the strength of this matrix alone.
