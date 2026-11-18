@@ -1,11 +1,6 @@
 name: ONE Linux Candidate Verification (Linux-only retry)
 
 on:
-  push:
-    branches: [verification]
-    paths:
-      - '.github/workflows/linux-candidate-only.yml'
-      - 'CANDIDATE_BUILD_COMMIT.txt'
   workflow_dispatch:
 
 permissions:
