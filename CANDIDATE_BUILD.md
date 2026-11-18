@@ -77,3 +77,13 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - The source change enables windows-sys 0.61 WDK Foundation + WDK Storage/FileSystem features and adds a compile-time-only reference to OBJECT_ATTRIBUTES and NtCreateFile. It performs no filesystem I/O.
 - The candidate matrix is being used strictly to compile and run the unchanged one-core baseline on Ubuntu and Windows, confirming that the native API feature gates resolve on both target builds. This is not E4 and does not test filesystem confinement.
 - Issue #104 remains unimplemented; do not treat this spike as a security acceptance candidate.
+
+
+## Windows compile failure triage — missing Win32_System_IO gate — 2026-11-18
+
+- Matrix run `44286515256` checked exact ONE source SHA `7f092b0f030aa9a182a952fdafc9630221b5d038`.
+- Windows Server 2025 job `134740467537` failed at `cargo test --locked -p one-core -- --nocapture`, compile error E0432: `NtCreateFile` unresolved in `windows_sys::Wdk::Storage::FileSystem`.
+- The source binding declaration is gated by `Wdk_Foundation`, `Win32_Security`, `Win32_Storage_FileSystem`, and `Win32_System_IO`; the project's existing dependency already enabled the first three but omitted `Win32_System_IO`. This is a deterministic dependency feature-gate omission, not a reason to replace the native API.
+- Corrective commit `14d81a93a60ea2bba1ebfd2ddf7d85baf0893e24` adds only the missing `Win32_System_IO` feature to the Windows target dependency.
+- Independent candidate pin advanced to the corrected exact source SHA. The next matrix run will validate it; no compile PASS is claimed yet.
+- The original run's Linux job was still running at triage time. Its final result is not inferred from the Windows failure.
