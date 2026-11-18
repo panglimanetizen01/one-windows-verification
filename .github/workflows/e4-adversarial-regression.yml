@@ -254,7 +254,7 @@ jobs:
                   if (handle != IntPtr.Zero && handle != new IntPtr(-1)) NtClose(handle);
               }
           }
-'@
+          '@
 
           $root = Join-Path $env:RUNNER_TEMP ("one-obj-dont-reparse-" + [guid]::NewGuid().ToString("N"))
           $outside = Join-Path $env:RUNNER_TEMP ("one-obj-dont-reparse-outside-" + [guid]::NewGuid().ToString("N"))
