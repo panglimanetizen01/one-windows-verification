@@ -1,0 +1,72 @@
+name: ONE Linux Candidate Verification (Linux-only retry)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-one-core:
+    name: Linux one-core compile and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: verification
+      - name: Validate candidate build pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha="$(tr -d '\r\n[:space:]' < CANDIDATE_BUILD_COMMIT.txt)"
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "ONE_CANDIDATE_SHA=$sha" >> "$GITHUB_ENV"
+          printf 'candidate_sha=%s\n' "$sha"
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ env.ONE_CANDIDATE_SHA }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: one-source
+      - name: Verify source identity
+        working-directory: one-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
+          rustc --version
+          cargo --version
+          printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)"
+      - name: Install Rust 1.100.0
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+        with:
+          toolchain: 1.100.0
+      - name: Install MinGW cross toolchain with bounded retries
+        shell: bash
+        timeout-minutes: 20
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          set -euo pipefail
+          apt_opts=(-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o DPkg::Lock::Timeout=300)
+          for attempt in 1 2 3; do
+            if timeout 12m sudo apt-get "${apt_opts[@]}" update; then
+              break
+            fi
+            if [[ "$attempt" -eq 3 ]]; then
+              echo "apt-get update failed after 3 bounded attempts" >&2
+              exit 1
+            fi
+            sleep "$((attempt * 10))"
+          done
+          timeout 15m sudo apt-get "${apt_opts[@]}" install --no-install-recommends -y clang lld mingw-w64
+          echo "ONE_WINDOWS_CLANG=$(command -v clang)" >> "$GITHUB_ENV"
+          clang --version
+          x86_64-w64-mingw32-gcc --version
+      - name: Run full one-core test suite
+        working-directory: one-source
+        shell: bash
+        run: cargo test --locked -p one-core -- --nocapture
