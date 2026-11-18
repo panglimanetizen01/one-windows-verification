@@ -1,0 +1,94 @@
+name: ONE Candidate Build Matrix (non-acceptance)
+
+on:
+  push:
+    branches: [verification]
+    paths:
+      - 'CANDIDATE_BUILD_COMMIT.txt'
+      - '.github/workflows/candidate-build-matrix.yml'
+      - 'tests/test_candidate_build_pin.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-one-core:
+    name: Linux one-core compile and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Resolve exact candidate SHA
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha="$(tr -d '\r\n[:space:]' < CANDIDATE_BUILD_COMMIT.txt)"
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.candidate.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: one-source
+      - name: Verify source identity
+        working-directory: one-source
+        shell: bash
+        env:
+          ONE_CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$ONE_CANDIDATE_SHA"
+          rustc --version
+          cargo --version
+          printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)"
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+      - name: Run full one-core test suite
+        working-directory: one-source
+        shell: bash
+        run: cargo test --locked -p one-core -- --nocapture
+
+  windows-one-core:
+    name: Windows one-core compile and tests
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - name: Checkout verification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Resolve exact candidate SHA
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha="$(tr -d '\r\n[:space:]' < CANDIDATE_BUILD_COMMIT.txt)"
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact ONE candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: panglimanetizen01/one
+          ref: ${{ steps.candidate.outputs.sha }}
+          token: ${{ secrets.CANONICAL_READ_TOKEN }}
+          path: one-source
+      - name: Verify source identity
+        working-directory: one-source
+        shell: pwsh
+        env:
+          ONE_CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne $env:ONE_CANDIDATE_SHA) { throw "Unexpected source SHA: $actual" }
+          rustc --version
+          cargo --version
+          Write-Output "candidate_sha=$actual"
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+      - name: Run full one-core test suite
+        working-directory: one-source
+        shell: pwsh
+        run: |
+          cargo test --locked -p one-core -- --nocapture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
