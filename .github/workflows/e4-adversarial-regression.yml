@@ -148,6 +148,15 @@ jobs:
     runs-on: windows-2025
     timeout-minutes: 10
     steps:
+      - name: Record Windows Server 2025 environment
+        shell: pwsh
+        run: |
+          $info = Get-ComputerInfo
+          Write-Output "WindowsProductName=$($info.WindowsProductName)"
+          Write-Output "WindowsVersion=$($info.WindowsVersion)"
+          Write-Output "OsBuildNumber=$($info.OsBuildNumber)"
+          Write-Output "PowerShell=$($PSVersionTable.PSVersion)"
+
       - name: Probe RootDirectory-relative opens and junction rejection
         shell: pwsh
         run: |
@@ -260,6 +269,7 @@ jobs:
           $outside = Join-Path $env:RUNNER_TEMP ("one-obj-dont-reparse-outside-" + [guid]::NewGuid().ToString("N"))
           New-Item -ItemType Directory -Path $root | Out-Null
           New-Item -ItemType Directory -Path $outside | Out-Null
+          New-Item -ItemType Directory -Path (Join-Path $outside "child") | Out-Null
           New-Item -ItemType Directory -Path (Join-Path $root "ordinary") | Out-Null
           Set-Content -LiteralPath (Join-Path $outside "sentinel.txt") -Value "OUTSIDE_SENTINEL_UNCHANGED" -NoNewline
           $junction = Join-Path $root "junction"
@@ -270,6 +280,8 @@ jobs:
           $ordinaryHandle = [IntPtr]::Zero
           $junctionBaselineHandle = [IntPtr]::Zero
           $junctionDeniedHandle = [IntPtr]::Zero
+          $intermediateBaselineHandle = [IntPtr]::Zero
+          $intermediateDeniedHandle = [IntPtr]::Zero
           try {
             $ordinaryStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "ordinary", $true, [ref]$ordinaryHandle)
             if ($ordinaryStatus -ne 0) {
@@ -300,6 +312,26 @@ jobs:
             if ($junctionStatus -ne [OneNtCreateFileProbe]::STATUS_REPARSE_POINT_ENCOUNTERED) {
               throw "INCONCLUSIVE/UNSUPPORTED: expected STATUS_REPARSE_POINT_ENCOUNTERED, observed $hex"
             }
+            $intermediateBaselineStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction\child", $false, [ref]$intermediateBaselineHandle)
+            if ($intermediateBaselineStatus -ne 0) {
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$intermediateBaselineStatus), 0))
+              throw "Control open without OBJ_DONT_REPARSE did not traverse intermediate junction: $hex"
+            }
+            [OneNtCreateFileProbe]::Close($intermediateBaselineHandle)
+            $intermediateBaselineHandle = [IntPtr]::Zero
+
+            $intermediateStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction\child", $true, [ref]$intermediateDeniedHandle)
+            $intermediateHex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$intermediateStatus), 0))
+            Write-Output "intermediate_junction_with_OBJ_DONT_REPARSE_status=$intermediateHex"
+            if ($intermediateStatus -eq 0) {
+              [OneNtCreateFileProbe]::Close($intermediateDeniedHandle)
+              $intermediateDeniedHandle = [IntPtr]::Zero
+              throw "SECURITY FAILURE: OBJ_DONT_REPARSE allowed traversal through an intermediate junction"
+            }
+            if ($intermediateStatus -ne [OneNtCreateFileProbe]::STATUS_REPARSE_POINT_ENCOUNTERED) {
+              throw "INCONCLUSIVE/UNSUPPORTED: intermediate junction expected STATUS_REPARSE_POINT_ENCOUNTERED, observed $intermediateHex"
+            }
+
             $sentinel = Get-Content -Raw -LiteralPath (Join-Path $outside "sentinel.txt")
             if ($sentinel -ne "OUTSIDE_SENTINEL_UNCHANGED") { throw "Outside sentinel changed unexpectedly" }
             Write-Output "OBJ_DONT_REPARSE_ROOT_DIRECTORY_JUNCTION_DENIAL_OK"
@@ -307,6 +339,8 @@ jobs:
             [OneNtCreateFileProbe]::Close($ordinaryHandle)
             [OneNtCreateFileProbe]::Close($junctionBaselineHandle)
             [OneNtCreateFileProbe]::Close($junctionDeniedHandle)
+            [OneNtCreateFileProbe]::Close($intermediateBaselineHandle)
+            [OneNtCreateFileProbe]::Close($intermediateDeniedHandle)
             [OneNtCreateFileProbe]::Close($rootHandle)
             Remove-Item -LiteralPath $junction -Force -ErrorAction SilentlyContinue
             Remove-Item -LiteralPath $root -Recurse -Force -ErrorAction SilentlyContinue
