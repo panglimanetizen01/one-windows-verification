@@ -17,18 +17,20 @@ jobs:
         with:
           ref: verification
       - name: Validate candidate build pin
+        id: candidate
         shell: bash
         run: |
           set -euo pipefail
           sha="$(tr -d '\r\n[:space:]' < CANDIDATE_BUILD_COMMIT.txt)"
           [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
           echo "ONE_CANDIDATE_SHA=$sha" >> "$GITHUB_ENV"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
           printf 'candidate_sha=%s\n' "$sha"
       - name: Checkout exact ONE candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
-          ref: ${{ env.ONE_CANDIDATE_SHA }}
+          ref: ${{ steps.candidate.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: one-source
       - name: Install Rust 1.100.0
