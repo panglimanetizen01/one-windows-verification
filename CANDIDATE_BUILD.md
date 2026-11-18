@@ -36,3 +36,13 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - Workflow fix commit: `2ebf939dd939f23e0e1bf349d8ed0fe12da2c7e9`.
 - First candidate run `44283817583` was already running with the old workflow and is not evidence for the fix.
 - Fresh matrix run `44284002056` was triggered by the workflow change. Linux job `134731808510` and Windows job `134731808090` are in progress; no test result is yet claimed.
+
+
+## Windows process-test remediation candidate — 2026-11-18
+
+- The previous baseline matrix on ONE source SHA `e47b3b52eeb7e1b25fc24f741d5bb5cc1b01f24d` completed Windows job `134731808090` with 124 passed and 3 failed. Failures: stdout/stderr hard-limit test diagnostics and the Job Object descendant probe exceeding its 10-second helper deadline. The Linux job from run `44284002056` was still provisioning its MinGW toolchain at last observation; it is not transferred to this new candidate.
+- Follow-up draft PR #112: https://github.com/panglimanetizen01/one/pull/112.
+- New exact source candidate pin: `dc9896d1f525db6ce1e462d250bd68b8f5b28cb8`.
+- Verifier pin update commit: `6cbd20a7435a9fe84867a804ff43518e4eb2aa1c`.
+- This run will determine whether the Windows test harness remediation is correct. The production process deadline remains 10 seconds; only the private integration probe gets a longer test setup budget.
+- This remains a non-acceptance baseline matrix and is not Issue #104/E4 evidence.
