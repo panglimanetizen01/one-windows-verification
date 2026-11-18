@@ -1335,3 +1335,11 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 - The first separate-pin workflow attempt, run `44242265068` on verifier SHA `1a37469403938da106bf35989a7068706a1fddc0`, stopped at the pin-format guard before checking out the ledger source. The pin had 39 characters because the `a` after `...9fbb` was omitted.
 - Corrected `LEDGER_SOURCE_COMMIT.txt` to the exact 40-character PR #103 head SHA `fde2b81b2f63743b990e9fbbade47ec8076e2151`. The shared `CANONICAL_COMMIT.txt` remains unchanged at `e50748a1b25922d9090eba1f5fb90548d7c7d003`.
 - This is a pin-format/input correction only. No ledger points, DoD checkboxes, security implementation, or E4 source pin changed.
+
+
+## Ledger checkout ref interpolation correction — 2026-11-18
+
+- Verifier run `44242448522` reached the dedicated ledger checkout, but the checkout step passed a literal leading backslash before the GitHub Actions expression (`\${{ steps.ledger.outputs.sha }}`). Git interpreted the resulting `\fde2...` as an invalid refspec and checkout failed before tests.
+- Root cause: the workflow and its source assertion were generated from a raw template string that preserved the escape character. Remove the literal backslash so Actions evaluates the `ref` and `token` expressions normally.
+- The exact ledger-document pin is valid and remains `fde2b81b2f63743b990e9fbbade47ec8076e2151` (40 lowercase hex characters). The shared E4/security pin remains `e50748a1b25922d9090eba1f5fb90548d7c7d003`.
+- No source implementation, ledger points, DoD checkboxes, or acceptance criteria changed. This is a workflow expression syntax fix only.

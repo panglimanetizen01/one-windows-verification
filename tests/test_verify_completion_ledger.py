@@ -257,11 +257,11 @@ class WorkflowActionPinTests(unittest.TestCase):
         ledger_pin = (root / "LEDGER_SOURCE_COMMIT.txt").read_text(encoding="utf-8").strip()
         self.assertRegex(ledger_pin, r"^[0-9a-f]{40}$")
         self.assertIn("LEDGER_SOURCE_COMMIT.txt", workflow)
-        self.assertIn("ref: \${{ steps.ledger.outputs.sha }}", workflow)
+        self.assertIn("ref: ${{ steps.ledger.outputs.sha }}", workflow)
         self.assertIn("path: ledger-source", workflow)
         self.assertIn("--ledger ledger-source/docs/verification/one-completion-ledger.md", workflow)
         self.assertIn("--dod ledger-source/docs/verification/DEFINITION_OF_DONE.md", workflow)
-        self.assertIn('--source-sha "\${{ steps.pin.outputs.sha }}"', workflow)
+        self.assertIn('--source-sha "${{ steps.pin.outputs.sha }}"', workflow)
 
 if __name__ == "__main__":
     unittest.main()

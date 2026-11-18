@@ -53,3 +53,11 @@ The fixed-weight ledger and Definition of Done are maintained on ONE PR #103's d
 ### Pin-format correction — 2026-11-18
 
 Run `44242265068` stopped at the new 40-character SHA validation because the initial ledger pin omitted one character. `LEDGER_SOURCE_COMMIT.txt` is corrected to `fde2b81b2f63743b990e9fbbade47ec8076e2151`; the E4 `CANONICAL_COMMIT.txt` remains untouched. This run did not reach checkout or acceptance evaluation.
+
+
+## Ledger checkout ref interpolation correction — 2026-11-18
+
+- Verifier run `44242448522` reached the dedicated ledger checkout, but the checkout step passed a literal leading backslash before the GitHub Actions expression (`\${{ steps.ledger.outputs.sha }}`). Git interpreted the resulting `\fde2...` as an invalid refspec and checkout failed before tests.
+- Root cause: the workflow and its source assertion were generated from a raw template string that preserved the escape character. Remove the literal backslash so Actions evaluates the `ref` and `token` expressions normally.
+- The exact ledger-document pin is valid and remains `fde2b81b2f63743b990e9fbbade47ec8076e2151` (40 lowercase hex characters). The shared E4/security pin remains `e50748a1b25922d9090eba1f5fb90548d7c7d003`.
+- No source implementation, ledger points, DoD checkboxes, or acceptance criteria changed. This is a workflow expression syntax fix only.
