@@ -111,3 +111,14 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - This is a non-acceptance build/test baseline only. No filesystem I/O has been implemented; it does not satisfy Issue #104 or E4 and contains no adversarial filesystem regression tests.
 - CircleCI `ci/circleci: one-linux` for exact source SHA `14d81a93...` remains PENDING at last check.
 - Verifier ledger update commit: pending readback after this append.
+
+
+## Issue #104 native backend design + exact E4 test inventory — 2026-11-18
+
+- Exact ONE candidate source SHA: `98c3f8a9f2f145a2155a763d47e1131ae075b3ce` (PR #113).
+- Design document sections 23–24 record: native implementation decision; rejection of cap-std as the strict no-symlink enforcement boundary; parent-rename race threat; and exact E4 test-name/count contract.
+- Independent candidate run [44288122054](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44288122054) is IN_PROGRESS on verifier HEAD `b881cae4de286d278b7eff0e6d1be6c88806e8b1`; Windows job `134745983528` is checking out the exact ONE candidate, Linux job `134745983669` is verifying source identity.
+- CircleCI `ci/circleci: one-linux` for exact source SHA `98c3f8a...` is PENDING.
+- The preceding code candidate SHA `14d81a93...` has independent Linux+Windows SUCCESS (239/0/1 and 232/0/1) and CircleCI SUCCESS. The new candidate adds documentation only; don't transfer results across SHAs.
+- E4 inventory currently has 0/5 Unix filter groups and 0/6 Windows named tests implemented/accepted. Generic test-suite success is not E4 acceptance.
+- No filesystem operations or authority object exist yet. Issue #104 remains OPEN / NOT IMPLEMENTED / NOT ACCEPTED. E4 and ledger acceptance pins remain unchanged.
