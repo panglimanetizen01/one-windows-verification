@@ -47,4 +47,9 @@ Required repair: restore/re-author the fixed-weight ledger and Definition of Don
 
 ## Ledger document pin separation — 2026-11-18
 
-The fixed-weight ledger and Definition of Done are maintained on ONE PR #103's documentation branch, while `CANONICAL_COMMIT.txt` is the independent E4/security candidate pin. These are intentionally different source revisions. `LEDGER_SOURCE_COMMIT.txt` now pins the exact PR #103 documentation SHA `fde2b81b2f63743b990e9fbbde47ec8076e2151`; `ledger-gate.yml` checks out that revision into `ledger-source/` and reads the two canonical ledger documents there. The candidate code SHA remains read from `CANONICAL_COMMIT.txt` and continues to drive live exact-SHA workflow/release evidence checks. This resolves the missing-file precondition without moving the E4 pin or weakening any acceptance rule. The gate is still expected to remain NOT PASSED while DoD has 10 unchecked items and the ledger has 0/100 verified points.
+The fixed-weight ledger and Definition of Done are maintained on ONE PR #103's documentation branch, while `CANONICAL_COMMIT.txt` is the independent E4/security candidate pin. These are intentionally different source revisions. `LEDGER_SOURCE_COMMIT.txt` now pins the exact PR #103 documentation SHA `fde2b81b2f63743b990e9fbbade47ec8076e2151`; `ledger-gate.yml` checks out that revision into `ledger-source/` and reads the two canonical ledger documents there. The candidate code SHA remains read from `CANONICAL_COMMIT.txt` and continues to drive live exact-SHA workflow/release evidence checks. This resolves the missing-file precondition without moving the E4 pin or weakening any acceptance rule. The gate is still expected to remain NOT PASSED while DoD has 10 unchecked items and the ledger has 0/100 verified points.
+
+
+### Pin-format correction — 2026-11-18
+
+Run `44242265068` stopped at the new 40-character SHA validation because the initial ledger pin omitted one character. `LEDGER_SOURCE_COMMIT.txt` is corrected to `fde2b81b2f63743b990e9fbbade47ec8076e2151`; the E4 `CANONICAL_COMMIT.txt` remains untouched. This run did not reach checkout or acceptance evaluation.

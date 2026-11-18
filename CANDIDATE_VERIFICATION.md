@@ -1325,6 +1325,13 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 # Fixed-weight ledger gate — separate documentation source pin — 2026-11-18
 
 - The shared `CANONICAL_COMMIT.txt` remains `e50748a1b25922d9090eba1f5fb90548d7c7d003` for the independent E4/security candidate. It must not be advanced until Issue #104 has a committed lockfile, handle-relative implementation, and the required Unix/Windows adversarial tests.
-- Added `LEDGER_SOURCE_COMMIT.txt`, pinned to PR #103 documentation branch HEAD `fde2b81b2f63743b990e9fbbde47ec8076e2151`, where `docs/verification/one-completion-ledger.md` and `docs/verification/DEFINITION_OF_DONE.md` are present.
+- Added `LEDGER_SOURCE_COMMIT.txt`, pinned to PR #103 documentation branch HEAD `fde2b81b2f63743b990e9fbbade47ec8076e2151`, where `docs/verification/one-completion-ledger.md` and `docs/verification/DEFINITION_OF_DONE.md` are present.
 - `ledger-gate.yml` now checks out the two source revisions independently: `one-source` for the exact candidate SHA from `CANONICAL_COMMIT.txt`, and `ledger-source` for the exact ledger/DoD SHA from `LEDGER_SOURCE_COMMIT.txt`. Live workflow evidence remains evaluated against the candidate `--source-sha`, not the documentation commit.
 - The prior run `44241595784` had 15/15 unit tests PASS but failed before ledger evaluation because those docs were absent from the shared E4 pin. This change fixes that input-path mismatch only; it does not change fixed weights, DoD checkboxes, source pin, or acceptance criteria. The ledger gate remains NOT PASSED until exact-SHA evidence and all acceptance items satisfy the verifier.
+
+
+## Ledger-source pin validation correction — 2026-11-18
+
+- The first separate-pin workflow attempt, run `44242265068` on verifier SHA `1a37469403938da106bf35989a7068706a1fddc0`, stopped at the pin-format guard before checking out the ledger source. The pin had 39 characters because the `a` after `...9fbb` was omitted.
+- Corrected `LEDGER_SOURCE_COMMIT.txt` to the exact 40-character PR #103 head SHA `fde2b81b2f63743b990e9fbbade47ec8076e2151`. The shared `CANONICAL_COMMIT.txt` remains unchanged at `e50748a1b25922d9090eba1f5fb90548d7c7d003`.
+- This is a pin-format/input correction only. No ledger points, DoD checkboxes, security implementation, or E4 source pin changed.
