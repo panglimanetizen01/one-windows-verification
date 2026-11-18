@@ -49,6 +49,14 @@ jobs:
           cargo --version
           printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)"
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+      - name: Install MinGW cross toolchain for Windows backend contract test
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y clang lld mingw-w64
+          echo "ONE_WINDOWS_CLANG=$(command -v clang)" >> "$GITHUB_ENV"
+          clang --version
+          x86_64-w64-mingw32-gcc --version
       - name: Run full one-core test suite
         working-directory: one-source
         shell: bash
@@ -88,6 +96,17 @@ jobs:
           cargo --version
           Write-Output "candidate_sha=$actual"
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+      - name: Install Windows GNU cross toolchain
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-clang mingw-w64-x86_64-lld
+      - name: Configure Windows native compiler override
+        shell: pwsh
+        run: |
+          "ONE_WINDOWS_CLANG=clang" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          clang --version
       - name: Run full one-core test suite
         working-directory: one-source
         shell: pwsh

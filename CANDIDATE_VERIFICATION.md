@@ -1358,3 +1358,8 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 - Added `CANDIDATE_BUILD_COMMIT.txt` pinned to exact PR #110 documentation HEAD `bac3a2e6f3ba6db5b821b9eafa6c5576f9fa8554` (which includes the committed `Cargo.lock`).
 - Added `.github/workflows/candidate-build-matrix.yml` to run the full `cargo test --locked -p one-core` suite on Ubuntu 24.04 and Windows 2025. This is a build/test baseline only, not security acceptance.
 - This creates an independent, log-visible CI route for iterating on Issue #104 without moving `CANONICAL_COMMIT.txt` or weakening the E4 acceptance gate. `LEDGER_SOURCE_COMMIT.txt` remains a separate third pin for ledger/DoD docs.
+
+
+## Candidate matrix environment repair — 2026-11-18
+
+The first candidate matrix run `44243442240` checked out the exact source and compiled `one-core` on both OSes, but both test suites failed in the existing `windows_x86_64_dapat_membangun_artifact_native` test because the configured cross-compiler `x86_64-w64-mingw32-clang` was not installed on either host. The test is intentionally retained (not ignored or weakened). The matrix now installs the required MinGW/Clang/LLD toolchains on Ubuntu and Windows and sets `ONE_WINDOWS_CLANG=clang` before running the full suite.

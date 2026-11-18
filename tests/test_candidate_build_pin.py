@@ -12,6 +12,9 @@ class CandidateBuildPinTests(unittest.TestCase):
         self.assertIn("runs-on: ubuntu-24.04", workflow)
         self.assertIn("runs-on: windows-2025", workflow)
         self.assertIn("cargo test --locked -p one-core", workflow)
+        self.assertIn("ONE_WINDOWS_CLANG", workflow)
+        self.assertIn("mingw-w64", workflow)
+        self.assertIn("msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e", workflow)
 
 
 if __name__ == "__main__":
