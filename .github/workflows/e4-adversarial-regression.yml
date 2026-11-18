@@ -273,7 +273,7 @@ jobs:
           try {
             $ordinaryStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "ordinary", $true, [ref]$ordinaryHandle)
             if ($ordinaryStatus -ne 0) {
-              $hex = "0x{0:X8}" -f ([uint32]$ordinaryStatus)
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$ordinaryStatus), 0))
               throw "Control open of ordinary child failed with NTSTATUS $hex"
             }
             [OneNtCreateFileProbe]::Close($ordinaryHandle)
@@ -281,14 +281,14 @@ jobs:
 
             $baselineStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction", $false, [ref]$junctionBaselineHandle)
             if ($baselineStatus -ne 0) {
-              $hex = "0x{0:X8}" -f ([uint32]$baselineStatus)
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$baselineStatus), 0))
               throw "Control open without OBJ_DONT_REPARSE did not follow junction: $hex"
             }
             [OneNtCreateFileProbe]::Close($junctionBaselineHandle)
             $junctionBaselineHandle = [IntPtr]::Zero
 
             $junctionStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction", $true, [ref]$junctionDeniedHandle)
-            $hex = "0x{0:X8}" -f ([uint32]$junctionStatus)
+            $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$junctionStatus), 0))
             Write-Output "ordinary_child_status=0x00000000"
             Write-Output "junction_without_flag_status=0x00000000"
             Write-Output "junction_with_OBJ_DONT_REPARSE_status=$hex"
