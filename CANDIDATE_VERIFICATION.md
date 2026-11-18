@@ -1,3 +1,13 @@
+
+
+# PR #110 latest source checkpoint — 2026-11-18
+
+- Latest observed ONE PR #110 branch HEAD at this checkpoint: `73c705f3581cf26414b4e4d69616fee9886396e4`; this is documentation-only. CircleCI `ci/circleci: one-linux` remains PENDING for that exact SHA (job `8b851d97-57f9-4043-af0e-49c5b357413e`).
+- Latest reviewed code-bearing parent SHA remains `19ef80d0ff4fa41ebfc96e9a3164ec96a6ae645b`; it still has path-based filesystem adapter operations and does not satisfy E4's required adversarial test inventory.
+- This verifier branch remains at its current head before this documentation update; `CANONICAL_COMMIT.txt` remains pinned to historical source `e50748a1b25922d9090eba1f5fb90548d7c7d003`. No source pin change or E4 run is authorized by this metadata update.
+- The latest documentation checkpoint supersedes earlier references that described `26d29c6...` as the current PR #110 HEAD. It does not supersede or transfer any test result across SHAs.
+
+---
 # E4 filesystem verifier — expanded log diagnosis — 2026-11-18
 
 - Historical verifier run: [43998206030](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43998206030), executed on verifier workflow SHA `9cf1bb3071c56497118ad9c9e532abfee3fd60ee` and pinned source `e50748a1b25922d9090eba1f5fb90548d7c7d003`.
