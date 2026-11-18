@@ -1,3 +1,14 @@
+# Live source-reconciliation note — 2026-11-18 — Issue #104
+
+- Current ONE candidate observed in GitHub: PR #110 branch `security/issue-104-root-handle-design-20261118`; code-bearing parent SHA `19ef80d0ff4fa41ebfc96e9a3164ec96a6ae645b`; latest docs-only PR head `26d29c61944e51919161f5360bccfef4a09d370d`.
+- At code-bearing SHA `19ef80d...`, `FileReadAdapter` and `FileWriteAdapter` still use `std::fs::read(path)` / `std::fs::write(path, ...)`; the required descriptor-relative Unix tests and Windows handle/reparse tests are not implemented in that source tree.
+- This branch's `CANONICAL_COMMIT.txt` remains pinned to `e50748a1b25922d9090eba1f5fb90548d7c7d003`, which is a historical verifier candidate and must not be represented as the current ONE source.
+- **Do not advance the pin yet.** The E4 workflow below requires nonzero matching adversarial tests. Updating the pin before the required source tests exist would produce zero-match/filter failures and would not constitute security verification. Keep the historical run evidence intact.
+- Current PR #110 CircleCI status at its code-bearing parent SHA `19ef80d...` is SUCCESS for `ci/circleci: one-linux`; this does not satisfy E4 filesystem confinement. The latest docs-only SHA `26d29c6...` has a new CircleCI run in progress at checkpoint time; no result is transferred from its parent.
+- Next verifier action: once Issue #104 implementation and matching Unix/Windows adversarial tests exist and compile, update the pin to that exact source SHA, verify nonzero matched-test counts, and run both verifier jobs. Record source SHA and verifier SHA separately.
+
+---
+
 # ACTIVE CHECKPOINT — PR #92 Local CI replacement — 2026-11-12
 
 **CURRENT SOURCE SHA: `01e0ad4a198d8095340da8d10adc3a6fa5ed9fa5` · CIRCLECI: SUCCESS · INDEPENDENT UBUNTU/WINDOWS: PASS · GITHUB ACTIONS SECONDARY: INFRASTRUCTURE FAILURE / LOGS UNAVAILABLE**
