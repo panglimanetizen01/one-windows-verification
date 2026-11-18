@@ -49,6 +49,8 @@ jobs:
           cargo --version
           printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)"
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+        with:
+          toolchain: 1.100.0
       - name: Install MinGW cross toolchain for Windows backend contract test
         shell: bash
         run: |
@@ -96,6 +98,8 @@ jobs:
           cargo --version
           Write-Output "candidate_sha=$actual"
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+        with:
+          toolchain: 1.100.0
       - name: Install Windows GNU cross toolchain
         uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e
         with:
