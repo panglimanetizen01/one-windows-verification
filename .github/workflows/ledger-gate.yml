@@ -6,6 +6,7 @@ on:
     branches: [verification]
     paths:
       - 'CANONICAL_COMMIT.txt'
+      - 'LEDGER_SOURCE_COMMIT.txt'
       - 'CANDIDATE_VERIFICATION.md'
       - 'tools/verify_completion_ledger.py'
       - 'tests/test_verify_completion_ledger.py'
@@ -45,6 +46,27 @@ jobs:
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: one-source
 
+
+      - name: Read exact ledger-document source SHA
+        id: ledger
+        shell: bash
+        run: |
+          sha="$(tr -d '\r\n[:space:]' < LEDGER_SOURCE_COMMIT.txt)"
+          if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid LEDGER_SOURCE_COMMIT.txt: $sha" >&2
+            exit 2
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "Pinned ONE ledger/DoD documentation SHA: $sha"
+
+      - name: Checkout exact ledger and Definition of Done source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: panglimanetizen01/one
+          ref: \${{ steps.ledger.outputs.sha }}
+          token: \${{ secrets.CANONICAL_READ_TOKEN }}
+          path: ledger-source
+
       - name: Test ledger verifier
         run: python -m unittest discover -s tests -p 'test_verify_completion_ledger.py' -v
 
@@ -57,8 +79,8 @@ jobs:
           CANONICAL_READ_TOKEN: ${{ secrets.ONE_REPO_TOKEN }}
         run: |
           python tools/verify_completion_ledger.py \
-            --ledger one-source/docs/verification/one-completion-ledger.md \
-            --dod one-source/docs/verification/DEFINITION_OF_DONE.md \
+            --ledger ledger-source/docs/verification/one-completion-ledger.md \
+            --dod ledger-source/docs/verification/DEFINITION_OF_DONE.md \
             --evidence-index CANDIDATE_VERIFICATION.md \
             --source-sha "${{ steps.pin.outputs.sha }}" \
             --require-live-workflows \

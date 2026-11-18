@@ -1320,3 +1320,11 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 
 - Live PR #110 remains OPEN / DRAFT / UNMERGED at exact HEAD `871a39967db315c695a642f527c41c7172922201` (documentation-only commit updating Issue #104 audit metadata).
 - CircleCI `ci/circleci: one-linux` for exact HEAD `871a399...` is PENDING; job `07d035f3-cac0-4a75-a4f8-0eaaa3f19a4b`, workflow `9d66857b-5f97-48db-834a-396c872831a1`, status timestamp `2026-11-18T05:01:55Z`. No result is transferred from parent SHA.
+
+
+# Fixed-weight ledger gate — separate documentation source pin — 2026-11-18
+
+- The shared `CANONICAL_COMMIT.txt` remains `e50748a1b25922d9090eba1f5fb90548d7c7d003` for the independent E4/security candidate. It must not be advanced until Issue #104 has a committed lockfile, handle-relative implementation, and the required Unix/Windows adversarial tests.
+- Added `LEDGER_SOURCE_COMMIT.txt`, pinned to PR #103 documentation branch HEAD `fde2b81b2f63743b990e9fbbde47ec8076e2151`, where `docs/verification/one-completion-ledger.md` and `docs/verification/DEFINITION_OF_DONE.md` are present.
+- `ledger-gate.yml` now checks out the two source revisions independently: `one-source` for the exact candidate SHA from `CANONICAL_COMMIT.txt`, and `ledger-source` for the exact ledger/DoD SHA from `LEDGER_SOURCE_COMMIT.txt`. Live workflow evidence remains evaluated against the candidate `--source-sha`, not the documentation commit.
+- The prior run `44241595784` had 15/15 unit tests PASS but failed before ledger evaluation because those docs were absent from the shared E4 pin. This change fixes that input-path mismatch only; it does not change fixed weights, DoD checkboxes, source pin, or acceptance criteria. The ledger gate remains NOT PASSED until exact-SHA evidence and all acceptance items satisfy the verifier.

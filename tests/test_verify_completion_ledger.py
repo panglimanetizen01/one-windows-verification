@@ -251,5 +251,17 @@ class WorkflowActionPinTests(unittest.TestCase):
         self.assertIn('git show "refs/remotes/origin/$branch:evidence/generated/interop-rustfmt-normalized.rs" | cmp -s - evidence/generated/interop-rustfmt-normalized.rs', workflow)
         self.assertIn("idempotent success", workflow)
         self.assertNotIn("git push --force", workflow)
+    def test_ledger_gate_uses_separate_exact_sha_documentation_pin(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "ledger-gate.yml").read_text(encoding="utf-8")
+        ledger_pin = (root / "LEDGER_SOURCE_COMMIT.txt").read_text(encoding="utf-8").strip()
+        self.assertRegex(ledger_pin, r"^[0-9a-f]{40}$")
+        self.assertIn("LEDGER_SOURCE_COMMIT.txt", workflow)
+        self.assertIn("ref: \${{ steps.ledger.outputs.sha }}", workflow)
+        self.assertIn("path: ledger-source", workflow)
+        self.assertIn("--ledger ledger-source/docs/verification/one-completion-ledger.md", workflow)
+        self.assertIn("--dod ledger-source/docs/verification/DEFINITION_OF_DONE.md", workflow)
+        self.assertIn('--source-sha "\${{ steps.pin.outputs.sha }}"', workflow)
+
 if __name__ == "__main__":
     unittest.main()
