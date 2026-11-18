@@ -146,7 +146,7 @@ jobs:
 
   windows-obj-dont-reparse-contract-probe:
     name: Windows user-mode NtCreateFile OBJ_DONT_REPARSE contract probe
-    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/probe/')
+    if: ${{ github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/probe/') }}
     runs-on: windows-2025
     timeout-minutes: 10
     steps:
