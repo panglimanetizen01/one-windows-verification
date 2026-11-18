@@ -59,18 +59,21 @@ jobs:
         run: |
           set -euo pipefail
           apt_opts=(-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o DPkg::Lock::Timeout=300)
-          for attempt in 1 2 3; do
-            if timeout 4m sudo apt-get "${apt_opts[@]}" update; then
-              break
-            fi
-            if [[ "$attempt" -eq 3 ]]; then
-              echo "apt-get update failed after 3 bounded attempts" >&2
-              exit 1
-            fi
-            sleep "$((attempt * 10))"
-          done
-          timeout 15m sudo apt-get "${apt_opts[@]}" install --no-install-recommends -y clang-18 gcc-mingw-w64-x86-64-posix
-          windows_clang="$(command -v clang-18)"
+          # GitHub's ubuntu-24.04 runner image already carries Clang.
+          # Reuse it rather than downloading a second compiler toolchain.
+          if command -v clang-18 >/dev/null 2>&1; then
+            windows_clang="$(command -v clang-18)"
+          elif command -v clang >/dev/null 2>&1; then
+            windows_clang="$(command -v clang)"
+          else
+            echo "Clang is not preinstalled on this runner image" >&2
+            exit 1
+          fi
+          # The runner image is freshly provisioned with apt indexes. Install
+          # only the POSIX x86_64 MinGW runtime/compiler actually required by
+          # the Windows GNU backend contract test; avoid a slow apt-get update
+          # and the unrelated all-architecture mingw-w64 meta-package.
+          timeout 15m sudo apt-get "${apt_opts[@]}" install --no-install-recommends -y gcc-mingw-w64-x86-64-posix
           echo "ONE_WINDOWS_CLANG=$windows_clang" >> "$GITHUB_ENV"
           "$windows_clang" --version
           x86_64-w64-mingw32-gcc-posix --version
