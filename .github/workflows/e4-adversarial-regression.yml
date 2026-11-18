@@ -3,7 +3,7 @@ name: ONE E4 adversarial filesystem and resource-bound regression
 
 on:
   push:
-    branches: [verification]
+    branches: [verification, 'probe/**']
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/e4-adversarial-regression.yml'
@@ -146,7 +146,7 @@ jobs:
 
   windows-obj-dont-reparse-contract-probe:
     name: Windows user-mode NtCreateFile OBJ_DONT_REPARSE contract probe
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/probe/')
     runs-on: windows-2025
     timeout-minutes: 10
     steps:
