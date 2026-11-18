@@ -1,3 +1,13 @@
+# E4 filesystem verifier — expanded log diagnosis — 2026-11-18
+
+- Historical verifier run: [43998206030](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/43998206030), executed on verifier workflow SHA `9cf1bb3071c56497118ad9c9e532abfee3fd60ee` and pinned source `e50748a1b25922d9090eba1f5fb90548d7c7d003`.
+- Unix job `133755415781`: Cargo's first `cargo test --locked` invocation exits 101 because `source/Cargo.lock` is absent and Cargo refuses to create it under `--locked`. No named test ran.
+- Windows job `133755416047`: same missing-lockfile error at the first expected test invocation; Cargo exit 101, PowerShell job exit 1. No named test ran.
+- This is a verifier input/precondition failure, not a filesystem test failure and not a security PASS. Keep `--locked` and exact nonzero-match assertions. Do not generate an ephemeral lockfile or relax filters.
+- The current ONE PR #110 code-bearing parent `19ef80d0ff4fa41ebfc96e9a3164ec96a6ae645b` still uses path-based std::fs operations and lacks the required adversarial tests. The latest PR #110 commits are documentation-only. Do not move `CANONICAL_COMMIT.txt` until a source candidate includes committed Cargo.lock, the complete named Unix/Windows tests, and the verified handle-relative implementation.
+
+---
+
 # Live source-reconciliation note — 2026-11-18 — Issue #104
 
 - Current ONE candidate observed in GitHub: PR #110 branch `security/issue-104-root-handle-design-20261118`; code-bearing parent SHA `19ef80d0ff4fa41ebfc96e9a3164ec96a6ae645b`; latest docs-only PR head `26d29c61944e51919161f5360bccfef4a09d370d`.
