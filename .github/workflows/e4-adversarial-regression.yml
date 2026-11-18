@@ -246,7 +246,7 @@ jobs:
 
               public static IntPtr OpenRoot(string path) {
                   IntPtr handle;
-                  string nativePath = @"\\??\\" + System.IO.Path.GetFullPath(path);
+                  string nativePath = @"\??\" + System.IO.Path.GetFullPath(path);
                   int status = OpenNamedDirectory(nativePath, IntPtr.Zero, OBJ_CASE_INSENSITIVE, out handle);
                   if (status != 0) {
                       string hex = "0x" + unchecked((uint)status).ToString("X8");
