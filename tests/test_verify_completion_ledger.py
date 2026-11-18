@@ -48,7 +48,7 @@ class LedgerGateTests(unittest.TestCase):
         workflow_path = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "windows-native-backend-runtime.yml"
         workflow = workflow_path.read_text(encoding="utf-8")
         self.assertIn("name: ONE Windows Native Backend Runtime — Windows Server 2025", workflow)
-        self.assertIn("CANONICAL_COMMIT.txt", workflow)
+        self.assertIn("WINDOWS_SOURCE_COMMIT.txt", workflow)
         self.assertIn("CANONICAL_READ_TOKEN", workflow)
         self.assertIn("ONE_WINDOWS_CLANG=clang", workflow)
         self.assertIn("clang --target=x86_64-w64-windows-gnu", workflow)
