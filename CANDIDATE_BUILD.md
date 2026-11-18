@@ -68,3 +68,12 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - Verifier workflow-run HEAD is `a790668f266ba23ac730cf018655a6035a0399db`; this is the verifier repository commit, not the ONE source candidate SHA.
 - This is a non-acceptance compile/test baseline only. It does not satisfy Issue #104, E4, symlink/TOCTOU/reparse-point adversarial testing, or Android runtime execution.
 - Candidate remains draft PR #112 pending independent CircleCI status and further review. Do not merge on the strength of this matrix alone.
+
+
+## Issue #104 native API compile spike — 2026-11-18
+
+- Exact ONE source candidate pin advanced to `7f092b0f030aa9a182a952fdafc9630221b5d038` (PR #113, draft).
+- Verifier pin commit: `c613adbccf975206f07fd4d15b2da7efbb808047`.
+- The source change enables windows-sys 0.61 WDK Foundation + WDK Storage/FileSystem features and adds a compile-time-only reference to OBJECT_ATTRIBUTES and NtCreateFile. It performs no filesystem I/O.
+- The candidate matrix is being used strictly to compile and run the unchanged one-core baseline on Ubuntu and Windows, confirming that the native API feature gates resolve on both target builds. This is not E4 and does not test filesystem confinement.
+- Issue #104 remains unimplemented; do not treat this spike as a security acceptance candidate.
