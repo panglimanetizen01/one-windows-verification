@@ -98,3 +98,16 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - CircleCI `ci/circleci: one-linux` for the same exact source SHA remains PENDING.
 - Linux success confirms the corrected dependency feature change does not regress Linux; it cannot validate Windows-only NtCreateFile imports.
 - This is still a compile/test baseline, not Issue #104 or E4 security acceptance.
+
+
+## Corrected NtCreateFile feature-gate candidate — full Linux + Windows baseline PASS — 2026-11-18
+
+- Independent verifier run [44286988623](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44286988623) completed SUCCESS.
+- Both jobs explicitly checked out and identity-verified exact ONE source SHA `14d81a93a60ea2bba1ebfd2ddf7d85baf0893e24`.
+- Linux Ubuntu 24.04 job `134742079698`: SUCCESS; complete logs total 239 passed, 0 failed, 1 ignored.
+- Windows Server 2025 job `134742079233`: SUCCESS; complete logs total 232 passed, 0 failed, 1 ignored.
+- Windows compilation confirms the missing `Win32_System_IO` feature gate fix exposes the `NtCreateFile` binding and the complete existing one-core suite passes.
+- The platform test counts differ due to platform-specific binaries/cases. Both test commands completed successfully.
+- This is a non-acceptance build/test baseline only. No filesystem I/O has been implemented; it does not satisfy Issue #104 or E4 and contains no adversarial filesystem regression tests.
+- CircleCI `ci/circleci: one-linux` for exact source SHA `14d81a93...` remains PENDING at last check.
+- Verifier ledger update commit: pending readback after this append.
