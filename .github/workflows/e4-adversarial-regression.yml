@@ -214,22 +214,13 @@ jobs:
                   IntPtr allocationSize, uint fileAttributes, uint shareAccess,
                   uint createDisposition, uint createOptions, IntPtr eaBuffer, uint eaLength);
 
-              public static IntPtr OpenRoot(string path) {
-                  IntPtr h = CreateFile(path,
-                      FILE_LIST_DIRECTORY | FILE_TRAVERSE | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
-                      FILE_SHARE_READ | FILE_SHARE_WRITE, IntPtr.Zero, OPEN_EXISTING,
-                      FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
-                  if (h == new IntPtr(-1)) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
-                  return h;
-              }
-
-              public static int OpenDirectoryRelative(IntPtr root, string component, out IntPtr handle) {
-                  IntPtr nameBuffer = Marshal.StringToHGlobalUni(component);
+              static int OpenNamedDirectory(string name, IntPtr root, uint objectAttributes, out IntPtr handle) {
+                  IntPtr nameBuffer = Marshal.StringToHGlobalUni(name);
                   IntPtr unicodeBuffer = IntPtr.Zero;
                   try {
                       var unicode = new UNICODE_STRING {
-                          Length = checked((ushort)(component.Length * 2)),
-                          MaximumLength = checked((ushort)(component.Length * 2 + 2)),
+                          Length = checked((ushort)(name.Length * 2)),
+                          MaximumLength = checked((ushort)(name.Length * 2 + 2)),
                           Buffer = nameBuffer
                       };
                       unicodeBuffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UNICODE_STRING)));
@@ -238,20 +229,34 @@ jobs:
                           Length = Marshal.SizeOf(typeof(OBJECT_ATTRIBUTES)),
                           RootDirectory = root,
                           ObjectName = unicodeBuffer,
-                          Attributes = OBJ_CASE_INSENSITIVE | OBJ_DONT_REPARSE
+                          Attributes = objectAttributes
                       };
                       IO_STATUS_BLOCK io;
-                      int status = NtCreateFile(out handle,
+                      return NtCreateFile(out handle,
                           FILE_LIST_DIRECTORY | FILE_TRAVERSE | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
                           ref attributes, out io, IntPtr.Zero, FILE_ATTRIBUTE_NORMAL,
                           FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_OPEN,
                           FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT,
                           IntPtr.Zero, 0);
-                      return status;
                   } finally {
                       if (unicodeBuffer != IntPtr.Zero) Marshal.FreeHGlobal(unicodeBuffer);
                       Marshal.FreeHGlobal(nameBuffer);
                   }
+              }
+
+              public static IntPtr OpenRoot(string path) {
+                  IntPtr handle;
+                  string nativePath = @"\\??\\" + System.IO.Path.GetFullPath(path);
+                  int status = OpenNamedDirectory(nativePath, IntPtr.Zero, OBJ_CASE_INSENSITIVE, out handle);
+                  if (status != 0) {
+                      string hex = "0x" + unchecked((uint)status).ToString("X8");
+                      throw new InvalidOperationException("NtCreateFile trusted-root open failed: " + hex);
+                  }
+                  return handle;
+              }
+
+              public static int OpenDirectoryRelative(IntPtr root, string component, out IntPtr handle) {
+                  return OpenNamedDirectory(component, root, OBJ_CASE_INSENSITIVE | OBJ_DONT_REPARSE, out handle);
               }
 
               public static void CloseNt(IntPtr handle) {
@@ -301,7 +306,7 @@ jobs:
           } finally {
             [OneNtCreateFileProbe]::CloseNt($ordinaryHandle)
             [OneNtCreateFileProbe]::CloseNt($junctionHandle)
-            [OneNtCreateFileProbe]::CloseWin32($rootHandle)
+            [OneNtCreateFileProbe]::CloseNt($rootHandle)
             Remove-Item -LiteralPath $root -Recurse -Force -ErrorAction SilentlyContinue
             Remove-Item -LiteralPath $outside -Recurse -Force -ErrorAction SilentlyContinue
           }
