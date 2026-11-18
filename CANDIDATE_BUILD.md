@@ -87,3 +87,14 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - Corrective commit `14d81a93a60ea2bba1ebfd2ddf7d85baf0893e24` adds only the missing `Win32_System_IO` feature to the Windows target dependency.
 - Independent candidate pin advanced to the corrected exact source SHA. The next matrix run will validate it; no compile PASS is claimed yet.
 - The original run's Linux job was still running at triage time. Its final result is not inferred from the Windows failure.
+
+
+## Corrected NtCreateFile feature-gate candidate — Linux baseline PASS, Windows pending — 2026-11-18
+
+- Exact ONE source SHA: `14d81a93a60ea2bba1ebfd2ddf7d85baf0893e24`.
+- Matrix run [44286988623](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44286988623).
+- Linux Ubuntu 24.04 job `134742079698`: SUCCESS; complete job logs report 239 passed, 0 failed, 1 ignored. Source identity was explicitly checked against `14d81a93...`.
+- Windows Server 2025 job `134742079233`: still IN_PROGRESS at the time of this record, in step `Install Windows GNU cross toolchain`. No Windows compile/test result yet.
+- CircleCI `ci/circleci: one-linux` for the same exact source SHA remains PENDING.
+- Linux success confirms the corrected dependency feature change does not regress Linux; it cannot validate Windows-only NtCreateFile imports.
+- This is still a compile/test baseline, not Issue #104 or E4 security acceptance.
