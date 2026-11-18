@@ -27,3 +27,12 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - Expected jobs: Ubuntu 24.04 and Windows Server 2025, each checking out the exact pinned ONE SHA and running `cargo test --locked -p one-core -- --nocapture`.
 - This is baseline compile/test evidence only. It does not run or satisfy E4 adversarial acceptance, does not alter `CANONICAL_COMMIT.txt`, and does not alter the independent ledger source pin.
 - At update time, the newly triggered workflow has not yet been observed to completion. Record each job's exact terminal result and logs before claiming parity.
+
+
+## Verifier bootstrap correction — 2026-11-18
+
+- Static inspection found that the matrix workflow still used the full Linux `mingw-w64` metapackage, despite a documented prior timeout on that package (277 MB download / 1,293 MB installed; apt exit 124).
+- The matrix workflow now uses bounded apt retries/timeouts and the previously proven minimal toolchain route: `clang-18` + `gcc-mingw-w64-x86-64-posix`, followed by a PE32+ smoke link.
+- Workflow fix commit: `2ebf939dd939f23e0e1bf349d8ed0fe12da2c7e9`.
+- First candidate run `44283817583` was already running with the old workflow and is not evidence for the fix.
+- Fresh matrix run `44284002056` was triggered by the workflow change. Linux job `134731808510` and Windows job `134731808090` are in progress; no test result is yet claimed.
