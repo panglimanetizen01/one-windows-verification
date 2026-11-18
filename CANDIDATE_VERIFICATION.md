@@ -1305,3 +1305,18 @@ This section reconciles the newly completed exact-SHA evidence against the sourc
 Canonical source One CI [42055118629](https://github.com/panglimanetizen01/one/actions/runs/42055118629) and Repository Health [42055118192](https://github.com/panglimanetizen01/one/actions/runs/42055118192) are still FAILURE with no usable job steps/logs; classification remains UNKNOWN. The independent matrix is explicitly recorded as independent evidence and does not silently replace canonical source CI.
 
 No source files, ledger weights, verified points, or DoD checkboxes were changed. No protected production provenance workflow was dispatched.
+
+
+# Fixed-weight ledger gate live failure diagnosis — 2026-11-18
+
+- Verifier run [44240745287](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44240745287), verifier SHA `a348adf16d828f400c307d7d837cb0cac452139d`, failed in unit test `test_required_windows_native_runtime_is_exact_sha_and_executes_artifact`: the test expected `CANONICAL_COMMIT.txt`, but the workflow correctly reads `WINDOWS_SOURCE_COMMIT.txt`. This was a stale test assertion, not a Windows runtime failure.
+- Corrected only that assertion in `tests/test_verify_completion_ledger.py`; commit `66af5cbc9805f95b5d13c192ce5989bfe8d2336c`.
+- Follow-up run [44241595784](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44241595784), verifier SHA `66af5cbc...`: all 15 ledger verifier unit tests PASS. The subsequent live gate step fails before ledger arithmetic because the exact pinned ONE source SHA `e50748a1b25922d9090eba1f5fb90548d7c7d003` does not contain `docs/verification/one-completion-ledger.md` (or `docs/verification/DEFINITION_OF_DONE.md`). The error is `cannot read required input: [Errno 2] No such file or directory: 'one-source/docs/verification/one-completion-ledger.md'`.
+- Confirmed by recursive Git tree inspection: neither file exists at `e50748a...` or current PR #110 HEAD `871a39967db315c695a642f527c41c7172922201`. Current source tree has `docs/verification/one-v0.1-evidence-matrix.md` and `one-v0.1-implementation-status.md`, but these are not the fixed-weight F1–F6/C1–C6/E1–E6 ledger and DoD contract expected by the verifier. Do not substitute them or weaken the parser.
+- Historical ledger and DoD files are retrievable at old source SHA `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`, but that is not the current candidate; do not silently use historical files as current acceptance evidence.
+- Next repair must restore/re-author the authoritative fixed-weight ledger and DoD at a clearly identified candidate source revision, then decouple the ledger documentation source pin from the E4 adversarial-test pin if needed. Keep `CANONICAL_COMMIT.txt` and E4 pin unchanged until the required Cargo.lock, handle-relative implementation, and named Unix/Windows adversarial tests exist. The ledger gate remains NOT PASSED.
+
+# ONE PR #110 latest live checkpoint — 2026-11-18
+
+- Live PR #110 remains OPEN / DRAFT / UNMERGED at exact HEAD `871a39967db315c695a642f527c41c7172922201` (documentation-only commit updating Issue #104 audit metadata).
+- CircleCI `ci/circleci: one-linux` for exact HEAD `871a399...` is PENDING; job `07d035f3-cac0-4a75-a4f8-0eaaa3f19a4b`, workflow `9d66857b-5f97-48db-834a-396c872831a1`, status timestamp `2026-11-18T05:01:55Z`. No result is transferred from parent SHA.
