@@ -142,6 +142,7 @@ jobs:
           Invoke-ExpectedTest "filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects"
           Invoke-ExpectedTest "filesystem_write_adapter_writes_text_target"
           Invoke-ExpectedTest "filesystem_write_adapter_rejects_oversized_content"
+          Invoke-ExpectedTest "filesystem_write_adapter_preserves_target_when_atomic_replace_is_denied"
           Invoke-ExpectedTest "filesystem_adapters_reject_parent_directory_traversal"
 
   windows-obj-dont-reparse-contract-probe:
