@@ -13,3 +13,8 @@ The full `one-core` suite includes a contract test that builds a Windows GNU art
 ## 2026-11-18 candidate update
 
 The candidate pin now follows PR #108's exact source SHA after the Rust 1.100.0 reproducibility change. This remains a non-acceptance build/test matrix; the E4 canonical acceptance pin is unchanged.
+
+
+## Exact source pin correction — 2026-11-18
+
+The candidate pin has been advanced from the initial toolchain commit to its immediate fix-up SHA `a20676be53e5f78c465832379d86c3675a2ed7c8`. The fix-up corrects static CircleCI toolchain parsing before acceptance. This new SHA receives its own Linux/Windows run; no result from the previous candidate pin is transferred.
