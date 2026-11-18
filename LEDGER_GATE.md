@@ -61,3 +61,11 @@ Run `44242265068` stopped at the new 40-character SHA validation because the ini
 - Root cause: the workflow and its source assertion were generated from a raw template string that preserved the escape character. Remove the literal backslash so Actions evaluates the `ref` and `token` expressions normally.
 - The exact ledger-document pin is valid and remains `fde2b81b2f63743b990e9fbbade47ec8076e2151` (40 lowercase hex characters). The shared E4/security pin remains `e50748a1b25922d9090eba1f5fb90548d7c7d003`.
 - No source implementation, ledger points, DoD checkboxes, or acceptance criteria changed. This is a workflow expression syntax fix only.
+
+
+## Current ledger/DoD document source refresh — 2026-11-18
+
+- ONE PR #103 documentation branch advanced to exact HEAD `d6c382a245c49a028bc60809f22ca956c7f894cc` with a fresh live-state checkpoint in both `docs/verification/one-completion-ledger.md` and `docs/verification/DEFINITION_OF_DONE.md`.
+- `LEDGER_SOURCE_COMMIT.txt` is updated to this exact 40-character documentation SHA. The shared `CANONICAL_COMMIT.txt` remains unchanged at `e50748a1b25922d9090eba1f5fb90548d7c7d003` for the E4/security candidate.
+- Previous verifier run `44242590734` evaluated ledger docs SHA `fde2b81b2f63743b990e9fbbade47ec8076e2151` and returned the expected NOT PASSED result: 16/16 unit tests passed, 92/100 provisional implementation, 0/100 verified, 10 unchecked DoD items, failed exact-SHA workflow evidence on the historical candidate, and no protected package-provenance release run.
+- The new pin triggers a fresh exact-document checkout and ledger evaluation. This does not change weights, checkboxes, security implementation, or E4 source pin.
