@@ -18,3 +18,12 @@ The candidate pin now follows PR #108's exact source SHA after the Rust 1.100.0 
 ## Exact source pin correction — 2026-11-18
 
 The candidate pin has been advanced from the initial toolchain commit to its immediate fix-up SHA `a20676be53e5f78c465832379d86c3675a2ed7c8`. The fix-up corrects static CircleCI toolchain parsing before acceptance. This new SHA receives its own Linux/Windows run; no result from the previous candidate pin is transferred.
+
+
+## Reconciliation candidate — 2026-11-18
+
+- Non-acceptance build pin advanced to exact ONE source SHA `e47b3b52eeb7e1b25fc24f741d5bb5cc1b01f24d` on reconciliation branch `reconciliation/pr-110-base-sync-20261118`.
+- Verifier commit: `46ba6c5beb028db6c1bec036fcf7f189999a5c74`; the push to `verification` changes `CANDIDATE_BUILD_COMMIT.txt`, which is a configured trigger for `.github/workflows/candidate-build-matrix.yml`.
+- Expected jobs: Ubuntu 24.04 and Windows Server 2025, each checking out the exact pinned ONE SHA and running `cargo test --locked -p one-core -- --nocapture`.
+- This is baseline compile/test evidence only. It does not run or satisfy E4 adversarial acceptance, does not alter `CANONICAL_COMMIT.txt`, and does not alter the independent ledger source pin.
+- At update time, the newly triggered workflow has not yet been observed to completion. Record each job's exact terminal result and logs before claiming parity.
