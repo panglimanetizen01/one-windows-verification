@@ -50,7 +50,7 @@ jobs:
           rustc --version
           cargo --version
           printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)"
-      - name: Install MinGW cross toolchain with bounded retries
+      - name: Install minimal x86_64 MinGW toolchain
         shell: bash
         timeout-minutes: 25
         env:
@@ -68,10 +68,20 @@ jobs:
             fi
             sleep "$((attempt * 10))"
           done
-          timeout 12m sudo apt-get "${apt_opts[@]}" install --no-install-recommends -y clang lld mingw-w64
-          echo "ONE_WINDOWS_CLANG=$(command -v clang)" >> "$GITHUB_ENV"
-          clang --version
-          x86_64-w64-mingw32-gcc --version
+          # Install only the 64-bit POSIX cross compiler required by ONE's
+          # x86_64-pc-windows-gnu backend; avoid the full i686 + x86_64
+          # POSIX + Win32 mingw-w64 metapackage (which exceeded the old 12m cap).
+          timeout 15m sudo apt-get "${apt_opts[@]}" install --no-install-recommends -y clang-18 gcc-mingw-w64-x86-64-posix
+          windows_clang="$(command -v clang-18)"
+          echo "ONE_WINDOWS_CLANG=$windows_clang" >> "$GITHUB_ENV"
+          "$windows_clang" --version
+          x86_64-w64-mingw32-gcc-posix --version
+
+          smoke_dir="$(mktemp -d)"
+          trap 'rm -rf "$smoke_dir"' EXIT
+          printf '#include <windows.h>\nint main(void) { return 0; }\n' > "$smoke_dir/mingw-smoke.c"
+          "$windows_clang" --target=x86_64-w64-windows-gnu "$smoke_dir/mingw-smoke.c" -o "$smoke_dir/mingw-smoke.exe"
+          file "$smoke_dir/mingw-smoke.exe"
       - name: Run full one-core test suite
         working-directory: one-source
         shell: bash
