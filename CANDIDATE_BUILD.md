@@ -46,3 +46,13 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - Verifier pin update commit: `6cbd20a7435a9fe84867a804ff43518e4eb2aa1c`.
 - This run will determine whether the Windows test harness remediation is correct. The production process deadline remains 10 seconds; only the private integration probe gets a longer test setup budget.
 - This remains a non-acceptance baseline matrix and is not Issue #104/E4 evidence.
+
+
+## Windows command-fixture correction — 2026-11-18
+
+- Candidate run [44284769779](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44284769779) checked out source SHA `dc9896d1f525db6ce1e462d250bd68b8f5b28cb8`.
+- Windows job `134734468629`: 125 passed, 2 failed. The Windows Job Object descendant probe now passes with the test-only 30-second setup budget. The two output-limit probes failed because `cmd.exe` rejected the quoted temp path with `The filename, directory name, or volume label syntax is incorrect.`; this is a test-fixture command-line issue, not evidence that the production output cap failed.
+- Linux job `134734469111` was still running the bounded MinGW bootstrap at the time of this update; no Linux conclusion is attributed to this run.
+- Follow-up source candidate in draft PR #112 is now `181ad350d8f0db53cda654c4d378425fbdd6ab24`. The Windows output-limit probes return to PowerShell byte writes, but use the private test-only 30-second timeout budget; production `run_process` remains fixed at 10 seconds.
+- Verifier candidate pin advanced to `181ad350d8f0db53cda654c4d378425fbdd6ab24`; verifier pin commit `a790668f266ba23ac730cf018655a6035a0399db`.
+- A new exact-SHA matrix is triggered. This remains non-acceptance baseline testing, not E4 security evidence.
