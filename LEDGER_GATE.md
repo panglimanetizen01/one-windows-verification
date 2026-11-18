@@ -31,3 +31,15 @@ The gate queries the current independent workflow runs and resolves the pinned s
 ## How to rerun
 
 Push a change to the `verification` branch or open the workflow and select **Run workflow**. The workflow checks out the exact SHA from `CANONICAL_COMMIT.txt`, runs its unit tests, then evaluates the source ledger and Definition of Done. To turn the gate green, close the actual E1–E6 acceptance items and provide exact-SHA evidence; do not change fixed weights or mark rows verified without that evidence.
+
+
+## Live gate diagnosis — 2026-11-18
+
+The gate is currently **NOT PASSED / BLOCKED BY INPUT INTEGRITY**, not green:
+
+- Run `44240745287`: one unit test was stale; it expected `CANONICAL_COMMIT.txt` in the Windows native workflow although that workflow intentionally reads `WINDOWS_SOURCE_COMMIT.txt`. Fixed in verifier commit `66af5cbc9805f95b5d13c192ce5989bfe8d2336c`.
+- Run `44241595784`: all 15 unit tests passed after the correction, then the live gate stopped because the pinned ONE source SHA `e50748a1b25922d9090eba1f5fb90548d7c7d003` does not contain the configured ledger path `docs/verification/one-completion-ledger.md`; the configured DoD path is absent too.
+- Current PR #110 source HEAD `871a39967db315c695a642f527c41c7172922201` also lacks those two fixed-weight gate inputs. The similarly named `one-v0.1-evidence-matrix.md` and `one-v0.1-implementation-status.md` are not format-equivalent and must not be substituted.
+- Historical copies exist at `2ead9dba45db4ce4105deaa81720aacc8fcadd6c`, but using them silently would bind a current acceptance decision to stale source documentation. No such fallback is permitted.
+
+Required repair: restore/re-author the fixed-weight ledger and Definition of Done in a current, explicitly versioned ONE candidate; keep the E4 security pin separate from the ledger-documentation pin so repairing the ledger does not prematurely trigger security verification against an incomplete implementation. Until that separation and source docs exist, this workflow must remain non-green and no completion score is promoted.
