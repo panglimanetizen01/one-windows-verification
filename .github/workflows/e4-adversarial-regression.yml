@@ -78,7 +78,7 @@ jobs:
             fi
           }
           run_test 2 descriptor_relative_read_rejects_
-          run_test 4 descriptor_relative_write_
+          run_test 5 descriptor_relative_write_
           run_test 1 descriptor_relative_walk_rejects_
           run_test 1 adapter::filesystem_nofollow_tests::descriptor_relative_read_race_never_follows_swapped_parent_symlink --exact --test-threads=1
           run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file --exact --test-threads=1
