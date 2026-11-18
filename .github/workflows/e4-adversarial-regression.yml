@@ -170,9 +170,12 @@ jobs:
               const uint OBJ_CASE_INSENSITIVE = 0x00000040;
               const uint OBJ_DONT_REPARSE = 0x00001000;
               const uint FILE_LIST_DIRECTORY = 0x00000001;
+              const uint FILE_READ_DATA = 0x00000001;
               const uint FILE_TRAVERSE = 0x00000020;
               const uint FILE_READ_ATTRIBUTES = 0x00000080;
               const uint SYNCHRONIZE = 0x00100000;
+              const uint FILE_NON_DIRECTORY_FILE = 0x00000040;
+              const uint FILE_OPEN_REPARSE_POINT = 0x00200000;
               const uint FILE_SHARE_READ = 0x00000001;
               const uint FILE_SHARE_WRITE = 0x00000002;
               const uint FILE_SHARE_DELETE = 0x00000004;
@@ -260,6 +263,36 @@ jobs:
                   return OpenNamedDirectory(component, root, flags, out handle);
               }
 
+              public static int OpenFileRelative(IntPtr root, string component, bool noReparse, out IntPtr handle) {
+                  IntPtr nameBuffer = Marshal.StringToHGlobalUni(component);
+                  IntPtr unicodeBuffer = IntPtr.Zero;
+                  try {
+                      var unicode = new UNICODE_STRING {
+                          Length = checked((ushort)(component.Length * 2)),
+                          MaximumLength = checked((ushort)(component.Length * 2 + 2)),
+                          Buffer = nameBuffer
+                      };
+                      unicodeBuffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UNICODE_STRING)));
+                      Marshal.StructureToPtr(unicode, unicodeBuffer, false);
+                      var attributes = new OBJECT_ATTRIBUTES {
+                          Length = Marshal.SizeOf(typeof(OBJECT_ATTRIBUTES)),
+                          RootDirectory = root,
+                          ObjectName = unicodeBuffer,
+                          Attributes = OBJ_CASE_INSENSITIVE | (noReparse ? OBJ_DONT_REPARSE : 0)
+                      };
+                      IO_STATUS_BLOCK io;
+                      return NtCreateFile(out handle,
+                          FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+                          ref attributes, out io, IntPtr.Zero, FILE_ATTRIBUTE_NORMAL,
+                          FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_OPEN,
+                          FILE_NON_DIRECTORY_FILE | FILE_OPEN_REPARSE_POINT | FILE_SYNCHRONOUS_IO_NONALERT,
+                          IntPtr.Zero, 0);
+                  } finally {
+                      if (unicodeBuffer != IntPtr.Zero) Marshal.FreeHGlobal(unicodeBuffer);
+                      Marshal.FreeHGlobal(nameBuffer);
+                  }
+              }
+
               public static void Close(IntPtr handle) {
                   if (handle != IntPtr.Zero && handle != new IntPtr(-1)) NtClose(handle);
               }
@@ -272,6 +305,7 @@ jobs:
           New-Item -ItemType Directory -Path $outside | Out-Null
           New-Item -ItemType Directory -Path (Join-Path $outside "child") | Out-Null
           New-Item -ItemType Directory -Path (Join-Path $root "ordinary") | Out-Null
+          Set-Content -LiteralPath (Join-Path $root "ordinary-file.txt") -Value "ORDINARY_FILE" -NoNewline
           Set-Content -LiteralPath (Join-Path $outside "sentinel.txt") -Value "OUTSIDE_SENTINEL_UNCHANGED" -NoNewline
           $junction = Join-Path $root "junction"
           & cmd.exe /c mklink /J "$junction" "$outside"
@@ -279,6 +313,8 @@ jobs:
 
           $rootHandle = [OneNtCreateFileProbe]::OpenRoot($root)
           $ordinaryHandle = [IntPtr]::Zero
+          $ordinaryFileBaselineHandle = [IntPtr]::Zero
+          $ordinaryFileNoReparseHandle = [IntPtr]::Zero
           $junctionBaselineHandle = [IntPtr]::Zero
           $junctionDeniedHandle = [IntPtr]::Zero
           $intermediateBaselineHandle = [IntPtr]::Zero
@@ -291,6 +327,20 @@ jobs:
             }
             [OneNtCreateFileProbe]::Close($ordinaryHandle)
             $ordinaryHandle = [IntPtr]::Zero
+
+            $ordinaryFileBaselineStatus = [OneNtCreateFileProbe]::OpenFileRelative($rootHandle, "ordinary-file.txt", $false, [ref]$ordinaryFileBaselineHandle)
+            if ($ordinaryFileBaselineStatus -ne 0) {
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$ordinaryFileBaselineStatus), 0))
+              throw "Control open of ordinary file with FILE_OPEN_REPARSE_POINT failed: $hex"
+            }
+            [OneNtCreateFileProbe]::Close($ordinaryFileBaselineHandle)
+            $ordinaryFileBaselineHandle = [IntPtr]::Zero
+            $ordinaryFileNoReparseStatus = [OneNtCreateFileProbe]::OpenFileRelative($rootHandle, "ordinary-file.txt", $true, [ref]$ordinaryFileNoReparseHandle)
+            $ordinaryFileNoReparseHex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$ordinaryFileNoReparseStatus), 0))
+            Write-Output "ordinary_file_with_FILE_OPEN_REPARSE_POINT_status=0x00000000"
+            Write-Output "ordinary_file_with_OBJ_DONT_REPARSE_status=$ordinaryFileNoReparseHex"
+            [OneNtCreateFileProbe]::Close($ordinaryFileNoReparseHandle)
+            $ordinaryFileNoReparseHandle = [IntPtr]::Zero
 
             $baselineStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction", $false, [ref]$junctionBaselineHandle)
             if ($baselineStatus -ne 0) {
@@ -338,6 +388,8 @@ jobs:
             Write-Output "OBJ_DONT_REPARSE_ROOT_DIRECTORY_JUNCTION_DENIAL_OK"
           } finally {
             [OneNtCreateFileProbe]::Close($ordinaryHandle)
+            [OneNtCreateFileProbe]::Close($ordinaryFileBaselineHandle)
+            [OneNtCreateFileProbe]::Close($ordinaryFileNoReparseHandle)
             [OneNtCreateFileProbe]::Close($junctionBaselineHandle)
             [OneNtCreateFileProbe]::Close($junctionDeniedHandle)
             [OneNtCreateFileProbe]::Close($intermediateBaselineHandle)
