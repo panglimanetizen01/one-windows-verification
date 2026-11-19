@@ -6,6 +6,11 @@ on:
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/package-provenance-e2e.yml'
+  pull_request:
+    branches: [verification]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/package-provenance-e2e.yml'
   workflow_dispatch:
 
 permissions:
