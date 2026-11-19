@@ -299,8 +299,14 @@ jobs:
             sleep 10
           done
           if [ "$booted" != "1" ]; then tail -n 300 "$log"; adb devices -l || true; exit 1; fi
-          test "$(adb -s emulator-5554 shell getprop ro.build.version.sdk | tr -d '\r')" = "35"
-          test "$(adb -s emulator-5554 shell getprop ro.product.cpu.abi | tr -d '\r')" = "arm64-v8a"
+          api_level="$(adb -s emulator-5554 shell getprop ro.build.version.sdk | tr -d '\r')"
+          device_abi="$(adb -s emulator-5554 shell getprop ro.product.cpu.abi | tr -d '\r')"
+          device_model="$(adb -s emulator-5554 shell getprop ro.product.model | tr -d '\r')"
+          test "$api_level" = "35"
+          test "$device_abi" = "arm64-v8a"
+          echo "Verified Android API level: $api_level"
+          echo "Verified Android ABI: $device_abi"
+          echo "Verified Android model: $device_model"
           echo "ONE_ANDROID_ADB=$ANDROID_HOME/platform-tools/adb" >> "$GITHUB_ENV"
 
           # Execute while the emulator is alive; the EXIT trap terminates it at step end.
@@ -310,6 +316,18 @@ jobs:
           file "$elf" | tee "$RUNNER_TEMP/one-android-runtime-elf.txt"
           grep -Eqi "ELF 64-bit.*ARM aarch64|ELF 64-bit.*AArch64" "$RUNNER_TEMP/one-android-runtime-elf.txt"
           remote="/data/local/tmp/one-native-backend-${GITHUB_RUN_ID}"
+          elf_sha256="$(sha256sum "$elf" | awk '{print $1}')"
+          {
+            printf 'source_sha=%s\n' "$(cat "$RUNNER_TEMP/ONE_SOURCE_SHA.txt")"
+            printf 'android_api_level=%s\n' "$api_level"
+            printf 'android_abi=%s\n' "$device_abi"
+            printf 'android_model=%s\n' "$device_model"
+            printf 'host_arch=%s\n' "$(uname -m)"
+            printf 'elf_sha256=%s\n' "$elf_sha256"
+            printf 'elf_local_path=%s\n' "$elf"
+            printf 'elf_remote_path=%s\n' "$remote"
+            printf 'elf_invocation=%s -s emulator-5554 shell %s\n' "$adb" "$remote"
+          } | tee "$RUNNER_TEMP/ANDROID_RUNTIME_METADATA.txt"
           "$adb" -s emulator-5554 push "$elf" "$remote"
           "$adb" -s emulator-5554 shell chmod 700 "$remote"
           set +e
@@ -317,6 +335,10 @@ jobs:
           status=$?
           set -e
           printf "Android ELF exit code: %s\\nAndroid ELF output:\\n%s\\n" "$status" "$output" | tee "$RUNNER_TEMP/one-android-runtime-result.txt"
+          {
+            printf 'elf_exit_code=%s\n' "$status"
+            printf 'elf_output=%s\n' "$(printf '%s' "$output" | tr '\\r\\n' '  ')"
+          } | tee -a "$RUNNER_TEMP/ANDROID_RUNTIME_METADATA.txt"
           test "$status" -eq 0
           test "$(printf "%s" "$output" | tr -d "\\r" | tail -n 1)" = "ONE_NATIVE_BACKEND_OK"
           "$adb" -s emulator-5554 shell rm -f "$remote"
@@ -330,6 +352,7 @@ jobs:
           retention-days: 14
           path: |
             ${{ runner.temp }}/ONE_SOURCE_SHA.txt
+            ${{ runner.temp }}/ANDROID_RUNTIME_METADATA.txt
             ${{ runner.temp }}/one-android-arm-host.log
             ${{ runner.temp }}/one-android-runtime-result.txt
             ${{ runner.temp }}/one-android-runtime-elf.txt
