@@ -50,13 +50,21 @@ jobs:
         working-directory: source
         run: test "$(git rev-parse HEAD)" = "${{ steps.source.outputs.sha }}"
 
-      - name: Install Linux native cross-compilers
+      - name: Install Linux native cross-compilers (bounded APT retries)
         if: runner.os == 'Linux'
         shell: bash
         run: |
           set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y clang lld mingw-w64 binutils-x86-64-linux-gnu
+          echo '=== Configured Ubuntu APT sources ==='
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+            if [[ -f "$source" ]]; then
+              echo "--- $source"
+              sudo sed -n '1,160p' "$source"
+            fi
+          done
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y clang lld mingw-w64 binutils-x86-64-linux-gnu
+          apt-cache policy clang lld mingw-w64 binutils-x86-64-linux-gnu
           command -v clang
           command -v x86_64-w64-mingw32-clang || true
           # The candidate passes --target=x86_64-w64-windows-gnu itself; use
