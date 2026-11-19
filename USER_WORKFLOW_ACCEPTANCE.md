@@ -152,3 +152,22 @@ ONE PR #113 parent documentation SHA eeafcab579cebb762af34d1daf4830f95cba87e7 ha
 ONE draft PR #103 ledger/DoD source is now exact SHA 36bba2e45a629c4fa39677b0ea07a2489d37bc99. It records E3 8/8 VERIFIED on canonical source 722d662 and DoD 4 checked / 9 unchecked. This verifier draft branch now pins LEDGER_SOURCE_COMMIT.txt to 36bba2e45a629c4fa39677b0ea07a2489d37bc99; CANONICAL_COMMIT.txt remains 722d662e7a81711ba3607d26571f4048a292b3ed. These pin/document changes are staged in draft PR #50 only; not merged to protected verification.
 
 Protected verifier branch verification remains b14abf0020472dc45842be30854e0a09317d6cb4 and all 12 required mirror workflow groups have terminal SUCCESS for canonical source 722d662. The historical fixed-weight gate #44519577312 remains FAILURE. E1, E2, E4, E5, E6 are not fully verified; Issue #104 remains OPEN / NOT ACCEPTED; protected source-bound package provenance release is absent. No fixed weights, DoD beyond the evidence-backed E3 item, canonical pin, or protected release state were changed.
+
+
+## Ledger source reconciliation — 2026-11-19 16:42Z
+
+The proposed ledger source pointer in this PR now targets ONE PR #103 draft commit `36bba2e45a629c4fa39677b0ea07a2489d37bc99`. That exact draft ledger records E3 VERIFIED 8/8 from the exact-source Linux/Windows/distro/artifact/Android runtime evidence. The proposed draft ledger totals are 92/100 IMPLEMENTED and 8/100 VERIFIED; Definition of Done is 4 checked / 9 unchecked / 13 total. E1 remains 7/10 implementation and 0/10 verified; E2 7/8 and 0/8; E4 6/6 and 0/6; E5 4/4 and 0/4; E6 0/4 and NOT IMPLEMENTED.
+
+Important separation: protected `LEDGER_SOURCE_COMMIT.txt` still points to `d6c382a245c49a028bc60809f22ca956c7f894cc`. This PR's new pointer is a proposed draft change only. The historical protected gate #44519577312 therefore still reports the old 0/100 verified / 10 unchecked state. No protected ledger pin, weights, or DoD boxes were changed by this PR.
+
+## Exact-source matrix and acceptance boundary refresh — 2026-11-19 16:42Z
+
+- Protected verifier HEAD: `b14abf0020472dc45842be30854e0a09317d6cb4`; canonical ONE source: `722d662e7a81711ba3607d26571f4048a292b3ed`.
+- All 12 required verifier workflow names plus the Android runtime alternative have terminal SUCCESS runs recorded in the exact-source matrix above.
+- E3 is VERIFIED 8/8 only in the draft ONE ledger source PR #103. This does not imply E1/E2/E4/E5/E6 or final project acceptance.
+- Protected fixed-weight gate #44519577312 remains historical FAILURE. No new gate run was triggered. If this PR is authorized and merged, its `CANDIDATE_VERIFICATION.md` and `LEDGER_SOURCE_COMMIT.txt` changes will trigger a new ledger-gate evaluation; expected result remains NOT PASSED until remaining row-level/DoD and protected package-provenance requirements are satisfied.
+- Issue #104 remains OPEN / NOT ACCEPTED; Linux nested writes and unsupported filesystem adapters remain fail-closed. Issue #105 escaped-descendant containment remains unresolved.
+- Issue #82 has protected Android runtime SUCCESS (#44519577666) on API 35 arm64-v8a / exit 0. PR #49's build job passes but metadata runtime job #135708475823 is still IN_PROGRESS; keep Issue #82 open pending the retained metadata artifact.
+- ONE PR #113 HEAD `54b92ab9703b9c3450cb33f5eb4f34861aae107b` is OPEN / DRAFT / UNMERGED; CircleCI `ci/circleci: one-linux` is PENDING on that exact SHA (workflow `f9bd8ac7-a741-4bf6-8536-37af4798f3a1`, job `77951c98-1242-4c47-b45b-90011ecebfd6`). Parent `eeafcab...` SUCCESS does not transfer.
+
+This is a documentation/evidence-pointer update only. It does not merge this PR, change the protected ledger source, modify fixed weights, check DoD items, or publish a package.
