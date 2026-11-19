@@ -1363,3 +1363,38 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 ## Candidate matrix environment repair — 2026-11-18
 
 The first candidate matrix run `44243442240` checked out the exact source and compiled `one-core` on both OSes, but both test suites failed in the existing `windows_x86_64_dapat_membangun_artifact_native` test because the configured cross-compiler `x86_64-w64-mingw32-clang` was not installed on either host. The test is intentionally retained (not ignored or weakened). The matrix now installs the required MinGW/Clang/LLD toolchains on Ubuntu and Windows and sets `ONE_WINDOWS_CLANG=clang` before running the full suite.
+
+
+
+# LATEST EXACT-SOURCE VERIFIER MATRIX — 2026-11-19 16:36Z
+
+## Canonical source and protected verifier identities
+
+- Exact ONE source SHA: 722d662e7a81711ba3607d26571f4048a292b3ed.
+- The protected verifier branch has advanced through squash merge commits 42feff8bc11d9b17d04ac9cff4abea4e80a7a832, d539a162aeed9d22988c7ffb0c7a893e8d33f571, 4ae84bad84ddacf169b9f25fa4c78581ab2b4bc4, and final HEAD b14abf0020472dc45842be30854e0a09317d6cb4. The CANONICAL_COMMIT.txt file was read at both a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd and b14abf0020472dc45842be30854e0a09317d6cb4; both contain the exact source SHA above.
+- All 12 workflow names required by REQUIRED_MIRROR_WORKFLOWS plus the Android runtime alternative now have a completed SUCCESS run whose verifier commit resolves to the exact ONE source SHA above.
+
+## Exact-SHA required workflow evidence
+
+| Required workflow scope | Run | Verifier commit (head SHA) | Result |
+|---|---:|---|---|
+| ONE Milestone 1 E1 Cross-Platform Acceptance Lab | [#44566212975](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212975) | b14abf0020472dc45842be30854e0a09317d6cb4 | SUCCESS — Ubuntu + Windows |
+| ONE E1 Standard Library Windows Acceptance | [#44566212997](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212997) | b14abf0020472dc45842be30854e0a09317d6cb4 | SUCCESS |
+| One Cross-Platform Verification | [#44519577496](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577496) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — Ubuntu + Windows |
+| ONE Linux Distro Verification | [#44519577570](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577570) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — Ubuntu 24.04 + Debian 12 |
+| ONE Focused Standard Library and Database Verification | [#44566212982](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212982) | b14abf0020472dc45842be30854e0a09317d6cb4 | SUCCESS |
+| ONE Cargo Lockfile Bootstrap Evidence | [#44519577555](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577555) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS |
+| ONE Candidate Artifact Integrity Verification | [#44566172841](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566172841) | 42feff8bc11d9b17d04ac9cff4abea4e80a7a832 | SUCCESS |
+| ONE E4 adversarial filesystem and resource-bound regression | [#44519577693](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577693) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — Windows reparse/handle + Unix no-follow/resource bounds |
+| E4 subprocess resource guard | [#44519577526](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577526) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS |
+| E4 SEC-05 subprocess timeout and output-limit verification | [#44566187162](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566187162) | d539a162aeed9d22988c7ffb0c7a893e8d33f571 | SUCCESS — Linux + Windows |
+| ONE Windows Native Backend Runtime — Windows Server 2025 | [#44566197814](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566197814) | 4ae84bad84ddacf169b9f25fa4c78581ab2b4bc4 | SUCCESS — PE32+ AMD64, native exit 0, output Budi |
+| ONE Android AArch64 runtime — native ARM64 Linux host | [#44519577666](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577666) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — API 35 arm64-v8a runtime, ELF exit 0 |
+
+The protected run jobs were read back and each listed as completed / success. The Android native ARM64 host log confirms an API 35 arm64-v8a emulator boot, AArch64 ELF push, runtime exit code 0, and exact-source runtime evidence artifact. The E1 Linux/Windows runs include non-zero test execution and contract/Clippy checks. The Windows native runtime log confirms PE32+ AMD64 and output Budi. The canonical source pin was unchanged across the protected verifier commits above.
+
+## Acceptance boundary — unchanged
+
+This matrix establishes current exact-source workflow evidence for the required CI scopes. It does NOT award ledger points, mark any F/C/E row VERIFIED, check Definition-of-Done items, accept Issue #104, or pass the final release gate. The prior fixed-weight gate #44519577312 remains FAILURE. Its inspected log recorded 92/100 implementation, 0/100 verified, 18 rows checked, 10 unchecked DoD items, and no protected ONE Package Provenance Release for this exact source SHA. The full package-provenance envelope remains outside the implemented v0.1 scope. Keep fixed weights and DoD unchanged; do not claim PASS GREEN LOCKED or dispatch release from workflow successes alone.
+
+This section is an evidence-index update only; no canonical pin or ledger/DoD source pin was changed.
