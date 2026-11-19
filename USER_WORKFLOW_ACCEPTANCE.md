@@ -171,3 +171,12 @@ Important separation: protected `LEDGER_SOURCE_COMMIT.txt` still points to `d6c3
 - ONE PR #113 HEAD `54b92ab9703b9c3450cb33f5eb4f34861aae107b` is OPEN / DRAFT / UNMERGED; CircleCI `ci/circleci: one-linux` is PENDING on that exact SHA (workflow `f9bd8ac7-a741-4bf6-8536-37af4798f3a1`, job `77951c98-1242-4c47-b45b-90011ecebfd6`). Parent `eeafcab...` SUCCESS does not transfer.
 
 This is a documentation/evidence-pointer update only. It does not merge this PR, change the protected ledger source, modify fixed weights, check DoD items, or publish a package.
+
+
+## Android API 35 runtime metadata evidence — 2026-11-20
+
+- Verifier PR #49 exact HEAD `fa0b5cffe52bf31fedef81ed945d6cc3a6dc2e19` completed Android runtime workflow [#44565956781](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44565956781) with terminal SUCCESS. Build job `135707610069` and API 35 ARM64 runtime job `135708475823` both completed SUCCESS.
+- Downloaded and inspected retained artifact ID `14553867982`, name `one-api35-arm64-runtime-evidence-722d662e7a81711ba3607d26571f4048a292b3ed`. `ANDROID_RUNTIME_METADATA.txt` records exact source SHA `722d662e7a81711ba3607d26571f4048a292b3ed`, API 35, ABI `arm64-v8a`, model `Android SDK built for arm64`, host architecture `aarch64`, ELF digest, local/remote paths, exact ADB invocation, exit code 0, and output `ONE_NATIVE_BACKEND_OK`.
+- The artifact ELF is ELF64 AArch64 with interpreter `/system/bin/linker64`. Recomputed ELF SHA-256 `5b05504a0167beeae1d15e267c2e7af1f1a7c62b163d459289be1d663c380a0c` matches the metadata. Archive SHA-256 is `69eaac89b1a6946ab0ced4f51029dc87d7ccc20a33f425d469b9617df2344c08`.
+- ONE Issue #82 was updated with the inspected artifact evidence and closed as COMPLETED. This closes only the Android AArch64 runtime-evidence task for source pin `722d662...`; it does not change the fixed-weight ledger, protected pins, or overall E3/release acceptance.
+- PR #49 remains OPEN / DRAFT / UNMERGED; no protected verifier branch or pin changed. PR #50's proposed `LEDGER_SOURCE_COMMIT.txt` remains `5f616ae08e303081666a5e0d6a4b8b63b9d69c16`; this documentation update does not promote it to the protected branch.
