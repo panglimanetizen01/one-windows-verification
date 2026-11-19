@@ -1,0 +1,99 @@
+name: Process containment capability probe
+
+on:
+  push:
+    branches:
+      - probe/issue-105-cgroup-v2-20261120
+    paths:
+      - .github/workflows/process-containment-probe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cgroup-v2-delegation:
+    name: Inspect Linux cgroup v2 delegation and kill support
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Probe delegated cgroup v2 capability without changing protected state
+        shell: bash
+        run: |
+          set -u
+          echo "=== kernel ==="
+          uname -a
+          echo "=== cgroup filesystem ==="
+          stat -fc '%T' /sys/fs/cgroup || true
+          echo "=== process cgroup ==="
+          cat /proc/self/cgroup
+          echo "=== cgroup mount ==="
+          findmnt -no FSTYPE,OPTIONS /sys/fs/cgroup || true
+
+          if [[ "$(stat -fc '%T' /sys/fs/cgroup 2>/dev/null || true)" != "cgroup2fs" ]]; then
+            echo "RESULT=CGROUP_V2_UNAVAILABLE"
+            exit 0
+          fi
+
+          relative="$(awk -F: '$1 == "0" { print $3 }' /proc/self/cgroup)"
+          parent="/sys/fs/cgroup${relative}"
+          echo "CURRENT_CGROUP=${parent}"
+          for name in cgroup.controllers cgroup.procs cgroup.events cgroup.kill; do
+            if [[ -e "${parent}/${name}" ]]; then
+              echo "PRESENT=${name}"
+            else
+              echo "MISSING=${name}"
+            fi
+          done
+
+          if [[ ! -e "${parent}/cgroup.kill" ]]; then
+            echo "RESULT=CGROUP_KILL_UNAVAILABLE"
+            exit 0
+          fi
+
+          probe="${parent}/one-process-containment-probe-$$"
+          if ! mkdir "${probe}" 2>/dev/null; then
+            echo "RESULT=CGROUP_SUBTREE_NOT_DELEGATED"
+            exit 0
+          fi
+
+          cleanup() {
+            printf '1\n' > "${probe}/cgroup.kill" 2>/dev/null || true
+            rmdir "${probe}" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          if [[ ! -w "${probe}/cgroup.procs" || ! -w "${probe}/cgroup.kill" ]]; then
+            echo "RESULT=CGROUP_FILES_NOT_WRITABLE"
+            exit 0
+          fi
+
+          sleep 60 &
+          child="$!"
+          if ! printf '%s\n' "${child}" > "${probe}/cgroup.procs"; then
+            kill "${child}" 2>/dev/null || true
+            wait "${child}" 2>/dev/null || true
+            echo "RESULT=CGROUP_PROCS_WRITE_DENIED"
+            exit 0
+          fi
+
+          if ! grep -qx "${child}" "${probe}/cgroup.procs"; then
+            echo "RESULT=CHILD_NOT_MOVED_INTO_CGROUP"
+            kill "${child}" 2>/dev/null || true
+            wait "${child}" 2>/dev/null || true
+            exit 0
+          fi
+
+          printf '1\n' > "${probe}/cgroup.kill" || {
+            kill "${child}" 2>/dev/null || true
+            wait "${child}" 2>/dev/null || true
+            echo "RESULT=CGROUP_KILL_WRITE_FAILED"
+            exit 0
+          }
+          wait "${child}" 2>/dev/null || true
+          cat "${probe}/cgroup.events"
+          if grep -q '^populated 0$' "${probe}/cgroup.events"; then
+            echo "RESULT=DELEGATED_CGROUP_V2_KILL_USABLE"
+          else
+            echo "RESULT=CGROUP_KILL_DID_NOT_EMPTY_SUBTREE"
+          fi
