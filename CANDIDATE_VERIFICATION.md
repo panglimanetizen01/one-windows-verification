@@ -1363,3 +1363,107 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 ## Candidate matrix environment repair — 2026-11-18
 
 The first candidate matrix run `44243442240` checked out the exact source and compiled `one-core` on both OSes, but both test suites failed in the existing `windows_x86_64_dapat_membangun_artifact_native` test because the configured cross-compiler `x86_64-w64-mingw32-clang` was not installed on either host. The test is intentionally retained (not ignored or weakened). The matrix now installs the required MinGW/Clang/LLD toolchains on Ubuntu and Windows and sets `ONE_WINDOWS_CLANG=clang` before running the full suite.
+
+
+
+# LATEST EXACT-SOURCE VERIFIER MATRIX — 2026-11-19 16:36Z
+
+## Canonical source and protected verifier identities
+
+- Exact ONE source SHA: 722d662e7a81711ba3607d26571f4048a292b3ed.
+- The protected verifier branch has advanced through squash merge commits 42feff8bc11d9b17d04ac9cff4abea4e80a7a832, d539a162aeed9d22988c7ffb0c7a893e8d33f571, 4ae84bad84ddacf169b9f25fa4c78581ab2b4bc4, and final HEAD b14abf0020472dc45842be30854e0a09317d6cb4. The CANONICAL_COMMIT.txt file was read at both a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd and b14abf0020472dc45842be30854e0a09317d6cb4; both contain the exact source SHA above.
+- All 12 workflow names required by REQUIRED_MIRROR_WORKFLOWS plus the Android runtime alternative now have a completed SUCCESS run whose verifier commit resolves to the exact ONE source SHA above.
+
+## Exact-SHA required workflow evidence
+
+| Required workflow scope | Run | Verifier commit (head SHA) | Result |
+|---|---:|---|---|
+| ONE Milestone 1 E1 Cross-Platform Acceptance Lab | [#44566212975](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212975) | b14abf0020472dc45842be30854e0a09317d6cb4 | SUCCESS — Ubuntu + Windows |
+| ONE E1 Standard Library Windows Acceptance | [#44566212997](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212997) | b14abf0020472dc45842be30854e0a09317d6cb4 | SUCCESS |
+| One Cross-Platform Verification | [#44519577496](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577496) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — Ubuntu + Windows |
+| ONE Linux Distro Verification | [#44519577570](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577570) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — Ubuntu 24.04 + Debian 12 |
+| ONE Focused Standard Library and Database Verification | [#44566212982](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212982) | b14abf0020472dc45842be30854e0a09317d6cb4 | SUCCESS |
+| ONE Cargo Lockfile Bootstrap Evidence | [#44519577555](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577555) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS |
+| ONE Candidate Artifact Integrity Verification | [#44566172841](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566172841) | 42feff8bc11d9b17d04ac9cff4abea4e80a7a832 | SUCCESS |
+| ONE E4 adversarial filesystem and resource-bound regression | [#44519577693](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577693) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — Windows reparse/handle + Unix no-follow/resource bounds |
+| E4 subprocess resource guard | [#44519577526](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577526) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS |
+| E4 SEC-05 subprocess timeout and output-limit verification | [#44566187162](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566187162) | d539a162aeed9d22988c7ffb0c7a893e8d33f571 | SUCCESS — Linux + Windows |
+| ONE Windows Native Backend Runtime — Windows Server 2025 | [#44566197814](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566197814) | 4ae84bad84ddacf169b9f25fa4c78581ab2b4bc4 | SUCCESS — PE32+ AMD64, native exit 0, output Budi |
+| ONE Android AArch64 runtime — native ARM64 Linux host | [#44519577666](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44519577666) | a44c32e18f884212c4c9250c4e7a9b8ad1ed9ccd | SUCCESS — API 35 arm64-v8a runtime, ELF exit 0 |
+
+The protected run jobs were read back and each listed as completed / success. The Android native ARM64 host log confirms an API 35 arm64-v8a emulator boot, AArch64 ELF push, runtime exit code 0, and exact-source runtime evidence artifact. The E1 Linux/Windows runs include non-zero test execution and contract/Clippy checks. The Windows native runtime log confirms PE32+ AMD64 and output Budi. The canonical source pin was unchanged across the protected verifier commits above.
+
+## Acceptance boundary — unchanged
+
+This matrix establishes current exact-source workflow evidence for the required CI scopes. It does NOT award ledger points, mark any F/C/E row VERIFIED, check Definition-of-Done items, accept Issue #104, or pass the final release gate. The prior fixed-weight gate #44519577312 remains FAILURE. Its inspected log recorded 92/100 implementation, 0/100 verified, 18 rows checked, 10 unchecked DoD items, and no protected ONE Package Provenance Release for this exact source SHA. The full package-provenance envelope remains outside the implemented v0.1 scope. Keep fixed weights and DoD unchanged; do not claim PASS GREEN LOCKED or dispatch release from workflow successes alone.
+
+This section is an evidence-index update only; no canonical pin or ledger/DoD source pin was changed.
+
+
+## Ledger source reconciliation — 2026-11-19 16:42Z
+
+The proposed ledger source pointer in this PR now targets ONE PR #103 draft commit `36bba2e45a629c4fa39677b0ea07a2489d37bc99`. That exact draft ledger records E3 VERIFIED 8/8 from the exact-source Linux/Windows/distro/artifact/Android runtime evidence. The proposed draft ledger totals are 92/100 IMPLEMENTED and 8/100 VERIFIED; Definition of Done is 4 checked / 9 unchecked / 13 total. E1 remains 7/10 implementation and 0/10 verified; E2 7/8 and 0/8; E4 6/6 and 0/6; E5 4/4 and 0/4; E6 0/4 and NOT IMPLEMENTED.
+
+Important separation: protected `LEDGER_SOURCE_COMMIT.txt` still points to `d6c382a245c49a028bc60809f22ca956c7f894cc`. This PR's new pointer is a proposed draft change only. The historical protected gate #44519577312 therefore still reports the old 0/100 verified / 10 unchecked state. No protected ledger pin, weights, or DoD boxes were changed by this PR.
+
+## Exact-source matrix and acceptance boundary refresh — 2026-11-19 16:42Z
+
+- Protected verifier HEAD: `b14abf0020472dc45842be30854e0a09317d6cb4`; canonical ONE source: `722d662e7a81711ba3607d26571f4048a292b3ed`.
+- All 12 required verifier workflow names plus the Android runtime alternative have terminal SUCCESS runs recorded in the exact-source matrix above.
+- E3 is VERIFIED 8/8 only in the draft ONE ledger source PR #103. This does not imply E1/E2/E4/E5/E6 or final project acceptance.
+- Protected fixed-weight gate #44519577312 remains historical FAILURE. No new gate run was triggered. If this PR is authorized and merged, its `CANDIDATE_VERIFICATION.md` and `LEDGER_SOURCE_COMMIT.txt` changes will trigger a new ledger-gate evaluation; expected result remains NOT PASSED until remaining row-level/DoD and protected package-provenance requirements are satisfied.
+- Issue #104 remains OPEN / NOT ACCEPTED; Linux nested writes and unsupported filesystem adapters remain fail-closed. Issue #105 escaped-descendant containment remains unresolved.
+- Issue #82 has protected Android runtime SUCCESS (#44519577666) on API 35 arm64-v8a / exit 0. PR #49's build job passes but metadata runtime job #135708475823 is still IN_PROGRESS; keep Issue #82 open pending the retained metadata artifact.
+- ONE PR #113 HEAD `54b92ab9703b9c3450cb33f5eb4f34861aae107b` is OPEN / DRAFT / UNMERGED; CircleCI `ci/circleci: one-linux` is PENDING on that exact SHA (workflow `f9bd8ac7-a741-4bf6-8536-37af4798f3a1`, job `77951c98-1242-4c47-b45b-90011ecebfd6`). Parent `eeafcab...` SUCCESS does not transfer.
+
+This is a documentation/evidence-pointer update only. It does not merge this PR, change the protected ledger source, modify fixed weights, check DoD items, or publish a package.
+
+
+## Live exact-HEAD PR/CI status — 2026-11-19 16:52Z
+
+The proposed ledger source pin in this draft PR is now `7d421e7558e4ba60e1a70c13586158ce6131524f`; it points to the latest ONE PR #103 ledger/DoD checkpoint. The independent canonical code source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`.
+
+- ONE PR #103: OPEN / DRAFT / UNMERGED, HEAD `22bb23d740fbd1011435e9b04b55655e2681a16f`; GitHub Actions Ubuntu + Windows run #44570379987 is IN_PROGRESS. CircleCI Pipeline status is ERROR on pipeline 1164; provider logs are unavailable, root cause UNKNOWN / NOT DIAGNOSED.
+- ONE PR #113: OPEN / DRAFT / UNMERGED, HEAD `b0d854124191587882705c832e1825ad2a46cc8f`; CircleCI `ci/circleci: one-linux` is PENDING (workflow `ecd5d877-e5f5-429c-884c-426196fc7e78`, job `cc77e7cb-8daf-4d9c-845d-df991e0f68bf`). The previous SHA `54b92ab...` had SUCCESS, but this newer SHA does not inherit it.
+- This verifier PR #50: OPEN / DRAFT / UNMERGED, HEAD `881554662906538a34ba26af4d34fbc1a5d27723`; no check runs/status context are reported for this exact HEAD (NOT REPORTED).
+- The draft ledger remains 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E1, E2, E4, E5, E6 and overall release remain incomplete. Issue #104 remains OPEN / NOT ACCEPTED.
+- No protected ledger/canonical pin, fixed weight, release state, or main branch was changed. Historical fixed-weight gate #44519577312 remains FAILURE; no gate was dispatched.
+
+
+## Exact-head correction — 2026-11-19 16:54Z
+
+The proposed `LEDGER_SOURCE_COMMIT.txt` now points to ONE ledger/DoD draft commit `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`. Canonical code-source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`.
+
+Latest exact-HEAD status read: ONE PR #113 `b0d854124191587882705c832e1825ad2a46cc8f` CircleCI SUCCESS (workflow `ecd5d877-e5f5-429c-884c-426196fc7e78`, job `cc77e7cb-8daf-4d9c-845d-df991e0f68bf`); PR #103 parent HEAD `7d421e7558e4ba60e1a70c13586158ce6131524f` CircleCI Pipeline ERROR (pipeline 1165), provider logs unavailable and cause UNKNOWN / NOT DIAGNOSED; the new ledger commit `e053b5ffae46a7e1d696bea5eb5a13999c722ee0` has no terminal CI result asserted here; this PR #50 previous HEAD `9aaaaeeec6884fddcde94588e95cb7f9ef494044` is PENDING with no reported status context/check runs. The latest PR #50 commit created by this update also has no terminal status claimed.
+
+Ledger remains 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E1/E2/E4/E5/E6 and overall release remain incomplete. Issue #104 remains OPEN / NOT ACCEPTED. No protected pins, fixed weights, release state, or main branch changed.
+
+
+## Latest live status read — 2026-11-19 16:55Z
+
+This is a subsequent read after the prior status correction; it supersedes the prior-head status values above where they conflict.
+
+- ONE PR #103 latest HEAD `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`: CircleCI Pipeline `error`, pipeline 1166 (updated 16:52:33Z). GitHub Actions Windows and Ubuntu jobs are IN_PROGRESS (run #44570989114). CircleCI step logs are not available in this session; failure cause UNKNOWN / NOT DIAGNOSED.
+- ONE PR #113 HEAD `b0d854124191587882705c832e1825ad2a46cc8f`: CircleCI `ci/circleci: one-linux` SUCCESS, workflow `ecd5d877-e5f5-429c-884c-426196fc7e78`, job `cc77e7cb-8daf-4d9c-845d-df991e0f68bf` (updated 16:50:40Z).
+- Verifier PR #50 prior HEAD `d25348fdb7e5972d6b088319c7e93368b7faf55a`: commit status PENDING, no status contexts/check runs returned. This new documentation-only descendant has not yet received a status at time of commit creation; do not claim it passed.
+- Draft ledger source pin remains `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`; canonical code source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`. Ledger totals remain 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total.
+- PRs #103, #113 and #50 remain OPEN / DRAFT / UNMERGED. ONE main remains `d35db95153f6ddd79885494c72f5aee16c899751`. Issue #104 remains OPEN / NOT ACCEPTED. No release, protected pin, fixed-weight or main-branch change.
+
+
+## ONE ledger / CI checkpoint refresh — 2026-11-20
+
+- Draft ledger + DoD source pointer now targets ONE PR #103 branch commit `5f616ae08e303081666a5e0d6a4b8b63b9d69c16`, which contains the completed exact-SHA CI checkpoint in both `docs/verification/one-completion-ledger.md` and `docs/verification/DEFINITION_OF_DONE.md`.
+- The exact source revision for that CI evidence is parent documentation commit `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`, for which GitHub Actions run #44570989114 / workflow #2238 completed SUCCESS on Ubuntu job `135725650325` and Windows job `135725650808`.
+- CircleCI on the same tested SHA remains ERROR at pipeline 1166; provider failed-step logs are unavailable, so root cause remains UNKNOWN / NOT DIAGNOSED. GHA success must not be treated as CircleCI success.
+- Canonical runtime/code source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`; do not conflate it with the ledger documentation pin.
+- Ledger totals remain 92/100 IMPLEMENTED, 8/100 VERIFIED; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E6 remains NOT IMPLEMENTED; Issue #104 OPEN / NOT ACCEPTED. Fixed weights and protected pins remain unchanged.
+- This PR #50 is still a documentation-only draft integration candidate. Its new commit status must be read on the exact resulting HEAD; no PASS is implied by prior status snapshots.
+
+
+## Android API 35 runtime metadata evidence — 2026-11-20
+
+- Verifier PR #49 exact HEAD `fa0b5cffe52bf31fedef81ed945d6cc3a6dc2e19` completed Android runtime workflow [#44565956781](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44565956781) with terminal SUCCESS. Build job `135707610069` and API 35 ARM64 runtime job `135708475823` both completed SUCCESS.
+- Downloaded and inspected retained artifact ID `14553867982`, name `one-api35-arm64-runtime-evidence-722d662e7a81711ba3607d26571f4048a292b3ed`. `ANDROID_RUNTIME_METADATA.txt` records exact source SHA `722d662e7a81711ba3607d26571f4048a292b3ed`, API 35, ABI `arm64-v8a`, model `Android SDK built for arm64`, host architecture `aarch64`, ELF digest, local/remote paths, exact ADB invocation, exit code 0, and output `ONE_NATIVE_BACKEND_OK`.
+- The artifact ELF is ELF64 AArch64 with interpreter `/system/bin/linker64`. Recomputed ELF SHA-256 `5b05504a0167beeae1d15e267c2e7af1f1a7c62b163d459289be1d663c380a0c` matches the metadata. Archive SHA-256 is `69eaac89b1a6946ab0ced4f51029dc87d7ccc20a33f425d469b9617df2344c08`.
+- ONE Issue #82 was updated with the inspected artifact evidence and closed as COMPLETED. This closes only the Android AArch64 runtime-evidence task for source pin `722d662...`; it does not change the fixed-weight ledger, protected pins, or overall E3/release acceptance.
+- PR #49 remains OPEN / DRAFT / UNMERGED; no protected verifier branch or pin changed. PR #50's proposed `LEDGER_SOURCE_COMMIT.txt` remains `5f616ae08e303081666a5e0d6a4b8b63b9d69c16`; this documentation update does not promote it to the protected branch.
