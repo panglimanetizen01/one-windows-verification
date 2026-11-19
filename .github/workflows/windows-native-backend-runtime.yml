@@ -4,7 +4,12 @@ on:
   push:
     branches: [ verification ]
     paths:
-      - "WINDOWS_SOURCE_COMMIT.txt"
+      - "CANONICAL_COMMIT.txt"
+      - ".github/workflows/windows-native-backend-runtime.yml"
+  pull_request:
+    branches: [ verification ]
+    paths:
+      - "CANONICAL_COMMIT.txt"
       - ".github/workflows/windows-native-backend-runtime.yml"
   workflow_dispatch:
 
@@ -28,7 +33,7 @@ jobs:
         id: canonical
         shell: bash
         run: |
-          target="$(tr -d '\r\n[:space:]' < WINDOWS_SOURCE_COMMIT.txt)"
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
           if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
             echo "invalid canonical commit: $target" >&2
             exit 1
@@ -51,9 +56,25 @@ jobs:
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
           "source_sha=$actual"
 
+      - name: Read exact Rust toolchain from pinned source
+        id: source_toolchain
+        working-directory: source
+        shell: pwsh
+        run: |
+          $content = Get-Content rust-toolchain.toml -Raw
+          if ($content -notmatch '(?m)^\s*channel\s*=\s*"([^"]+)"') {
+            throw 'rust-toolchain.toml must declare one channel.'
+          }
+          $channel = $Matches[1]
+          if ($channel -notmatch '^\d+\.\d+\.\d+($)') {
+            throw "Expected a stable exact Rust version, got: $channel"
+          }
+          "channel=$channel" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "Using exact source-pinned Rust toolchain: $channel"
+
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
-          toolchain: 1.99.0
+          toolchain: ${{ steps.source_toolchain.outputs.channel }}
           components: rustfmt, clippy
 
       - name: Install MinGW clang and linker
