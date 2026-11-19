@@ -4,7 +4,12 @@ on:
   push:
     branches: [ verification ]
     paths:
-      - "WINDOWS_SOURCE_COMMIT.txt"
+      - "CANONICAL_COMMIT.txt"
+      - ".github/workflows/windows-native-backend-runtime.yml"
+  pull_request:
+    branches: [ verification ]
+    paths:
+      - "CANONICAL_COMMIT.txt"
       - ".github/workflows/windows-native-backend-runtime.yml"
   workflow_dispatch:
 
@@ -28,7 +33,7 @@ jobs:
         id: canonical
         shell: bash
         run: |
-          target="$(tr -d '\r\n[:space:]' < WINDOWS_SOURCE_COMMIT.txt)"
+          target="$(tr -d '\r\n[:space:]' < CANONICAL_COMMIT.txt)"
           if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
             echo "invalid canonical commit: $target" >&2
             exit 1
@@ -51,9 +56,146 @@ jobs:
           if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "canonical commit mismatch: $actual" }
           "source_sha=$actual"
 
+      - name: Read exact Rust toolchain from pinned source
+        id: source_toolchain
+        working-directory: source
+        shell: pwsh
+        run: |
+          $content = Get-Content rust-toolchain.toml -Raw
+          if ($content -notmatch '(?m)^\s*channel\s*=\s*"([^"]+)"') {
+            throw 'rust-toolchain.toml must declare one channel.'
+          }
+          $channel = $Matches[1]
+          if ($channel -notmatch '^\d+\.\d+\.\d+
+
+      - name: Install MinGW clang and linker
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
+
+      - name: Configure Windows native compiler override
+        shell: pwsh
+        run: |
+          "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
+          clang --version
+          $probe = Join-Path $env:RUNNER_TEMP 'one-mingw-probe.c'
+          $probeExe = Join-Path $env:RUNNER_TEMP 'one-mingw-probe.exe'
+          'int main(void) { return 0; }' | Set-Content -Encoding ascii $probe
+          clang --target=x86_64-w64-windows-gnu $probe -o $probeExe
+          if ($LASTEXITCODE -ne 0 -or -not (Test-Path $probeExe)) {
+            throw 'MinGW clang could not produce a Windows GNU executable.'
+          }
+          $probeBytes = [System.IO.File]::ReadAllBytes($probeExe)
+          if ($probeBytes.Length -lt 2 -or $probeBytes[0] -ne 0x4D -or $probeBytes[1] -ne 0x5A) {
+            throw 'MinGW compiler probe is not a PE executable.'
+          }
+          Write-Host 'MinGW clang PE probe PASS.'
+
+      - name: Verify Windows Server 2025 host
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Write-Host "OS: $([System.Environment]::OSVersion.VersionString)"
+          Write-Host "Architecture: $env:PROCESSOR_ARCHITECTURE"
+          if ($env:PROCESSOR_ARCHITECTURE -ne 'AMD64') {
+            throw "Expected AMD64 Windows runner."
+          }
+
+      - name: Build Windows native backend artifact
+        working-directory: source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          rustc --version
+          cargo --version
+          # one-native resolves a relative output path beneath the input .one file's directory (examples/).
+          cargo run -p one-cli --bin one-native --locked -- build --target windows-x86_64 examples/hello.one one-windows-native.exe
+          if (-not (Test-Path examples/one-windows-native.exe)) {
+            throw 'Windows native artifact was not produced.'
+          }
+
+      - name: Inspect PE32+ AMD64 artifact
+        working-directory: source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $bytes = [System.IO.File]::ReadAllBytes('examples/one-windows-native.exe')
+          if ($bytes.Length -lt 64 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+            throw 'Artifact does not have a valid PE MZ header.'
+          }
+          $peOffset = [BitConverter]::ToInt32($bytes, 0x3C)
+          if ($peOffset -lt 0 -or $peOffset + 24 -gt $bytes.Length) {
+            throw 'Invalid PE header offset.'
+          }
+          if ($bytes[$peOffset] -ne 0x50 -or $bytes[$peOffset + 1] -ne 0x45 -or $bytes[$peOffset + 2] -ne 0x00 -or $bytes[$peOffset + 3] -ne 0x00) {
+            throw 'Missing PE signature.'
+          }
+          $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
+          if ($machine -ne 0x8664) {
+            throw ("Expected AMD64 PE machine 0x8664, got 0x{0:X4}." -f $machine)
+          }
+          Write-Host 'PE32+ AMD64 artifact verified.'
+
+      - name: Execute Windows native artifact
+        id: runtime
+        working-directory: source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = & .\examples\one-windows-native.exe 2>&1
+          $exitCode = $LASTEXITCODE
+          $outputText = ($output | Out-String).Trim()
+          Write-Host "runtime_exit_code=$exitCode"
+          Write-Host "runtime_output=$outputText"
+          if ($exitCode -ne 0) {
+            throw "Windows native artifact exited with code $exitCode."
+          }
+          if (-not $outputText.Contains('Budi')) {
+            throw "Expected program output was not observed: $outputText"
+          }
+          "runtime_exit_code=$exitCode" >> $env:GITHUB_OUTPUT
+          "runtime_output=$outputText" >> $env:GITHUB_OUTPUT
+
+      - name: Write exact-SHA runtime manifest
+        working-directory: source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $hash = (Get-FileHash examples/one-windows-native.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          @(
+            "source_sha=${{ steps.canonical.outputs.ref }}"
+            "host_os=$([System.Environment]::OSVersion.VersionString)"
+            "host_arch=$env:PROCESSOR_ARCHITECTURE"
+            "target=x86_64-pc-windows-gnu"
+            "rustc=$(rustc --version)"
+            "cargo=$(cargo --version)"
+            "binary=examples/one-windows-native.exe"
+            "binary_sha256=$hash"
+            "runtime_exit_code=${{ steps.runtime.outputs.runtime_exit_code }}"
+            "runtime_output=${{ steps.runtime.outputs.runtime_output }}"
+          ) | Set-Content -Encoding utf8 one-windows-native-runtime-manifest.txt
+          Get-Content one-windows-native-runtime-manifest.txt
+
+      - name: Upload exact-SHA Windows native runtime evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: one-windows-native-runtime-${{ steps.canonical.outputs.ref }}
+          path: |
+            source/examples/one-windows-native.exe
+            source/one-windows-native-runtime-manifest.txt
+          if-no-files-found: ignore
+) {
+            throw "Expected a stable exact Rust version, got: $channel"
+          }
+          "channel=$channel" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "Using exact source-pinned Rust toolchain: $channel"
+
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
         with:
-          toolchain: 1.99.0
+          toolchain: ${{ steps.source_toolchain.outputs.channel }}
           components: rustfmt, clippy
 
       - name: Install MinGW clang and linker
