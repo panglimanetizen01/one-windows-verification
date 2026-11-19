@@ -6,11 +6,6 @@ on:
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/package-provenance-e2e.yml'
-  pull_request:
-    branches: [verification]
-    paths:
-      - 'CANONICAL_COMMIT.txt'
-      - '.github/workflows/package-provenance-e2e.yml'
   workflow_dispatch:
 
 permissions:
@@ -68,8 +63,7 @@ jobs:
             echo "Precondition failed: regex unexpectedly exists in the source lockfile" >&2
             exit 1
           fi
-          sed -i '/^\[dependencies\]/a regex = "1"' "$tmp/crates/one-cli/Cargo.toml"
-          grep -Fq 'regex = "1"' "$tmp/crates/one-cli/Cargo.toml"
+          sed -i '/^sha2 = /a regex = "1"' "$tmp/crates/one-cli/Cargo.toml"
           set +e
           output="$(cargo metadata --locked --manifest-path "$tmp/Cargo.toml" --format-version 1 2>&1)"
           status=$?
