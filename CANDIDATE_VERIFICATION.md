@@ -1428,3 +1428,12 @@ The proposed ledger source pin in this draft PR is now `7d421e7558e4ba60e1a70c13
 - This verifier PR #50: OPEN / DRAFT / UNMERGED, HEAD `881554662906538a34ba26af4d34fbc1a5d27723`; no check runs/status context are reported for this exact HEAD (NOT REPORTED).
 - The draft ledger remains 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E1, E2, E4, E5, E6 and overall release remain incomplete. Issue #104 remains OPEN / NOT ACCEPTED.
 - No protected ledger/canonical pin, fixed weight, release state, or main branch was changed. Historical fixed-weight gate #44519577312 remains FAILURE; no gate was dispatched.
+
+
+## Exact-head correction — 2026-11-19 16:54Z
+
+The proposed `LEDGER_SOURCE_COMMIT.txt` now points to ONE ledger/DoD draft commit `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`. Canonical code-source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`.
+
+Latest exact-HEAD status read: ONE PR #113 `b0d854124191587882705c832e1825ad2a46cc8f` CircleCI SUCCESS (workflow `ecd5d877-e5f5-429c-884c-426196fc7e78`, job `cc77e7cb-8daf-4d9c-845d-df991e0f68bf`); PR #103 parent HEAD `7d421e7558e4ba60e1a70c13586158ce6131524f` CircleCI Pipeline ERROR (pipeline 1165), provider logs unavailable and cause UNKNOWN / NOT DIAGNOSED; the new ledger commit `e053b5ffae46a7e1d696bea5eb5a13999c722ee0` has no terminal CI result asserted here; this PR #50 previous HEAD `9aaaaeeec6884fddcde94588e95cb7f9ef494044` is PENDING with no reported status context/check runs. The latest PR #50 commit created by this update also has no terminal status claimed.
+
+Ledger remains 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E1/E2/E4/E5/E6 and overall release remain incomplete. Issue #104 remains OPEN / NOT ACCEPTED. No protected pins, fixed weights, release state, or main branch changed.
