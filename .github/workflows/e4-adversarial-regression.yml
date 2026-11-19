@@ -3,7 +3,7 @@ name: ONE E4 adversarial filesystem and resource-bound regression
 
 on:
   push:
-    branches: [verification]
+    branches: [verification, 'probe/**']
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/e4-adversarial-regression.yml'
@@ -77,14 +77,15 @@ jobs:
               return 1
             fi
           }
-          run_test 2 descriptor_relative_read_rejects_
-          run_test 1 descriptor_relative_write_rejects_
+          run_test 3 descriptor_relative_read_rejects_
+          run_test 5 descriptor_relative_write_
           run_test 1 descriptor_relative_walk_rejects_
           run_test 1 adapter::filesystem_nofollow_tests::descriptor_relative_read_race_never_follows_swapped_parent_symlink --exact --test-threads=1
           run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file --exact --test-threads=1
-          run_test 11 database::tests
-          run_test 10 governance::tests
-          run_test 27 network_runtime::tests -- --test-threads=1
+          # Exact source inventory at the candidate SHA: database=1, governance=11, network_runtime=5.
+          run_test 1 database::tests
+          run_test 11 governance::tests
+          run_test 5 network_runtime::tests -- --test-threads=1
           run_test 1 orchestrator::tests::denied_request_never_reaches_adapter_invocation --exact --test-threads=1
 
   windows-reparse-regression:
@@ -141,4 +142,261 @@ jobs:
           Invoke-ExpectedTest "filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects"
           Invoke-ExpectedTest "filesystem_write_adapter_writes_text_target"
           Invoke-ExpectedTest "filesystem_write_adapter_rejects_oversized_content"
+          Invoke-ExpectedTest "filesystem_write_adapter_preserves_target_when_atomic_replace_is_denied"
           Invoke-ExpectedTest "filesystem_adapters_reject_parent_directory_traversal"
+
+  windows-obj-dont-reparse-contract-probe:
+    name: Windows user-mode NtCreateFile OBJ_DONT_REPARSE contract probe
+    runs-on: windows-2025
+    timeout-minutes: 10
+    steps:
+      - name: Record Windows Server 2025 environment
+        shell: pwsh
+        run: |
+          $info = Get-ComputerInfo
+          Write-Output "WindowsProductName=$($info.WindowsProductName)"
+          Write-Output "WindowsVersion=$($info.WindowsVersion)"
+          Write-Output "OsBuildNumber=$($info.OsBuildNumber)"
+          Write-Output "PowerShell=$($PSVersionTable.PSVersion)"
+
+      - name: Probe RootDirectory-relative opens and junction rejection
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Add-Type -TypeDefinition @'
+          using System;
+          using System.Runtime.InteropServices;
+
+          public static class OneNtCreateFileProbe {
+              const uint OBJ_CASE_INSENSITIVE = 0x00000040;
+              const uint OBJ_DONT_REPARSE = 0x00001000;
+              const uint FILE_LIST_DIRECTORY = 0x00000001;
+              const uint FILE_READ_DATA = 0x00000001;
+              const uint FILE_TRAVERSE = 0x00000020;
+              const uint FILE_READ_ATTRIBUTES = 0x00000080;
+              const uint SYNCHRONIZE = 0x00100000;
+              const uint FILE_NON_DIRECTORY_FILE = 0x00000040;
+              const uint FILE_OPEN_REPARSE_POINT = 0x00200000;
+              const uint FILE_SHARE_READ = 0x00000001;
+              const uint FILE_SHARE_WRITE = 0x00000002;
+              const uint FILE_SHARE_DELETE = 0x00000004;
+              const uint FILE_OPEN = 1;
+              const uint FILE_DIRECTORY_FILE = 0x00000001;
+              const uint FILE_SYNCHRONOUS_IO_NONALERT = 0x00000020;
+              const uint FILE_ATTRIBUTE_NORMAL = 0x00000080;
+              public const int STATUS_REPARSE_POINT_ENCOUNTERED = unchecked((int)0xC000050B);
+
+              [StructLayout(LayoutKind.Sequential)]
+              struct UNICODE_STRING {
+                  public ushort Length;
+                  public ushort MaximumLength;
+                  public IntPtr Buffer;
+              }
+
+              [StructLayout(LayoutKind.Sequential)]
+              struct OBJECT_ATTRIBUTES {
+                  public int Length;
+                  public IntPtr RootDirectory;
+                  public IntPtr ObjectName;
+                  public uint Attributes;
+                  public IntPtr SecurityDescriptor;
+                  public IntPtr SecurityQualityOfService;
+              }
+
+              [StructLayout(LayoutKind.Sequential)]
+              struct IO_STATUS_BLOCK {
+                  public IntPtr Status;
+                  public IntPtr Information;
+              }
+
+              [DllImport("ntdll.dll")]
+              static extern int NtClose(IntPtr handle);
+
+              [DllImport("ntdll.dll")]
+              static extern int NtCreateFile(out IntPtr fileHandle, uint desiredAccess,
+                  ref OBJECT_ATTRIBUTES objectAttributes, out IO_STATUS_BLOCK ioStatusBlock,
+                  IntPtr allocationSize, uint fileAttributes, uint shareAccess,
+                  uint createDisposition, uint createOptions, IntPtr eaBuffer, uint eaLength);
+
+              static int OpenNamedDirectory(string name, IntPtr root, uint objectAttributes, out IntPtr handle) {
+                  IntPtr nameBuffer = Marshal.StringToHGlobalUni(name);
+                  IntPtr unicodeBuffer = IntPtr.Zero;
+                  try {
+                      var unicode = new UNICODE_STRING {
+                          Length = checked((ushort)(name.Length * 2)),
+                          MaximumLength = checked((ushort)(name.Length * 2 + 2)),
+                          Buffer = nameBuffer
+                      };
+                      unicodeBuffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UNICODE_STRING)));
+                      Marshal.StructureToPtr(unicode, unicodeBuffer, false);
+                      var attributes = new OBJECT_ATTRIBUTES {
+                          Length = Marshal.SizeOf(typeof(OBJECT_ATTRIBUTES)),
+                          RootDirectory = root,
+                          ObjectName = unicodeBuffer,
+                          Attributes = objectAttributes
+                      };
+                      IO_STATUS_BLOCK io;
+                      return NtCreateFile(out handle,
+                          FILE_LIST_DIRECTORY | FILE_TRAVERSE | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+                          ref attributes, out io, IntPtr.Zero, FILE_ATTRIBUTE_NORMAL,
+                          FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_OPEN,
+                          FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT,
+                          IntPtr.Zero, 0);
+                  } finally {
+                      if (unicodeBuffer != IntPtr.Zero) Marshal.FreeHGlobal(unicodeBuffer);
+                      Marshal.FreeHGlobal(nameBuffer);
+                  }
+              }
+
+              public static IntPtr OpenRoot(string path) {
+                  IntPtr handle;
+                  string nativePath = @"\??\" + System.IO.Path.GetFullPath(path);
+                  int status = OpenNamedDirectory(nativePath, IntPtr.Zero, OBJ_CASE_INSENSITIVE, out handle);
+                  if (status != 0) {
+                      string hex = "0x" + unchecked((uint)status).ToString("X8");
+                      throw new InvalidOperationException("NtCreateFile trusted-root open failed: " + hex);
+                  }
+                  return handle;
+              }
+
+              public static int OpenDirectoryRelative(IntPtr root, string component, bool noReparse, out IntPtr handle) {
+                  uint flags = OBJ_CASE_INSENSITIVE | (noReparse ? OBJ_DONT_REPARSE : 0);
+                  return OpenNamedDirectory(component, root, flags, out handle);
+              }
+
+              public static int OpenFileRelative(IntPtr root, string component, bool noReparse, out IntPtr handle) {
+                  IntPtr nameBuffer = Marshal.StringToHGlobalUni(component);
+                  IntPtr unicodeBuffer = IntPtr.Zero;
+                  try {
+                      var unicode = new UNICODE_STRING {
+                          Length = checked((ushort)(component.Length * 2)),
+                          MaximumLength = checked((ushort)(component.Length * 2 + 2)),
+                          Buffer = nameBuffer
+                      };
+                      unicodeBuffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UNICODE_STRING)));
+                      Marshal.StructureToPtr(unicode, unicodeBuffer, false);
+                      var attributes = new OBJECT_ATTRIBUTES {
+                          Length = Marshal.SizeOf(typeof(OBJECT_ATTRIBUTES)),
+                          RootDirectory = root,
+                          ObjectName = unicodeBuffer,
+                          Attributes = OBJ_CASE_INSENSITIVE | (noReparse ? OBJ_DONT_REPARSE : 0)
+                      };
+                      IO_STATUS_BLOCK io;
+                      return NtCreateFile(out handle,
+                          FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+                          ref attributes, out io, IntPtr.Zero, FILE_ATTRIBUTE_NORMAL,
+                          FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_OPEN,
+                          FILE_NON_DIRECTORY_FILE | FILE_OPEN_REPARSE_POINT | FILE_SYNCHRONOUS_IO_NONALERT,
+                          IntPtr.Zero, 0);
+                  } finally {
+                      if (unicodeBuffer != IntPtr.Zero) Marshal.FreeHGlobal(unicodeBuffer);
+                      Marshal.FreeHGlobal(nameBuffer);
+                  }
+              }
+
+              public static void Close(IntPtr handle) {
+                  if (handle != IntPtr.Zero && handle != new IntPtr(-1)) NtClose(handle);
+              }
+          }
+          '@
+
+          $root = Join-Path $env:RUNNER_TEMP ("one-obj-dont-reparse-" + [guid]::NewGuid().ToString("N"))
+          $outside = Join-Path $env:RUNNER_TEMP ("one-obj-dont-reparse-outside-" + [guid]::NewGuid().ToString("N"))
+          New-Item -ItemType Directory -Path $root | Out-Null
+          New-Item -ItemType Directory -Path $outside | Out-Null
+          New-Item -ItemType Directory -Path (Join-Path $outside "child") | Out-Null
+          New-Item -ItemType Directory -Path (Join-Path $root "ordinary") | Out-Null
+          Set-Content -LiteralPath (Join-Path $root "ordinary-file.txt") -Value "ORDINARY_FILE" -NoNewline
+          Set-Content -LiteralPath (Join-Path $outside "sentinel.txt") -Value "OUTSIDE_SENTINEL_UNCHANGED" -NoNewline
+          $junction = Join-Path $root "junction"
+          & cmd.exe /c mklink /J "$junction" "$outside"
+          if ($LASTEXITCODE -ne 0) { throw "Could not create test junction; exit=$LASTEXITCODE" }
+
+          $rootHandle = [OneNtCreateFileProbe]::OpenRoot($root)
+          $ordinaryHandle = [IntPtr]::Zero
+          $ordinaryFileBaselineHandle = [IntPtr]::Zero
+          $ordinaryFileNoReparseHandle = [IntPtr]::Zero
+          $junctionBaselineHandle = [IntPtr]::Zero
+          $junctionDeniedHandle = [IntPtr]::Zero
+          $intermediateBaselineHandle = [IntPtr]::Zero
+          $intermediateDeniedHandle = [IntPtr]::Zero
+          try {
+            $ordinaryStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "ordinary", $true, [ref]$ordinaryHandle)
+            if ($ordinaryStatus -ne 0) {
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$ordinaryStatus), 0))
+              throw "Control open of ordinary child failed with NTSTATUS $hex"
+            }
+            [OneNtCreateFileProbe]::Close($ordinaryHandle)
+            $ordinaryHandle = [IntPtr]::Zero
+
+            $ordinaryFileBaselineStatus = [OneNtCreateFileProbe]::OpenFileRelative($rootHandle, "ordinary-file.txt", $false, [ref]$ordinaryFileBaselineHandle)
+            if ($ordinaryFileBaselineStatus -ne 0) {
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$ordinaryFileBaselineStatus), 0))
+              throw "Control open of ordinary file with FILE_OPEN_REPARSE_POINT failed: $hex"
+            }
+            [OneNtCreateFileProbe]::Close($ordinaryFileBaselineHandle)
+            $ordinaryFileBaselineHandle = [IntPtr]::Zero
+            $ordinaryFileNoReparseStatus = [OneNtCreateFileProbe]::OpenFileRelative($rootHandle, "ordinary-file.txt", $true, [ref]$ordinaryFileNoReparseHandle)
+            $ordinaryFileNoReparseHex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$ordinaryFileNoReparseStatus), 0))
+            Write-Output "ordinary_file_with_FILE_OPEN_REPARSE_POINT_status=0x00000000"
+            Write-Output "ordinary_file_with_OBJ_DONT_REPARSE_status=$ordinaryFileNoReparseHex"
+            [OneNtCreateFileProbe]::Close($ordinaryFileNoReparseHandle)
+            $ordinaryFileNoReparseHandle = [IntPtr]::Zero
+
+            $baselineStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction", $false, [ref]$junctionBaselineHandle)
+            if ($baselineStatus -ne 0) {
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$baselineStatus), 0))
+              throw "Control open without OBJ_DONT_REPARSE did not follow junction: $hex"
+            }
+            [OneNtCreateFileProbe]::Close($junctionBaselineHandle)
+            $junctionBaselineHandle = [IntPtr]::Zero
+
+            $junctionStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction", $true, [ref]$junctionDeniedHandle)
+            $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$junctionStatus), 0))
+            Write-Output "ordinary_child_status=0x00000000"
+            Write-Output "junction_without_flag_status=0x00000000"
+            Write-Output "junction_with_OBJ_DONT_REPARSE_status=$hex"
+            if ($junctionStatus -eq 0) {
+              [OneNtCreateFileProbe]::Close($junctionDeniedHandle)
+              $junctionDeniedHandle = [IntPtr]::Zero
+              throw "SECURITY FAILURE: OBJ_DONT_REPARSE allowed a RootDirectory-relative junction open"
+            }
+            if ($junctionStatus -ne [OneNtCreateFileProbe]::STATUS_REPARSE_POINT_ENCOUNTERED) {
+              throw "INCONCLUSIVE/UNSUPPORTED: expected STATUS_REPARSE_POINT_ENCOUNTERED, observed $hex"
+            }
+            $intermediateBaselineStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction\child", $false, [ref]$intermediateBaselineHandle)
+            if ($intermediateBaselineStatus -ne 0) {
+              $hex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$intermediateBaselineStatus), 0))
+              throw "Control open without OBJ_DONT_REPARSE did not traverse intermediate junction: $hex"
+            }
+            [OneNtCreateFileProbe]::Close($intermediateBaselineHandle)
+            $intermediateBaselineHandle = [IntPtr]::Zero
+
+            $intermediateStatus = [OneNtCreateFileProbe]::OpenDirectoryRelative($rootHandle, "junction\child", $true, [ref]$intermediateDeniedHandle)
+            $intermediateHex = "0x{0:X8}" -f ([BitConverter]::ToUInt32([BitConverter]::GetBytes([int32]$intermediateStatus), 0))
+            Write-Output "intermediate_junction_with_OBJ_DONT_REPARSE_status=$intermediateHex"
+            if ($intermediateStatus -eq 0) {
+              [OneNtCreateFileProbe]::Close($intermediateDeniedHandle)
+              $intermediateDeniedHandle = [IntPtr]::Zero
+              throw "SECURITY FAILURE: OBJ_DONT_REPARSE allowed traversal through an intermediate junction"
+            }
+            if ($intermediateStatus -ne [OneNtCreateFileProbe]::STATUS_REPARSE_POINT_ENCOUNTERED) {
+              throw "INCONCLUSIVE/UNSUPPORTED: intermediate junction expected STATUS_REPARSE_POINT_ENCOUNTERED, observed $intermediateHex"
+            }
+
+            $sentinel = Get-Content -Raw -LiteralPath (Join-Path $outside "sentinel.txt")
+            if ($sentinel -ne "OUTSIDE_SENTINEL_UNCHANGED") { throw "Outside sentinel changed unexpectedly" }
+            Write-Output "OBJ_DONT_REPARSE_ROOT_DIRECTORY_JUNCTION_DENIAL_OK"
+          } finally {
+            [OneNtCreateFileProbe]::Close($ordinaryHandle)
+            [OneNtCreateFileProbe]::Close($ordinaryFileBaselineHandle)
+            [OneNtCreateFileProbe]::Close($ordinaryFileNoReparseHandle)
+            [OneNtCreateFileProbe]::Close($junctionBaselineHandle)
+            [OneNtCreateFileProbe]::Close($junctionDeniedHandle)
+            [OneNtCreateFileProbe]::Close($intermediateBaselineHandle)
+            [OneNtCreateFileProbe]::Close($intermediateDeniedHandle)
+            [OneNtCreateFileProbe]::Close($rootHandle)
+            Remove-Item -LiteralPath $junction -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $root -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $outside -Recurse -Force -ErrorAction SilentlyContinue
+          }

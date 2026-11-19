@@ -1,4 +1,5 @@
 # Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
+# Keep exact candidate-source subprocess checks active for the current filesystem/CLI continuation.
 name: E4 SEC-05 subprocess timeout and output-limit verification
 
 on:
