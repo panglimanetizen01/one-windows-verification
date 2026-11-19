@@ -1448,3 +1448,13 @@ This is a subsequent read after the prior status correction; it supersedes the p
 - Verifier PR #50 prior HEAD `d25348fdb7e5972d6b088319c7e93368b7faf55a`: commit status PENDING, no status contexts/check runs returned. This new documentation-only descendant has not yet received a status at time of commit creation; do not claim it passed.
 - Draft ledger source pin remains `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`; canonical code source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`. Ledger totals remain 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total.
 - PRs #103, #113 and #50 remain OPEN / DRAFT / UNMERGED. ONE main remains `d35db95153f6ddd79885494c72f5aee16c899751`. Issue #104 remains OPEN / NOT ACCEPTED. No release, protected pin, fixed-weight or main-branch change.
+
+
+## ONE ledger / CI checkpoint refresh — 2026-11-20
+
+- Draft ledger + DoD source pointer now targets ONE PR #103 branch commit `5f616ae08e303081666a5e0d6a4b8b63b9d69c16`, which contains the completed exact-SHA CI checkpoint in both `docs/verification/one-completion-ledger.md` and `docs/verification/DEFINITION_OF_DONE.md`.
+- The exact source revision for that CI evidence is parent documentation commit `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`, for which GitHub Actions run #44570989114 / workflow #2238 completed SUCCESS on Ubuntu job `135725650325` and Windows job `135725650808`.
+- CircleCI on the same tested SHA remains ERROR at pipeline 1166; provider failed-step logs are unavailable, so root cause remains UNKNOWN / NOT DIAGNOSED. GHA success must not be treated as CircleCI success.
+- Canonical runtime/code source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`; do not conflate it with the ledger documentation pin.
+- Ledger totals remain 92/100 IMPLEMENTED, 8/100 VERIFIED; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E6 remains NOT IMPLEMENTED; Issue #104 OPEN / NOT ACCEPTED. Fixed weights and protected pins remain unchanged.
+- This PR #50 is still a documentation-only draft integration candidate. Its new commit status must be read on the exact resulting HEAD; no PASS is implied by prior status snapshots.
