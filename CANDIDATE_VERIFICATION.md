@@ -1363,3 +1363,13 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 ## Candidate matrix environment repair — 2026-11-18
 
 The first candidate matrix run `44243442240` checked out the exact source and compiled `one-core` on both OSes, but both test suites failed in the existing `windows_x86_64_dapat_membangun_artifact_native` test because the configured cross-compiler `x86_64-w64-mingw32-clang` was not installed on either host. The test is intentionally retained (not ignored or weakened). The matrix now installs the required MinGW/Clang/LLD toolchains on Ubuntu and Windows and sets `ONE_WINDOWS_CLANG=clang` before running the full suite.
+
+
+## ONE PR #113 platform metadata candidate — exact-SHA evidence — 2026-11-20
+
+- Branch-local `CANONICAL_COMMIT.txt` pins ONE source `c7f460a4e38be61de635ad5af9f7ff987a941f01`; verifier PR #51 is a diagnostic OPEN / DRAFT / UNMERGED PR. Protected `verification` branch remains `b14abf0020472dc45842be30854e0a09317d6cb4` with protected canonical pin `722d662e7a81711ba3607d26571f4048a292b3ed` unchanged.
+- E4 run #44585270928 SUCCESS on the exact candidate: Unix no-follow/resource-bound and Windows reparse/handle jobs passed; Windows native `NtCreateFile + OBJ_DONT_REPARSE` probe passed on Windows Server 2025 build 26100. The added test `filesystem_adapters_advertise_only_platforms_with_native_backends` explicitly passed on Linux and Windows (1 passed / 0 failed each).
+- Linux distro run #44585282690 SUCCESS on Ubuntu 24.04 and Debian 12, including workspace tests and corrected filesystem vertical-slice CLI integration. E1 Windows acceptance run #44585282432 SUCCESS.
+- Remaining aggregate cross-platform, Windows native runtime, Android runtime, SEC-05, E1 milestone and artifact-integrity workflows were IN_PROGRESS/PENDING at this checkpoint. CircleCI on source `c7f460a...` was PENDING; provider step logs unavailable.
+- The prior source `7581a1b...` exposed a CLI integration mismatch because the interpreter passed `PlatformKind::Any`; candidate `c7f460a...` fixes this by using `PlatformKind::current_host()` and updates the integration test to use the actual host platform.
+- Filesystem adapter metadata is now Linux-only on Linux, Windows-only on Windows, and empty on Android/macOS/other unsupported targets. This does not add Android/macOS filesystem support. Issue #104 remains OPEN / NOT ACCEPTED; no protected pin or ledger weight is promoted.
