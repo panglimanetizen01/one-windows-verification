@@ -28,7 +28,7 @@ jobs:
   subprocess-linux:
     name: Linux subprocess baseline and SEC-05 guard
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout verification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -51,10 +51,22 @@ jobs:
           ref: ${{ steps.target.outputs.sha }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
-      - name: Install Linux native cross-compilers
+      - name: Install Linux native cross-compilers (bounded APT retries)
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang lld mingw-w64 binutils-x86-64-linux-gnu
+          set -euo pipefail
+          echo '=== Configured Ubuntu APT sources ==='
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+            if [[ -f "$source" ]]; then
+              echo "--- $source"
+              sudo sed -n '1,160p' "$source"
+            fi
+          done
+          echo '=== Refresh package indexes with bounded retries ==='
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          echo '=== Install the complete Linux cross-compiler set with bounded retries ==='
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y clang lld mingw-w64 binutils-x86-64-linux-gnu
+          apt-cache policy clang lld mingw-w64 binutils-x86-64-linux-gnu
           command -v clang
           command -v x86_64-w64-mingw32-clang || true
           command -v x86_64-w64-mingw32-gcc || true
