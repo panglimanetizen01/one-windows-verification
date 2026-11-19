@@ -7,6 +7,11 @@ on:
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/candidate-artifact-inspection.yml'
+  pull_request:
+    branches: [verification]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/candidate-artifact-inspection.yml'
   workflow_dispatch:
 
 permissions:
