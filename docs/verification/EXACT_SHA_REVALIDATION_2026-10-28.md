@@ -101,3 +101,24 @@ The earlier fixed-weight gate #44519577312 remains FAILURE; no new gate run was 
 ONE PR #113 HEAD d20036c0ad7b00caf6b68e4807102c6ee3b895a4 remains OPEN / DRAFT / UNMERGED. CircleCI ci/circleci: one-linux remains PENDING on that exact SHA at 2026-11-19T16:30:42Z (workflow fc7039a6-8cde-464b-8c06-387e291d6d67, job 1a030227-696e-490d-bb16-dd288947976d). The previous ONE SHA 64c490e... was SUCCESS, but evidence does not transfer. No CircleCI CLI/provider connection is exposed in this session. ONE main remains d35db95153f6ddd79885494c72f5aee16c899751; Issue #104 remains OPEN / NOT ACCEPTED.
 
 No architecture diagram changes are required for this verifier-workflow-only change. PR #50 remains documentation-only and draft pending review.
+
+## Final E1 cross-platform result — 2026-11-19 16:33Z
+
+Protected run #44566212975 is now COMPLETED / SUCCESS on exact protected verifier HEAD b14abf0020472dc45842be30854e0a09317d6cb4. Ubuntu 24.04 job 135708526288 and Windows Server 2025 job 135708526901 both succeeded.
+
+Retrieved Ubuntu log confirms bounded APT source diagnostics/install, Rust/Cargo 1.100.0, stdlib helper 6/6, core pipeline 6/6, conformance 5/5, one-core library 148/148, full workspace test targets, workspace Clippy with warnings denied, and repository contract checker. Retrieved Windows log confirms Rust/Cargo 1.100.0, stdlib 6/6, core pipeline 6/6, conformance 5/5, one-core library 133/133, full workspace test targets, Clippy with warnings denied, and repository contract checker. The named E1 acceptance targets and full suites executed non-zero tests. No unsupported future APIs were implemented to satisfy E1.
+
+All six protected post-merge runs for the authorized PR #45–#48 integration are now terminal SUCCESS:
+
+| Scope | Run | Exact protected verifier commit |
+|---|---:|---|
+| Candidate artifact integrity | [#44566172841](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566172841) | 42feff8bc11d9b17d04ac9cff4abea4e80a7a832 |
+| SEC-05 Linux + Windows | [#44566187162](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566187162) | d539a162aeed9d22988c7ffb0c7a893e8d33f571 |
+| Windows Native Backend Runtime | [#44566197814](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566197814) | 4ae84bad84ddacf169b9f25fa4c78581ab2b4bc4 |
+| E1 cross-platform | [#44566212975](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212975) | b14abf0020472dc45842be30854e0a09317d6cb4 |
+| Focused stdlib/database | [#44566212982](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212982) | b14abf0020472dc45842be30854e0a09317d6cb4 |
+| E1 Windows | [#44566212997](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44566212997) | b14abf0020472dc45842be30854e0a09317d6cb4 |
+
+These are scoped protected workflow successes, not acceptance of all E1–E6 or Issue #104. The fixed-weight gate #44519577312 remains a historical FAILURE and has not been rerun. Reconcile exact-SHA evidence, row-level verified points, unchecked DoD, and protected provenance-release requirements before considering a new gate evaluation. Do not alter weights, check DoD items without evidence, or dispatch release without its acceptance prerequisites.
+
+ONE PR #113 HEAD d20036c0ad7b00caf6b68e4807102c6ee3b895a4 remains OPEN / DRAFT / UNMERGED. CircleCI ci/circleci: one-linux on that exact SHA was PENDING at last read (workflow fc7039a6-8cde-464b-8c06-387e291d6d67, job 1a030227-696e-490d-bb16-dd288947976d). The previous ONE SHA 64c490e... had SUCCESS but that result does not transfer. No CircleCI CLI/provider connection is exposed in this session. ONE main remains d35db95153f6ddd79885494c72f5aee16c899751; Issue #104 remains OPEN / NOT ACCEPTED.
