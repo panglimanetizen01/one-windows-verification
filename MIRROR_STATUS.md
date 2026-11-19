@@ -29,3 +29,11 @@ The canonical repository's Actions runner provisioning failures are not treated 
 - Remaining aggregate cross-platform, Windows native runtime, Android runtime, SEC-05, E1 milestone and artifact-integrity workflows were IN_PROGRESS/PENDING at this checkpoint. CircleCI on source `c7f460a...` was PENDING; provider step logs unavailable.
 - The prior source `7581a1b...` exposed a CLI integration mismatch because the interpreter passed `PlatformKind::Any`; candidate `c7f460a...` fixes this by using `PlatformKind::current_host()` and updates the integration test to use the actual host platform.
 - Filesystem adapter metadata is now Linux-only on Linux, Windows-only on Windows, and empty on Android/macOS/other unsupported targets. This does not add Android/macOS filesystem support. Issue #104 remains OPEN / NOT ACCEPTED; no protected pin or ledger weight is promoted.
+
+
+## Android API 35 AArch64 runtime artifact — 2026-11-20
+
+- Workflow #44585282482 SUCCESS on exact ONE source `c7f460a4e38be61de635ad5af9f7ff987a941f01`; ARM64-native runtime job #135777110380 exited 0 with `ONE_NATIVE_BACKEND_OK`.
+- Artifact ID `14562860220`, 12,953 bytes; GitHub archive digest and independently downloaded ZIP SHA-256 both `75a73869f4d5351b3d3a9ba311266602a89221bad81b040d0433432c2aa41741`.
+- Embedded source marker matches `c7f460a...`; ELF is AArch64 PIE with `/system/bin/linker64`; embedded ELF SHA-256 `5b05504a0167beeae1d15e267c2e7af1f1a7c62b163d459289be1d663c380a0c` matches the included sidecar.
+- This is native backend runtime evidence only. It does not establish Android filesystem adapter support or promote the protected E3 source pin/ledger.
