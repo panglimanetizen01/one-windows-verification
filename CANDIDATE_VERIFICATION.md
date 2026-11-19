@@ -1437,3 +1437,14 @@ The proposed `LEDGER_SOURCE_COMMIT.txt` now points to ONE ledger/DoD draft commi
 Latest exact-HEAD status read: ONE PR #113 `b0d854124191587882705c832e1825ad2a46cc8f` CircleCI SUCCESS (workflow `ecd5d877-e5f5-429c-884c-426196fc7e78`, job `cc77e7cb-8daf-4d9c-845d-df991e0f68bf`); PR #103 parent HEAD `7d421e7558e4ba60e1a70c13586158ce6131524f` CircleCI Pipeline ERROR (pipeline 1165), provider logs unavailable and cause UNKNOWN / NOT DIAGNOSED; the new ledger commit `e053b5ffae46a7e1d696bea5eb5a13999c722ee0` has no terminal CI result asserted here; this PR #50 previous HEAD `9aaaaeeec6884fddcde94588e95cb7f9ef494044` is PENDING with no reported status context/check runs. The latest PR #50 commit created by this update also has no terminal status claimed.
 
 Ledger remains 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E1/E2/E4/E5/E6 and overall release remain incomplete. Issue #104 remains OPEN / NOT ACCEPTED. No protected pins, fixed weights, release state, or main branch changed.
+
+
+## Latest live status read — 2026-11-19 16:55Z
+
+This is a subsequent read after the prior status correction; it supersedes the prior-head status values above where they conflict.
+
+- ONE PR #103 latest HEAD `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`: CircleCI Pipeline `error`, pipeline 1166 (updated 16:52:33Z). GitHub Actions Windows and Ubuntu jobs are IN_PROGRESS (run #44570989114). CircleCI step logs are not available in this session; failure cause UNKNOWN / NOT DIAGNOSED.
+- ONE PR #113 HEAD `b0d854124191587882705c832e1825ad2a46cc8f`: CircleCI `ci/circleci: one-linux` SUCCESS, workflow `ecd5d877-e5f5-429c-884c-426196fc7e78`, job `cc77e7cb-8daf-4d9c-845d-df991e0f68bf` (updated 16:50:40Z).
+- Verifier PR #50 prior HEAD `d25348fdb7e5972d6b088319c7e93368b7faf55a`: commit status PENDING, no status contexts/check runs returned. This new documentation-only descendant has not yet received a status at time of commit creation; do not claim it passed.
+- Draft ledger source pin remains `e053b5ffae46a7e1d696bea5eb5a13999c722ee0`; canonical code source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`. Ledger totals remain 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total.
+- PRs #103, #113 and #50 remain OPEN / DRAFT / UNMERGED. ONE main remains `d35db95153f6ddd79885494c72f5aee16c899751`. Issue #104 remains OPEN / NOT ACCEPTED. No release, protected pin, fixed-weight or main-branch change.
