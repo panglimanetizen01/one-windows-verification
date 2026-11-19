@@ -1417,3 +1417,14 @@ Important separation: protected `LEDGER_SOURCE_COMMIT.txt` still points to `d6c3
 - ONE PR #113 HEAD `54b92ab9703b9c3450cb33f5eb4f34861aae107b` is OPEN / DRAFT / UNMERGED; CircleCI `ci/circleci: one-linux` is PENDING on that exact SHA (workflow `f9bd8ac7-a741-4bf6-8536-37af4798f3a1`, job `77951c98-1242-4c47-b45b-90011ecebfd6`). Parent `eeafcab...` SUCCESS does not transfer.
 
 This is a documentation/evidence-pointer update only. It does not merge this PR, change the protected ledger source, modify fixed weights, check DoD items, or publish a package.
+
+
+## Live exact-HEAD PR/CI status — 2026-11-19 16:52Z
+
+The proposed ledger source pin in this draft PR is now `7d421e7558e4ba60e1a70c13586158ce6131524f`; it points to the latest ONE PR #103 ledger/DoD checkpoint. The independent canonical code source pin remains `722d662e7a81711ba3607d26571f4048a292b3ed`.
+
+- ONE PR #103: OPEN / DRAFT / UNMERGED, HEAD `22bb23d740fbd1011435e9b04b55655e2681a16f`; GitHub Actions Ubuntu + Windows run #44570379987 is IN_PROGRESS. CircleCI Pipeline status is ERROR on pipeline 1164; provider logs are unavailable, root cause UNKNOWN / NOT DIAGNOSED.
+- ONE PR #113: OPEN / DRAFT / UNMERGED, HEAD `b0d854124191587882705c832e1825ad2a46cc8f`; CircleCI `ci/circleci: one-linux` is PENDING (workflow `ecd5d877-e5f5-429c-884c-426196fc7e78`, job `cc77e7cb-8daf-4d9c-845d-df991e0f68bf`). The previous SHA `54b92ab...` had SUCCESS, but this newer SHA does not inherit it.
+- This verifier PR #50: OPEN / DRAFT / UNMERGED, HEAD `881554662906538a34ba26af4d34fbc1a5d27723`; no check runs/status context are reported for this exact HEAD (NOT REPORTED).
+- The draft ledger remains 92/100 implementation, 8/100 verified; E3 8/8 VERIFIED; DoD 4 checked / 9 unchecked / 13 total. E1, E2, E4, E5, E6 and overall release remain incomplete. Issue #104 remains OPEN / NOT ACCEPTED.
+- No protected ledger/canonical pin, fixed weight, release state, or main branch was changed. Historical fixed-weight gate #44519577312 remains FAILURE; no gate was dispatched.
