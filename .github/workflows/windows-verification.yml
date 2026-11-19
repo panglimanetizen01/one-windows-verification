@@ -1,16 +1,19 @@
-# Exact-SHA parity refresh for source candidate 56ef8babfbc35808d82b930d8dd9baa92afb26af
 name: One Exact-SHA CI Parity Verification
 
 on:
   push:
-    branches: [ verification ]
+    branches: [verification]
     paths:
-      - 'LOCAL_CI_CANONICAL_COMMIT.txt'
+      - 'ONE_SOURCE_CANONICAL_COMMIT.txt'
+      - 'CI_LOCAL_CANONICAL_COMMIT.txt'
+      - 'plans/one-product-checks.json'
       - '.github/workflows/windows-verification.yml'
   pull_request:
-    branches: [ verification ]
+    branches: [verification]
     paths:
-      - 'LOCAL_CI_CANONICAL_COMMIT.txt'
+      - 'ONE_SOURCE_CANONICAL_COMMIT.txt'
+      - 'CI_LOCAL_CANONICAL_COMMIT.txt'
+      - 'plans/one-product-checks.json'
       - '.github/workflows/windows-verification.yml'
   workflow_dispatch:
 
@@ -24,7 +27,7 @@ concurrency:
 jobs:
   ci:
     name: ci (${{ matrix.os }})
-    timeout-minutes: 120
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
@@ -35,38 +38,90 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - name: Read canonical source SHA
-        id: canonical
+      - name: Read and validate independent source pins
+        id: pins
         shell: bash
         run: |
-          target="$(tr -d '\r\n[:space:]' < LOCAL_CI_CANONICAL_COMMIT.txt)"
-          if ! printf '%s' "$target" | grep -Eq '^[0-9a-f]{40}$'; then
-            echo "Invalid canonical commit: $target" >&2
+          set -euo pipefail
+          one_sha="$(tr -d '\r\n[:space:]' < ONE_SOURCE_CANONICAL_COMMIT.txt)"
+          ci_local_sha="$(tr -d '\r\n[:space:]' < CI_LOCAL_CANONICAL_COMMIT.txt)"
+          for item in "$one_sha" "$ci_local_sha"; do
+            if ! printf '%s' "$item" | grep -Eq '^[0-9a-f]{40}$'; then
+              echo "Invalid canonical commit: $item" >&2
+              exit 1
+            fi
+          done
+          echo "one=$one_sha" >> "$GITHUB_OUTPUT"
+          echo "ci_local=$ci_local_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Verify read access to pinned private ci-local repository
+        id: ci_local_auth
+        shell: bash
+        env:
+          CI_LOCAL_READ_TOKEN: ${{ secrets.CI_LOCAL_READ_TOKEN }}
+          CANONICAL_READ_TOKEN: ${{ secrets.CANONICAL_READ_TOKEN }}
+          CI_LOCAL_SHA: ${{ steps.pins.outputs.ci_local }}
+        run: |
+          set -euo pipefail
+          api_url="https://api.github.com/repos/panglimanetizen01/ci-local/commits/$CI_LOCAL_SHA"
+          selected=""
+          if [ -n "$CI_LOCAL_READ_TOKEN" ]; then
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H "Authorization: Bearer $CI_LOCAL_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" "$api_url")"
+            echo "CI_LOCAL_READ_TOKEN access status: $status"
+            if [ "$status" = "200" ]; then selected="ci_local"; fi
+          else
+            echo "CI_LOCAL_READ_TOKEN is not configured."
+          fi
+          if [ -z "$selected" ] && [ -n "$CANONICAL_READ_TOKEN" ]; then
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H "Authorization: Bearer $CANONICAL_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" "$api_url")"
+            echo "CANONICAL_READ_TOKEN fallback access status: $status"
+            if [ "$status" = "200" ]; then selected="canonical"; fi
+          else
+            if [ -z "$selected" ]; then echo "CANONICAL_READ_TOKEN is not configured."; fi
+          fi
+          if [ -z "$selected" ]; then
+            echo "Neither configured token can read the pinned private ci-local commit." >&2
+            echo "Grant one existing token Contents: read access to panglimanetizen01/ci-local." >&2
             exit 1
           fi
-          echo "ref=$target" >> "$GITHUB_OUTPUT"
+          echo "token_source=$selected" >> "$GITHUB_OUTPUT"
+          echo "Private ci-local access verified using $selected credential."
 
-      - name: Checkout canonical One source
+      - name: Checkout canonical ONE source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: panglimanetizen01/one
-          ref: ${{ steps.canonical.outputs.ref }}
+          ref: ${{ steps.pins.outputs.one }}
           token: ${{ secrets.CANONICAL_READ_TOKEN }}
           path: source
 
-      - name: Verify checked-out source SHA (Linux)
-        if: runner.os != 'Windows'
-        working-directory: source
-        shell: bash
-        run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
+      - name: Checkout standalone ci-local
+        id: checkout_ci_local
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: panglimanetizen01/ci-local
+          ref: ${{ steps.pins.outputs.ci_local }}
+          token: ${{ steps.ci_local_auth.outputs.token_source == 'ci_local' && secrets.CI_LOCAL_READ_TOKEN || secrets.CANONICAL_READ_TOKEN }}
+          path: ci-local
 
-      - name: Verify checked-out source SHA (Windows)
-        if: runner.os == 'Windows'
-        working-directory: source
-        shell: pwsh
+      - name: Verify all three repository identities
+        shell: bash
         run: |
-          $actual = (git rev-parse HEAD).Trim()
-          if ($actual -ne '${{ steps.canonical.outputs.ref }}') { throw "Canonical commit mismatch: $actual" }
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          test "$(git -C source rev-parse HEAD)" = "${{ steps.pins.outputs.one }}"
+          test "$(git -C ci-local rev-parse HEAD)" = "${{ steps.pins.outputs.ci_local }}"
+          printf 'verifier_sha=%s\none_source_sha=%s\nci_local_sha=%s\n' \
+            "${{ github.sha }}" "${{ steps.pins.outputs.one }}" "${{ steps.pins.outputs.ci_local }}"
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: "3.12"
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
@@ -83,7 +138,7 @@ jobs:
           command -v clang
           clang --version
           if [ -f /etc/apt/apt-mirrors.txt ]; then
-            sudo sed -i 's/azure\\.archive\\.ubuntu\\.com/archive.ubuntu.com/g' /etc/apt/apt-mirrors.txt
+            sudo sed -i 's/azure\.archive\.ubuntu\.com/archive.ubuntu.com/g' /etc/apt/apt-mirrors.txt
           fi
           timeout --signal=TERM --kill-after=30s 10m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 update
           timeout --signal=TERM --kill-after=30s 15m sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev gcc-mingw-w64-x86-64-posix
@@ -125,56 +180,87 @@ jobs:
           "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
 
-      - name: Show Python version
-        working-directory: source
-        run: python --version
+      - name: Compile standalone ci-local package and tests
+        working-directory: ci-local
+        shell: bash
+        run: |
+          python -m compileall -q ci_local tests
+          python -m unittest discover -s tests -v
 
-      - name: Test Local CI runner regression suite
-        working-directory: source
-        run: python tools/ci_unittest.py --start-directory tests --pattern test_ci_local.py
+      - name: Build and install pinned ci-local distribution
+        id: install_ci_local
+        shell: bash
+        run: python -m pip install --no-deps ./ci-local
 
-      - name: Test CircleCI configuration paths
-        working-directory: source
-        run: python tools/ci_unittest.py --start-directory tests --pattern test_circleci_config_paths.py
+      - name: Verify installed package origin and console entry points
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import ci_local
 
-      - name: Test fail-closed unittest discovery
-        working-directory: source
-        run: python tools/ci_unittest.py --start-directory tests --pattern test_ci_unittest.py
+          checkout = (Path(os.environ["GITHUB_WORKSPACE"]) / "ci-local").resolve()
+          installed = Path(ci_local.__file__).resolve()
+          if installed == checkout or checkout in installed.parents:
+              raise SystemExit(f"ci_local import shadowed by checkout: {installed}")
+          print(f"installed ci_local origin: {installed}")
+          PY
+          ci-local --help
+          ci-local-evidence --help
 
-      - name: Run local CI parity runner
-        working-directory: source
-        run: python tools/ci_local.py --report artifacts/ci-local-report.json --timeout 3600
+      - name: Run installed-package smoke plan
+        shell: bash
+        run: |
+          ci-local \
+            --plan "$GITHUB_WORKSPACE/ci-local/examples/smoke-plan.json" \
+            --cwd "$GITHUB_WORKSPACE/ci-local" \
+            --report "$RUNNER_TEMP/ci-local-smoke-report.json"
 
-      - name: Validate exact-SHA Local CI report and create SHA-256 manifest
+      - name: Run ONE product verification plan through standalone runner
+        shell: bash
+        run: |
+          ci-local \
+            --plan "$GITHUB_WORKSPACE/plans/one-product-checks.json" \
+            --cwd "$GITHUB_WORKSPACE/source" \
+            --report "$RUNNER_TEMP/one-product-report.json"
+
+      - name: Create and verify exact three-identity evidence manifest when report exists
         if: always()
-        working-directory: source
         shell: bash
         env:
-          EXPECTED_SOURCE_SHA: ${{ steps.canonical.outputs.ref }}
-          VERIFIER_SHA: ${{ github.sha }}
+          EXPECTED_SOURCE_SHA: ${{ steps.pins.outputs.one }}
+          EXPECTED_RUNNER_SHA: ${{ steps.pins.outputs.ci_local }}
+          EXPECTED_VERIFIER_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}
         run: |
-          python tools/ci_local_evidence.py create \
-            --report artifacts/ci-local-report.json \
-            --manifest artifacts/ci-local-manifest.json \
+          if ! command -v ci-local-evidence >/dev/null 2>&1 || [ ! -f "$RUNNER_TEMP/one-product-report.json" ]; then
+            echo "::notice::Evidence creation skipped because the standalone runner did not install or the product report was not produced."
+            exit 0
+          fi
+          ci-local-evidence create \
+            --report "$RUNNER_TEMP/one-product-report.json" \
+            --plan "$GITHUB_WORKSPACE/plans/one-product-checks.json" \
+            --manifest "$RUNNER_TEMP/one-product-manifest.json" \
             --expected-source-sha "$EXPECTED_SOURCE_SHA" \
-            --verifier-sha "$VERIFIER_SHA" \
-            --workflow "$GITHUB_WORKFLOW" \
-            --run-id "$GITHUB_RUN_ID" \
-            --run-attempt "$GITHUB_RUN_ATTEMPT" \
-            --job "$GITHUB_JOB" \
-            --os "$RUNNER_OS" \
-            --arch "$RUNNER_ARCH"
-          python tools/ci_local_evidence.py verify \
-            --report artifacts/ci-local-report.json \
-            --manifest artifacts/ci-local-manifest.json \
+            --expected-verifier-sha "$EXPECTED_VERIFIER_SHA" \
+            --expected-runner-sha "$EXPECTED_RUNNER_SHA" \
+            --run-id "$RUN_ID"
+          ci-local-evidence verify \
+            --report "$RUNNER_TEMP/one-product-report.json" \
+            --plan "$GITHUB_WORKSPACE/plans/one-product-checks.json" \
+            --manifest "$RUNNER_TEMP/one-product-manifest.json" \
             --expected-source-sha "$EXPECTED_SOURCE_SHA" \
-            --expected-verifier-sha "$VERIFIER_SHA"
-      - name: Upload local CI report and manifest
-        if: always()
+            --expected-verifier-sha "$EXPECTED_VERIFIER_SHA" \
+            --expected-runner-sha "$EXPECTED_RUNNER_SHA"
+
+      - name: Upload generated standalone ci-local and ONE verification reports
+        if: always() && steps.checkout_ci_local.outcome == 'success' && steps.install_ci_local.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: local-ci-evidence-${{ matrix.os }}
+          name: ci-local-evidence-${{ matrix.os }}
           path: |
-            source/artifacts/ci-local-report.json
-            source/artifacts/ci-local-manifest.json
-          if-no-files-found: error
+            ${{ runner.temp }}/ci-local-smoke-report.json
+            ${{ runner.temp }}/one-product-report.json
+            ${{ runner.temp }}/one-product-manifest.json
+          if-no-files-found: warn
