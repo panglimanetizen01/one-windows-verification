@@ -7,6 +7,11 @@ on:
     paths:
       - 'CANONICAL_COMMIT.txt'
       - '.github/workflows/candidate-artifact-inspection.yml'
+  pull_request:
+    branches: [verification]
+    paths:
+      - 'CANONICAL_COMMIT.txt'
+      - '.github/workflows/candidate-artifact-inspection.yml'
   workflow_dispatch:
 
 permissions:
@@ -153,7 +158,7 @@ jobs:
                   raise SystemExit(f"Linux target triple mismatch: {metadata['target']}")
               if expected_platform == "windows" and "windows" not in metadata["target"]:
                   raise SystemExit(f"Windows target triple mismatch: {metadata['target']}")
-              if "1.99.0" not in metadata["rustc"] or "1.99.0" not in metadata["cargo"]:
+              if "1.100.0" not in metadata["rustc"] or "1.100.0" not in metadata["cargo"]:
                   raise SystemExit(f"{expected_platform} unexpected Rust/Cargo versions: {metadata['rustc']} / {metadata['cargo']}")
               if "0.1.0" not in metadata["cli_version"]:
                   raise SystemExit(f"{expected_platform} unexpected CLI version: {metadata['cli_version']}")
