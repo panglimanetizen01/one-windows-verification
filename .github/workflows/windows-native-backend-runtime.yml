@@ -66,7 +66,7 @@ jobs:
             throw 'rust-toolchain.toml must declare one channel.'
           }
           $channel = $Matches[1]
-          if ($channel -notmatch '^\d+\.\d+\.\d+') {
+          if ($channel -notmatch '^\d+\.\d+\.\d+($)') {
             throw "Expected a stable exact Rust version, got: $channel"
           }
           "channel=$channel" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
