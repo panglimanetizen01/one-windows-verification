@@ -1,0 +1,69 @@
+name: Process containment admin delegation probe
+
+on:
+  push:
+    branches:
+      - probe/issue-105-cgroup-v2-20261120
+    paths:
+      - .github/workflows/process-containment-admin-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  admin-delegation:
+    name: Test host-admin cgroup v2 delegation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Create and exercise a temporary delegated cgroup subtree
+        shell: bash
+        run: |
+          set -u
+          root="/sys/fs/cgroup/one-process-admin-probe-${GITHUB_RUN_ID}-$$"
+          child="${root}/child"
+          cleanup() {
+            if [[ -e "${child}/cgroup.kill" ]]; then
+              printf '1\n' | sudo tee "${child}/cgroup.kill" >/dev/null 2>&1 || true
+            fi
+            rmdir "${child}" 2>/dev/null || true
+            sudo rmdir "${root}" 2>/dev/null || true
+          }
+          if ! sudo mkdir "${root}" 2>/dev/null; then
+            echo "RESULT=ADMIN_CGROUP_CREATE_DENIED"
+            exit 0
+          fi
+          trap cleanup EXIT
+          if ! sudo chown "${USER}:${USER}" "${root}" 2>/dev/null; then
+            echo "RESULT=ADMIN_CGROUP_DELEGATION_CHOWN_FAILED"
+            exit 0
+          fi
+          if ! mkdir "${child}" 2>/dev/null; then
+            echo "RESULT=DELEGATED_PARENT_CANNOT_CREATE_CHILD"
+            exit 0
+          fi
+          sudo chown "${USER}:${USER}" "${child}/cgroup.procs" "${child}/cgroup.kill" 2>/dev/null || true
+          if [[ ! -w "${child}/cgroup.procs" || ! -w "${child}/cgroup.kill" ]]; then
+            echo "RESULT=DELEGATED_CGROUP_CONTROL_FILES_NOT_WRITABLE"
+            exit 0
+          fi
+          sleep 60 &
+          child_pid="$!"
+          if ! printf '%s\n' "${child_pid}" > "${child}/cgroup.procs"; then
+            kill "${child_pid}" 2>/dev/null || true
+            wait "${child_pid}" 2>/dev/null || true
+            echo "RESULT=DELEGATED_CGROUP_PROCS_WRITE_FAILED"
+            exit 0
+          fi
+          printf '1\n' > "${child}/cgroup.kill" || {
+            kill "${child_pid}" 2>/dev/null || true
+            wait "${child_pid}" 2>/dev/null || true
+            echo "RESULT=DELEGATED_CGROUP_KILL_FAILED"
+            exit 0
+          }
+          wait "${child_pid}" 2>/dev/null || true
+          if grep -q '^populated 0$' "${child}/cgroup.events"; then
+            echo "RESULT=ADMIN_DELEGATED_CGROUP_V2_KILL_USABLE"
+          else
+            echo "RESULT=ADMIN_DELEGATED_CGROUP_NOT_EMPTY"
+          fi
