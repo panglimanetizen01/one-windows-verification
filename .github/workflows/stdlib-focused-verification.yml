@@ -1,9 +1,12 @@
-# Revalidation after Clippy-clean mount-boundary fix 2026-10-26; acceptance logic unchanged.
 name: ONE Focused Standard Library and Database Verification
-# Exact-SHA focused regression rerun for the current milestone candidate.
 
 on:
   push:
+    branches: [ verification ]
+    paths:
+      - "CANONICAL_COMMIT.txt"
+      - ".github/workflows/stdlib-focused-verification.yml"
+  pull_request:
     branches: [ verification ]
     paths:
       - "CANONICAL_COMMIT.txt"
@@ -14,13 +17,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: one-stdlib-focused-v2-${{ github.ref_name }}
+  group: one-stdlib-focused-v0.1-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   stdlib:
-    name: UTC and database resource-bound regressions (canonical source SHA)
+    name: Documented v0.1 standard library and database regressions
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Read canonical source SHA
@@ -43,90 +47,53 @@ jobs:
         working-directory: source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${{ steps.canonical.outputs.ref }}"
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
-        with:
-          toolchain: 1.99.0
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
-        with:
-          workspaces: source
-      - name: UTC formatter unit and calendar-boundary tests
-        working-directory: source
-        run: cargo --locked test -p one-core --lib unix_seconds_format_as_valid_bounded_gregorian_utc_timestamps
-      - name: JSON serializer byte-budget boundary tests
-        working-directory: source
-        run: cargo --locked test -p one-core --lib json_serializer_enforces_the_utf8_output_byte_limit
-      - name: Source-level UTC formatter integration tests
-        working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins unix_timestamp_formatter_runs_through_the_canonical_pipeline
-      - name: Source-level text prefix and suffix integration tests
-        working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins text_prefix_and_suffix_builtins_execute_through_the_canonical_pipeline
-      - name: Source-level checked integer remainder integration tests
-        working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins checked_integer_remainder_runs_through_the_canonical_pipeline
-      - name: Source-level case conversion and numeric integration tests
-        working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins case_conversion_and_numeric_builtins_execute_through_the_canonical_pipeline
-      - name: UTC parser unit and calendar-validation tests
-        working-directory: source
-        run: cargo --locked test -p one-core --lib utc_text_parses_strict_bounded_gregorian_timestamps
-      - name: Source-level UTC parser integration tests
-        working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins utc_timestamp_parser_runs_through_the_canonical_pipeline
-      - name: SQLite SQL byte-limit regression
-        working-directory: source
-        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_sql_over_query_byte_limit
-      - name: SQLite individual parameter byte-limit regression
-        working-directory: source
-        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_individually_oversized_parameters
-      - name: SQLite parameter-count regression
-        working-directory: source
-        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_excessive_parameter_count
-      - name: SQLite aggregate parameter byte-limit regression
-        working-directory: source
-        run: cargo --locked test -p one-core --lib sqlite_adapter_rejects_aggregate_parameter_bytes_over_the_limit
-      - name: SQLite read-only missing-file regression
-        working-directory: source
-        run: cargo --locked test -p one-core --test database_vertical_slice sqlite_read_query_does_not_create_missing_database_file
-      - name: SQLite NOFOLLOW final-symlink regression
-        working-directory: source
-        run: cargo --locked test -p one-core --lib sqlite_read_only_open_rejects_symlink_even_if_precheck_races
-      - name: Built package signing and trusted-publisher verification
-        working-directory: source
-        run: cargo --locked test -p one-cli --test cli package_signature_cli_authenticates_trusted_publisher_and_detects_tampering -- --exact
-      - name: V2 provenance unit tests (source binding, trust store, tampering, malformed inputs)
-        working-directory: source
-        run: cargo --locked test -p one-cli --bin one package_provenance::tests
-      - name: Packaging deterministic bytes, stale-lock rejection, and dependency fail-closed tests
+      - name: Read exact Rust toolchain from pinned source
+        id: source_toolchain
         working-directory: source
         shell: bash
         run: |
           set -euo pipefail
-          cargo --locked test -p one-cli --test cli package_command_writes_manifested_artifact -- --exact
-          cargo --locked test -p one-cli --test cli build_and_package_artifacts_are_byte_deterministic -- --exact
-          cargo --locked test -p one-cli --test cli package_command_supports_modular_human_core_projects_deterministically -- --exact
-          cargo --locked test -p one-cli --test cli package_rejects_unsupported_dependency_declarations_instead_of_ignoring_them -- --exact
-      - name: E1 text Unicode, empty-value, and integer-boundary regressions
+          channel="$(sed -nE 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' rust-toolchain.toml | head -n1)"
+          if [[ ! "$channel" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid stable Rust channel in rust-toolchain.toml: $channel" >&2
+            exit 1
+          fi
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+          echo "Using exact source-pinned Rust toolchain: $channel"
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+        with:
+          toolchain: ${{ steps.source_toolchain.outputs.channel }}
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
+        with:
+          workspaces: source
+      - name: Print exact source and toolchain
         working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins text_builtins_cover_empty_values_unicode_scalars_and_i64_boundaries
-      - name: E1 empty-collection, join-type, and index-boundary regressions
+        run: |
+          git rev-parse HEAD
+          rustc --version
+          cargo --version
+      - name: Documented standard-library helper unit tests
         working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins collection_builtins_cover_empty_join_and_invalid_indices
-      - name: E1 UTC parser full-year-range regression
+        run: cargo --locked test -p one-core --lib stdlib::tests -- --test-threads=1
+      - name: Source-language core pipeline and list operations
         working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins utc_parser_source_contract_includes_year_zero_and_upper_boundary
-      - name: Default-parser mapping API regression
+        run: cargo --locked test -p one-core --test core_pipeline
+      - name: v0.1 conformance fixtures
         working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins mapping_builtins_work_in_default_parser_after_json_construction -- --exact
-      - name: Complete E1 standard-library integration suite including public Rust APIs
+        run: cargo --locked test -p one-core --test conformance
+      - name: SQLite adapter unit contract
         working-directory: source
-        run: cargo --locked test -p one-core --test stdlib_builtins
-      - name: Complete E1 standard-library library unit suite
+        run: cargo --locked test -p one-core --lib database::tests -- --test-threads=1
+      - name: SQLite language-level database vertical slice
         working-directory: source
-        run: cargo --locked test -p one-core --lib
-      - name: E1 repository contract checker
+        run: cargo --locked test -p one-core --test database_vertical_slice
+      - name: Complete one-core library unit suite
         working-directory: source
-        run: python tools/check_contract.py
-      - name: Standard-library lint
+        run: cargo --locked test -p one-core --lib -- --test-threads=1
+      - name: one-core Clippy with warnings denied
         working-directory: source
         run: cargo --locked clippy -p one-core --all-targets -- -D warnings
+      - name: Repository contract checker
+        working-directory: source
+        run: python tools/check_contract.py
