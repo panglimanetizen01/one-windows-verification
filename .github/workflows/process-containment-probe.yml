@@ -97,3 +97,26 @@ jobs:
           else
             echo "RESULT=CGROUP_KILL_DID_NOT_EMPTY_SUBTREE"
           fi
+
+      - name: Probe unprivileged PID namespace containment against setsid escape
+        shell: bash
+        run: |
+          set -u
+          token="one-pidns-escape-${GITHUB_RUN_ID:-local}-$$"
+          if unshare --user --map-root-user --pid --fork --mount-proc bash -c '
+            token="$1"
+            setsid bash -c "exec -a $token sleep 120" >/dev/null 2>&1 &
+            sleep 0.2
+            echo "NAMESPACE_INIT_EXITING"
+            exit 0
+          ' _ "${token}"; then
+            sleep 0.2
+            if pgrep -f "^${token} 120$" >/dev/null 2>&1; then
+              echo "RESULT=PID_NAMESPACE_ESCAPED_DESCENDANT_SURVIVED"
+              pkill -f "^${token} 120$" || true
+              exit 1
+            fi
+            echo "RESULT=PID_NAMESPACE_KILLED_ESCAPED_DESCENDANT"
+          else
+            echo "RESULT=UNPRIVILEGED_PID_NAMESPACE_UNAVAILABLE"
+          fi
