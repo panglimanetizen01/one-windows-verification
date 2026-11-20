@@ -1409,3 +1409,13 @@ The previous artifact-integrity failure #44589012615 is preserved as historical 
 Evidence details and exact artifact digests: [evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md](evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md).
 
 Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and unsupported Android/macOS filesystem adapters remain fail-closed/unavailable. No protected pin, ledger weight, DoD checkbox, release status, or merge state is changed.
+
+
+## Android API 35 ARM64 runtime — exact-source verification refresh (2026-11-20)
+
+- Independent verifier PR #51 HEAD: `226360d00bc26f858128d3127591fce13ecd52d9`; exact ONE source pin: `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`.
+- Workflow [#44652693606](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44652693606) completed SUCCESS. Build job #136011228119 and API 35 ARM64 runtime job #136012787863 both completed SUCCESS.
+- Runtime job log confirms an ARM64 ELF with interpreter `/system/bin/linker64` was pushed to the Android API 35 ARM64 emulator, executed with exit code 0, and printed `ONE_NATIVE_BACKEND_OK`.
+- Runtime evidence artifact #14592959506 (`one-api35-arm64-runtime-evidence-fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`) uploaded successfully; SHA-256 `ab24bf6244652ccc6892dabcbbd3571cb4c4dda3bd2bf5ad902c922e3faf152d`.
+- This verifies the native backend runtime on the specified Android API 35 ARM64 environment for this exact source. It does **not** establish Android filesystem adapter support: filesystem adapter metadata remains Linux-only on Linux and Windows-only on Windows; Android/macOS filesystem adapters remain unavailable. Issue #104 remains OPEN / NOT ACCEPTED.
+- Do not repeat this Android runtime workflow for the same source and verifier inputs unless a relevant input changes.
