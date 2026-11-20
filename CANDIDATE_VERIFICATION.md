@@ -1390,3 +1390,22 @@ The first candidate matrix run `44243442240` checked out the exact source and co
 - Artifact-integrity run #44589012615 failed because `candidate-artifact-inspection.yml` queried only Actions runs with `branch=verification`. That excluded the successful pull-request run on the PR branch, even though its artifacts existed and were named with the exact source SHA. The 45-minute wait therefore ended with “No successful cross-platform run produced candidate bundles”; embedded metadata/digest validation was skipped. This is a verifier discovery-filter defect, not a source build/test failure and not an artifact-integrity pass.
 - Corrected the workflow on PR #51 by removing the branch-only filter while retaining the successful-workflow-name, completed/success conclusion, and exact `CANONICAL_COMMIT.txt` source-pin checks. This allows both protected-branch and pull-request runs to be considered without changing the canonical source pin or acceptance ledger.
 - New verifier commit: `7c670659c28b3be72c47f5e905013626e72851c8`. The artifact-integrity workflow must complete on this verifier revision before archive digest, embedded source manifest, and ELF/PE checks can be credited. Status remains NOT VERIFIED until that rerun passes.
+
+## Exact-source hard-link verification checkpoint — 2026-11-20
+
+The current branch-local source pin is `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`. The verifier workflows were executed from verifier HEAD `27207b85ed205d2cf12e6fd66b918193a215d8fd`; this documentation commit does not change the protected `verification` branch or its source pin.
+
+- E4 run #44651796986 SUCCESS: Unix and Windows adversarial filesystem jobs passed, including `filesystem::hardlink_tests::authority_rejects_hard_linked_targets_without_side_effects`.
+- Windows E4 job #136008224371 explicitly passed the seven named Windows filesystem regressions, atomic-replacement failure-preservation, hard-link, and platform-metadata tests (9 selected tests, 0 failures).
+- Unix E4 job #136008224711 passed the no-follow, mount-boundary, traversal, race, write-boundary, hard-link, platform-metadata, and policy regression filters.
+- Linux distro run #44651796952 SUCCESS on Ubuntu 24.04 and Debian 12.
+- Windows native backend runtime #44651796852, E1 Windows #44651797000, focused stdlib/database #44651796941, SEC-05 #44651796634, E4 resource guard #44651796650, and artifact integrity #44651796712 all SUCCESS.
+- Artifact integrity #44651796712 verified Linux artifact #14563276002 (`sha256:59aa04887ffa5c2cb66d65e4ef7936622c6e0a4f6164ea8ea458457d10b8a940`) and Windows artifact #14561664789 (`sha256:7d3c51123f73c398032ef0c636c018c12ea501340b822b8e3b4edc9777645a3a`); embedded source manifests match `fb5c8bc...`, and ELF64/PE32+ format checks pass.
+- ONE CircleCI `ci/circleci: one-linux` on exact source `fb5c8bc...` is SUCCESS (workflow `3a9c0613-a1bc-43ae-b2d6-319841061048`, job `c4faf162-80e9-4f17-a83a-a72634bb592f`); provider step logs were not inspected.
+- Android build artifact #44651796635 is SUCCESS; Android API 35 runtime #44651796976 remained IN PROGRESS. Cross-platform aggregate #44651796654 remained PENDING and E1 Milestone 1 #44651796950 remained IN PROGRESS at last read.
+
+The previous artifact-integrity failure #44589012615 is preserved as historical evidence. Its follow-up #44651796712 is a separate successful exact-source verification, not a replacement of the historical failure.
+
+Evidence details and exact artifact digests: [evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md](evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md).
+
+Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and unsupported Android/macOS filesystem adapters remain fail-closed/unavailable. No protected pin, ledger weight, DoD checkbox, release status, or merge state is changed.
