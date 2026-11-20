@@ -1381,3 +1381,12 @@ The first candidate matrix run `44243442240` checked out the exact source and co
 - Artifact ID `14562860220`, 12,953 bytes; GitHub archive digest and independently downloaded ZIP SHA-256 both `75a73869f4d5351b3d3a9ba311266602a89221bad81b040d0433432c2aa41741`.
 - Embedded source marker matches `c7f460a...`; ELF is AArch64 PIE with `/system/bin/linker64`; embedded ELF SHA-256 `5b05504a0167beeae1d15e267c2e7af1f1a7c62b163d459289be1d663c380a0c` matches the included sidecar.
 - This is native backend runtime evidence only. It does not establish Android filesystem adapter support or promote the protected E3 source pin/ledger.
+
+
+## Candidate artifact discovery must include pull-request verification runs — 2026-11-20
+
+- Exact-source ONE candidate: `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`; verifier PR #51 head before this correction: `e784b5ee02f4dbe9641e5085b716b9c989e518eb`.
+- E4 run #44589012206, cross-platform run #44589012521, Linux distro #44589012238, Windows native runtime #44589012113, SEC-05 #44589012589, and Android API 35 runtime #44589012387 completed successfully against the pinned candidate. The cross-platform run was a `pull_request` event on branch `probe/issue-104-platform-metadata-20261120` and produced both exact-SHA bundles (Linux artifact 14563276002; Windows artifact 14561664789).
+- Artifact-integrity run #44589012615 failed because `candidate-artifact-inspection.yml` queried only Actions runs with `branch=verification`. That excluded the successful pull-request run on the PR branch, even though its artifacts existed and were named with the exact source SHA. The 45-minute wait therefore ended with “No successful cross-platform run produced candidate bundles”; embedded metadata/digest validation was skipped. This is a verifier discovery-filter defect, not a source build/test failure and not an artifact-integrity pass.
+- Corrected the workflow on PR #51 by removing the branch-only filter while retaining the successful-workflow-name, completed/success conclusion, and exact `CANONICAL_COMMIT.txt` source-pin checks. This allows both protected-branch and pull-request runs to be considered without changing the canonical source pin or acceptance ledger.
+- New verifier commit: `7c670659c28b3be72c47f5e905013626e72851c8`. The artifact-integrity workflow must complete on this verifier revision before archive digest, embedded source manifest, and ELF/PE checks can be credited. Status remains NOT VERIFIED until that rerun passes.
