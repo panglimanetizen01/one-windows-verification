@@ -56,3 +56,17 @@ The previous artifact-integrity failure #44589012615 is preserved as historical 
 Evidence details and exact artifact digests: [evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md](evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md).
 
 Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and unsupported Android/macOS filesystem adapters remain fail-closed/unavailable. No protected pin, ledger weight, DoD checkbox, release status, or merge state is changed.
+
+
+## Current Project ONE Issue #104 verifier checkpoint — 2026-11-20
+
+- Verifier PR #51: OPEN / DRAFT / UNMERGED; branch `probe/issue-104-platform-metadata-20261120`; HEAD at readback `e5632e75c473546527c7e9a404262631d827f429`.
+- Branch-local `CANONICAL_COMMIT.txt`: exact ONE source `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`.
+- Fresh E4 #44656893733, Linux distro #44656893931, Windows native runtime #44656893882, SEC-05 #44656893697, E4 resource guard #44656893627, artifact integrity #44656893650, E1 Windows #44656893639, focused stdlib/database #44656893788, and cross-platform aggregate #44656893832: SUCCESS.
+- Android AArch64 build #44656893715: SUCCESS. Fresh Android API 35 ARM64 runtime #44656893597 remains IN PROGRESS (runtime job #136025758614).
+- E1 Milestone 1 #44656893655 remains IN PROGRESS (Windows passed; Ubuntu job #136025210968 still running).
+- Earlier Android API 35 runtime #44652693606 completed SUCCESS for the same ONE source on verifier HEAD `226360d...`; that historical exact-source proof is preserved, but it does not make the fresh run on HEAD `e5632e...` terminal.
+- Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and unsupported Android/macOS filesystem adapters remain fail-closed/unavailable. No source pin, ledger weight, DoD item, merge, or release state is changed.
+- GitHub branch metadata reports `protected=false` for branch `verification`; the repository rulesets endpoint returned an empty list. The classic branch-protection endpoint returned 403 to this integration, so actual protection configuration is NOT VERIFIED. Do not assume GitHub-side protection is enabled or change branch settings without explicit authorization.
+
+The PR #92 Local CI migration notes above are historical and separate from this current product-verification candidate. The branch-local source pin remains the authoritative checkout target for the workflows in this PR.

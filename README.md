@@ -2,9 +2,9 @@
 
 Temporary public verification mirror for independent Linux and Windows verification of the One programming language.
 
-The canonical source repository remains private: `panglimanetizen01/one`.
+The canonical source repository is `panglimanetizen01/one`. Repository visibility is controlled by GitHub settings; this verifier does not change it.
 
-Current PR #92 Local CI verifier target: `56ef8babfbc35808d82b930d8dd9baa92afb26af` (PR #92, branch `tooling/python-local-ci`). The pin file `LOCAL_CI_CANONICAL_COMMIT.txt` is authoritative for the actual workflow checkout. The pin is a target pointer, not execution evidence. Linux/Windows results must complete on this exact SHA before parity is claimed. This is the last source SHA recorded as independently verified; newer PR #92 commits must not inherit that evidence.
+Historical PR #92 Local CI verifier target: `56ef8babfbc35808d82b930d8dd9baa92afb26af` (PR #92, branch `tooling/python-local-ci`). The pin file `LOCAL_CI_CANONICAL_COMMIT.txt` is authoritative for the actual workflow checkout. The pin is a target pointer, not execution evidence. Linux/Windows results must complete on this exact SHA before parity is claimed. This records the PR #92 Local CI checkpoint only; it is not the current Project ONE source pin and must not be conflated with the PR #51 Issue #104 candidate.
 
 The separate `CANONICAL_COMMIT.txt` pin for PR #94 remains unchanged.
 
@@ -76,3 +76,10 @@ The previous artifact-integrity failure #44589012615 is preserved as historical 
 Evidence details and exact artifact digests: [evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md](evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md).
 
 Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and unsupported Android/macOS filesystem adapters remain fail-closed/unavailable. No protected pin, ledger weight, DoD checkbox, release status, or merge state is changed.
+
+
+## Current Project ONE Issue #104 verifier checkpoint — 2026-11-20
+
+The current product-verification candidate is verifier PR #51, branch `probe/issue-104-platform-metadata-20261120`, pinned to ONE source `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`. E4, Linux distro, Windows native runtime, SEC-05, resource guard, artifact integrity, E1 Windows, focused stdlib/database, and cross-platform aggregate workflows have succeeded on that source. Android API 35 runtime and E1 Milestone 1 have fresh runs still in progress. See [MIRROR_STATUS.md](MIRROR_STATUS.md) and [the exact-source evidence note](evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md).
+
+Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and Android/macOS filesystem adapters remain fail-closed/unavailable. The historical PR #92 Local CI migration notes above are not the current product-verification pin.
