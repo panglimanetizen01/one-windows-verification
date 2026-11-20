@@ -1363,3 +1363,59 @@ No source files, ledger weights, verified points, or DoD checkboxes were changed
 ## Candidate matrix environment repair — 2026-11-18
 
 The first candidate matrix run `44243442240` checked out the exact source and compiled `one-core` on both OSes, but both test suites failed in the existing `windows_x86_64_dapat_membangun_artifact_native` test because the configured cross-compiler `x86_64-w64-mingw32-clang` was not installed on either host. The test is intentionally retained (not ignored or weakened). The matrix now installs the required MinGW/Clang/LLD toolchains on Ubuntu and Windows and sets `ONE_WINDOWS_CLANG=clang` before running the full suite.
+
+
+## ONE PR #113 platform metadata candidate — exact-SHA evidence — 2026-11-20
+
+- Branch-local `CANONICAL_COMMIT.txt` pins ONE source `c7f460a4e38be61de635ad5af9f7ff987a941f01`; verifier PR #51 is a diagnostic OPEN / DRAFT / UNMERGED PR. Protected `verification` branch remains `b14abf0020472dc45842be30854e0a09317d6cb4` with protected canonical pin `722d662e7a81711ba3607d26571f4048a292b3ed` unchanged.
+- E4 run #44585270928 SUCCESS on the exact candidate: Unix no-follow/resource-bound and Windows reparse/handle jobs passed; Windows native `NtCreateFile + OBJ_DONT_REPARSE` probe passed on Windows Server 2025 build 26100. The added test `filesystem_adapters_advertise_only_platforms_with_native_backends` explicitly passed on Linux and Windows (1 passed / 0 failed each).
+- Linux distro run #44585282690 SUCCESS on Ubuntu 24.04 and Debian 12, including workspace tests and corrected filesystem vertical-slice CLI integration. E1 Windows acceptance run #44585282432 SUCCESS.
+- Remaining aggregate cross-platform, Windows native runtime, Android runtime, SEC-05, E1 milestone and artifact-integrity workflows were IN_PROGRESS/PENDING at this checkpoint. CircleCI on source `c7f460a...` was PENDING; provider step logs unavailable.
+- The prior source `7581a1b...` exposed a CLI integration mismatch because the interpreter passed `PlatformKind::Any`; candidate `c7f460a...` fixes this by using `PlatformKind::current_host()` and updates the integration test to use the actual host platform.
+- Filesystem adapter metadata is now Linux-only on Linux, Windows-only on Windows, and empty on Android/macOS/other unsupported targets. This does not add Android/macOS filesystem support. Issue #104 remains OPEN / NOT ACCEPTED; no protected pin or ledger weight is promoted.
+
+
+## Android API 35 AArch64 runtime artifact — 2026-11-20
+
+- Workflow #44585282482 SUCCESS on exact ONE source `c7f460a4e38be61de635ad5af9f7ff987a941f01`; ARM64-native runtime job #135777110380 exited 0 with `ONE_NATIVE_BACKEND_OK`.
+- Artifact ID `14562860220`, 12,953 bytes; GitHub archive digest and independently downloaded ZIP SHA-256 both `75a73869f4d5351b3d3a9ba311266602a89221bad81b040d0433432c2aa41741`.
+- Embedded source marker matches `c7f460a...`; ELF is AArch64 PIE with `/system/bin/linker64`; embedded ELF SHA-256 `5b05504a0167beeae1d15e267c2e7af1f1a7c62b163d459289be1d663c380a0c` matches the included sidecar.
+- This is native backend runtime evidence only. It does not establish Android filesystem adapter support or promote the protected E3 source pin/ledger.
+
+
+## Candidate artifact discovery must include pull-request verification runs — 2026-11-20
+
+- Exact-source ONE candidate: `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`; verifier PR #51 head before this correction: `e784b5ee02f4dbe9641e5085b716b9c989e518eb`.
+- E4 run #44589012206, cross-platform run #44589012521, Linux distro #44589012238, Windows native runtime #44589012113, SEC-05 #44589012589, and Android API 35 runtime #44589012387 completed successfully against the pinned candidate. The cross-platform run was a `pull_request` event on branch `probe/issue-104-platform-metadata-20261120` and produced both exact-SHA bundles (Linux artifact 14563276002; Windows artifact 14561664789).
+- Artifact-integrity run #44589012615 failed because `candidate-artifact-inspection.yml` queried only Actions runs with `branch=verification`. That excluded the successful pull-request run on the PR branch, even though its artifacts existed and were named with the exact source SHA. The 45-minute wait therefore ended with “No successful cross-platform run produced candidate bundles”; embedded metadata/digest validation was skipped. This is a verifier discovery-filter defect, not a source build/test failure and not an artifact-integrity pass.
+- Corrected the workflow on PR #51 by removing the branch-only filter while retaining the successful-workflow-name, completed/success conclusion, and exact `CANONICAL_COMMIT.txt` source-pin checks. This allows both protected-branch and pull-request runs to be considered without changing the canonical source pin or acceptance ledger.
+- New verifier commit: `7c670659c28b3be72c47f5e905013626e72851c8`. The artifact-integrity workflow must complete on this verifier revision before archive digest, embedded source manifest, and ELF/PE checks can be credited. Status remains NOT VERIFIED until that rerun passes.
+
+## Exact-source hard-link verification checkpoint — 2026-11-20
+
+The current branch-local source pin is `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`. The verifier workflows were executed from verifier HEAD `27207b85ed205d2cf12e6fd66b918193a215d8fd`; this documentation commit does not change the protected `verification` branch or its source pin.
+
+- E4 run #44651796986 SUCCESS: Unix and Windows adversarial filesystem jobs passed, including `filesystem::hardlink_tests::authority_rejects_hard_linked_targets_without_side_effects`.
+- Windows E4 job #136008224371 explicitly passed the seven named Windows filesystem regressions, atomic-replacement failure-preservation, hard-link, and platform-metadata tests (9 selected tests, 0 failures).
+- Unix E4 job #136008224711 passed the no-follow, mount-boundary, traversal, race, write-boundary, hard-link, platform-metadata, and policy regression filters.
+- Linux distro run #44651796952 SUCCESS on Ubuntu 24.04 and Debian 12.
+- Windows native backend runtime #44651796852, E1 Windows #44651797000, focused stdlib/database #44651796941, SEC-05 #44651796634, E4 resource guard #44651796650, and artifact integrity #44651796712 all SUCCESS.
+- Artifact integrity #44651796712 verified Linux artifact #14563276002 (`sha256:59aa04887ffa5c2cb66d65e4ef7936622c6e0a4f6164ea8ea458457d10b8a940`) and Windows artifact #14561664789 (`sha256:7d3c51123f73c398032ef0c636c018c12ea501340b822b8e3b4edc9777645a3a`); embedded source manifests match `fb5c8bc...`, and ELF64/PE32+ format checks pass.
+- ONE CircleCI `ci/circleci: one-linux` on exact source `fb5c8bc...` is SUCCESS (workflow `3a9c0613-a1bc-43ae-b2d6-319841061048`, job `c4faf162-80e9-4f17-a83a-a72634bb592f`); provider step logs were not inspected.
+- Android build artifact #44651796635 is SUCCESS; Android API 35 runtime #44651796976 remained IN PROGRESS. Cross-platform aggregate #44651796654 remained PENDING and E1 Milestone 1 #44651796950 remained IN PROGRESS at last read.
+
+The previous artifact-integrity failure #44589012615 is preserved as historical evidence. Its follow-up #44651796712 is a separate successful exact-source verification, not a replacement of the historical failure.
+
+Evidence details and exact artifact digests: [evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md](evidence/ISSUE_104_HARDLINK_EXACT_SHA_2026-11-20.md).
+
+Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and unsupported Android/macOS filesystem adapters remain fail-closed/unavailable. No protected pin, ledger weight, DoD checkbox, release status, or merge state is changed.
+
+
+## Android API 35 ARM64 runtime — exact-source verification refresh (2026-11-20)
+
+- Independent verifier PR #51 HEAD: `226360d00bc26f858128d3127591fce13ecd52d9`; exact ONE source pin: `fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`.
+- Workflow [#44652693606](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44652693606) completed SUCCESS. Build job #136011228119 and API 35 ARM64 runtime job #136012787863 both completed SUCCESS.
+- Runtime job log confirms an ARM64 ELF with interpreter `/system/bin/linker64` was pushed to the Android API 35 ARM64 emulator, executed with exit code 0, and printed `ONE_NATIVE_BACKEND_OK`.
+- Runtime evidence artifact #14592959506 (`one-api35-arm64-runtime-evidence-fb5c8bc66a5cbdf8a6670d9d1e9dbe0caa631a20`) uploaded successfully; SHA-256 `ab24bf6244652ccc6892dabcbbd3571cb4c4dda3bd2bf5ad902c922e3faf152d`.
+- This verifies the native backend runtime on the specified Android API 35 ARM64 environment for this exact source. It does **not** establish Android filesystem adapter support: filesystem adapter metadata remains Linux-only on Linux and Windows-only on Windows; Android/macOS filesystem adapters remain unavailable. Issue #104 remains OPEN / NOT ACCEPTED.
+- Do not repeat this Android runtime workflow for the same source and verifier inputs unless a relevant input changes.
