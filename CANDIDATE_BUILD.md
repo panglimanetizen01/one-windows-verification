@@ -132,3 +132,14 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - Verifier pin commit: `1e3116c90904e1cabcee838cb1806a14dd3cb720`. A fresh push-triggered matrix is expected; record the actual run ID and both terminal job outcomes before claiming independent Windows/Linux PASS.
 - The source repository's own GitHub Actions run #44854675780 on the same exact source SHA has Ubuntu and Windows Server 2025 Build, Clippy, and Tests steps SUCCESS. CircleCI status `ci/circleci: one-linux` is also SUCCESS on that exact SHA. These are separate CI evidence and do not substitute for this mirror's run.
 - PR #113 remains OPEN / DRAFT / UNMERGED. Issue #104 remains OPEN / NOT ACCEPTED.
+
+
+## 2026-11-21 — PR #113 exact-SHA Linux and Windows matrix completed
+
+- Independent verifier run [#44855478984](https://github.com/panglimanetizen01/one-windows-verification/actions/runs/44855478984) completed SUCCESS against exact ONE source SHA `3a9badf1aa281a6dbe37de2338776caa90288cdd` selected by `CANDIDATE_BUILD_COMMIT.txt`.
+- Linux Ubuntu 24.04 job #136696541594: SUCCESS; 279 passed, 0 failed, 4 ignored across 27 test-result summaries.
+- Windows Server 2025 job #136696541787: SUCCESS; 257 passed, 0 failed, 1 ignored across 27 test-result summaries.
+- The Windows log confirms the seven Windows filesystem tests all executed and passed, including the real directory-junction escape test (`mklink /J`), absolute-target confinement/no-side-effects, parent traversal rejection, write success, oversized write rejection, and atomic-replace-denied preservation.
+- Main ONE GitHub Actions run #44854675780 on the same source SHA: Ubuntu and Windows Server 2025 Build, Clippy, and Tests all SUCCESS. CircleCI status context `ci/circleci: one-linux` is SUCCESS on the same source SHA.
+- This matrix is non-acceptance evidence. It does not change or satisfy the protected E4 acceptance pin, does not rerun the full E4 adversarial workflow, and does not prove Android/macOS runtime support or complete Issue #104 acceptance.
+- PR #113 remains OPEN / DRAFT / UNMERGED; Issue #104 remains OPEN / NOT ACCEPTED.
