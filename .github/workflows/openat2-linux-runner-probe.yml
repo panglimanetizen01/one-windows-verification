@@ -1,0 +1,121 @@
+name: openat2 Linux hosted-runner probe
+
+on:
+  push:
+    branches:
+      - probe/openat2-linux-runner-20261121
+    paths:
+      - .github/workflows/openat2-linux-runner-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  openat2:
+    name: Linux openat2 enforcement probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Record runner environment
+        run: |
+          uname -a
+          grep -E '^(NAME|VERSION_ID)=' /etc/os-release || true
+          gcc --version | head -n 1
+      - name: Compile isolated probe
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/openat2_probe.c" <<'EOF'
+          #define _GNU_SOURCE
+          #include <errno.h>
+          #include <fcntl.h>
+          #include <linux/openat2.h>
+          #include <stdio.h>
+          #include <string.h>
+          #include <unistd.h>
+          #include <sys/syscall.h>
+
+          #ifndef __NR_openat2
+          #define __NR_openat2 437
+          #endif
+
+          static int open2(int rootfd, const char *path, unsigned long resolve) {
+              struct open_how how = {
+                  .flags = O_RDONLY | O_CLOEXEC,
+                  .mode = 0,
+                  .resolve = resolve
+              };
+              return (int)syscall(__NR_openat2, rootfd, path, &how, sizeof(how));
+          }
+
+          static int failed_with(int fd, int expected_errno, const char *label) {
+              if (fd < 0 && errno == expected_errno) {
+                  printf("PASS %s (errno=%d: %s)\n", label, errno, strerror(errno));
+                  return 0;
+              }
+              printf("FAIL %s (fd=%d errno=%d: %s)\n",
+                     label, fd, errno, strerror(errno));
+              if (fd >= 0) close(fd);
+              return 1;
+          }
+
+          int main(int argc, char **argv) {
+              if (argc != 2) {
+                  fprintf(stderr, "usage: %s ROOT\n", argv[0]);
+                  return 2;
+              }
+              int rootfd = open(argv[1], O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+              if (rootfd < 0) {
+                  perror("open root");
+                  return 2;
+              }
+
+              int failures = 0;
+              int fd = open2(rootfd, "nested/inside.txt",
+                  RESOLVE_BENEATH | RESOLVE_NO_SYMLINKS | RESOLVE_NO_MAGICLINKS);
+              if (fd >= 0) {
+                  puts("PASS nested file inside root");
+                  close(fd);
+              } else {
+                  printf("FAIL nested file inside root (errno=%d: %s)\n",
+                         errno, strerror(errno));
+                  failures++;
+                  if (errno == ENOSYS || errno == EPERM) {
+                      puts("openat2 unavailable or blocked on this runner");
+                      close(rootfd);
+                      return 77;
+                  }
+              }
+
+              errno = 0;
+              fd = open2(rootfd, "../outside.txt", RESOLVE_BENEATH);
+              failures += failed_with(fd, EXDEV, "parent traversal rejected");
+
+              errno = 0;
+              fd = open2(rootfd, "escape-link", RESOLVE_NO_SYMLINKS);
+              failures += failed_with(fd, ELOOP, "symlink rejected");
+
+              errno = 0;
+              fd = open2(rootfd, "escape-link", RESOLVE_BENEATH);
+              failures += failed_with(fd, EXDEV, "escaping symlink rejected by BENEATH");
+
+              close(rootfd);
+              if (failures) {
+                  fprintf(stderr, "RESULT=FAIL failures=%d\n", failures);
+                  return 1;
+              }
+              puts("RESULT=PASS all openat2 resolution checks enforced");
+              return 0;
+          }
+          EOF
+          gcc -Wall -Wextra -Werror -O2 "$RUNNER_TEMP/openat2_probe.c" -o "$RUNNER_TEMP/openat2_probe"
+      - name: Execute path-confinement probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/one-openat2-probe"
+          root="$base/root"
+          mkdir -p "$root/nested"
+          printf 'inside-test\n' > "$root/nested/inside.txt"
+          printf 'outside-test\n' > "$base/outside.txt"
+          ln -s ../outside.txt "$root/escape-link"
+          "$RUNNER_TEMP/openat2_probe" "$root"
