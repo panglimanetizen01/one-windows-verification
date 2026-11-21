@@ -122,3 +122,13 @@ The candidate pin has been advanced from the initial toolchain commit to its imm
 - The preceding code candidate SHA `14d81a93...` has independent Linux+Windows SUCCESS (239/0/1 and 232/0/1) and CircleCI SUCCESS. The new candidate adds documentation only; don't transfer results across SHAs.
 - E4 inventory currently has 0/5 Unix filter groups and 0/6 Windows named tests implemented/accepted. Generic test-suite success is not E4 acceptance.
 - No filesystem operations or authority object exist yet. Issue #104 remains OPEN / NOT IMPLEMENTED / NOT ACCEPTED. E4 and ledger acceptance pins remain unchanged.
+
+
+## 2026-11-21 — PR #113 exact-SHA independent Windows/Linux matrix queued
+
+- Advanced only the non-acceptance `CANDIDATE_BUILD_COMMIT.txt` selector to ONE PR #113 exact HEAD `3a9badf1aa281a6dbe37de2338776caa90288cdd`.
+- This source SHA includes the Android compile correction commit `ed30f41fb9e69392c926a83dd9a8b6ac2e61efc4` in its ancestry. The corrected Android candidate had not yet received a dedicated Termux rerun in the checkpoint; do not treat this independent matrix as Android runtime evidence.
+- The change intentionally leaves `CANONICAL_COMMIT.txt` (E4 acceptance pin) and `LEDGER_SOURCE_COMMIT.txt` untouched. This workflow is a non-acceptance `cargo test --locked -p one-core -- --nocapture` matrix on Ubuntu 24.04 and Windows Server 2025.
+- Verifier pin commit: `1e3116c90904e1cabcee838cb1806a14dd3cb720`. A fresh push-triggered matrix is expected; record the actual run ID and both terminal job outcomes before claiming independent Windows/Linux PASS.
+- The source repository's own GitHub Actions run #44854675780 on the same exact source SHA has Ubuntu and Windows Server 2025 Build, Clippy, and Tests steps SUCCESS. CircleCI status `ci/circleci: one-linux` is also SUCCESS on that exact SHA. These are separate CI evidence and do not substitute for this mirror's run.
+- PR #113 remains OPEN / DRAFT / UNMERGED. Issue #104 remains OPEN / NOT ACCEPTED.
