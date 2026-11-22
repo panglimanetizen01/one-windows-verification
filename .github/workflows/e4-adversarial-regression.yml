@@ -83,10 +83,10 @@ jobs:
           run_test 1 adapter::filesystem_nofollow_tests::descriptor_relative_read_race_never_follows_swapped_parent_symlink --exact --test-threads=1
           run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file --exact --test-threads=1
           run_test 1 filesystem::hardlink_tests::authority_rejects_hard_linked_targets_without_side_effects --exact --test-threads=1
-          # Exact source inventory at the candidate SHA: database=1, governance=11, network_runtime=5.
+          # Exact source inventory observed on the pinned ONE candidate: database=3, governance=11, network_runtime=15.
           run_test 3 database::tests
           run_test 11 governance::tests
-          run_test 5 network_runtime::tests -- --test-threads=1
+          run_test 15 network_runtime::tests -- --test-threads=1
           run_test 1 orchestrator::tests::denied_request_never_reaches_adapter_invocation --exact --test-threads=1
           run_test 1 filesystem_platform_metadata_tests::filesystem_adapters_advertise_only_platforms_with_native_backends
 
