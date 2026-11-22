@@ -125,56 +125,36 @@ jobs:
           "ONE_ANDROID_CLANG=$clang" >> $env:GITHUB_ENV
           "ONE_WINDOWS_CLANG=clang" >> $env:GITHUB_ENV
 
-      - name: Show Python version
+      - name: Toolchain
         working-directory: source
-        run: python --version
+        run: rustc --version && cargo --version && python --version
 
-      - name: Test Local CI runner regression suite
-        working-directory: source
-        run: python tools/ci_unittest.py --start-directory tests --pattern test_ci_local.py
-
-      - name: Test CircleCI configuration paths
-        working-directory: source
-        run: python tools/ci_unittest.py --start-directory tests --pattern test_circleci_config_paths.py
-
-      - name: Test fail-closed unittest discovery
-        working-directory: source
-        run: python tools/ci_unittest.py --start-directory tests --pattern test_ci_unittest.py
-
-      - name: Run local CI parity runner
-        working-directory: source
-        run: python tools/ci_local.py --report artifacts/ci-local-report.json --timeout 3600
-
-      - name: Validate exact-SHA Local CI report and create SHA-256 manifest
-        if: always()
+      - name: Contract and user documentation checks
         working-directory: source
         shell: bash
-        env:
-          EXPECTED_SOURCE_SHA: ${{ steps.canonical.outputs.ref }}
-          VERIFIER_SHA: ${{ github.sha }}
         run: |
-          python tools/ci_local_evidence.py create \
-            --report artifacts/ci-local-report.json \
-            --manifest artifacts/ci-local-manifest.json \
-            --expected-source-sha "$EXPECTED_SOURCE_SHA" \
-            --verifier-sha "$VERIFIER_SHA" \
-            --workflow "$GITHUB_WORKFLOW" \
-            --run-id "$GITHUB_RUN_ID" \
-            --run-attempt "$GITHUB_RUN_ATTEMPT" \
-            --job "$GITHUB_JOB" \
-            --os "$RUNNER_OS" \
-            --arch "$RUNNER_ARCH"
-          python tools/ci_local_evidence.py verify \
-            --report artifacts/ci-local-report.json \
-            --manifest artifacts/ci-local-manifest.json \
-            --expected-source-sha "$EXPECTED_SOURCE_SHA" \
-            --expected-verifier-sha "$VERIFIER_SHA"
-      - name: Upload local CI report and manifest
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: local-ci-evidence-${{ matrix.os }}
-          path: |
-            source/artifacts/ci-local-report.json
-            source/artifacts/ci-local-manifest.json
-          if-no-files-found: error
+          set -euo pipefail
+          python tools/check_contract.py
+          python tools/check_user_docs.py
+          python tools/check_user_docs_test.py
+
+      - name: Build workspace
+        working-directory: source
+        run: cargo --locked build --workspace --all-targets
+
+      - name: Clippy workspace
+        working-directory: source
+        run: cargo --locked clippy --workspace --all-targets -- -D warnings
+
+      - name: Workspace tests (Linux)
+        if: runner.os != 'Windows'
+        working-directory: source
+        run: cargo --locked test --workspace --all-targets
+
+      - name: Workspace tests (Windows; Android target covered separately)
+        if: runner.os == 'Windows'
+        working-directory: source
+        shell: pwsh
+        run: |
+          cargo --locked test --workspace --all-targets -- --skip android_target_explicit_mempertahankan_build_native --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
