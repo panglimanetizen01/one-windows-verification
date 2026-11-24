@@ -262,7 +262,9 @@ jobs:
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: one-android-filesystem-test-harness
-          path: ${{ runner.temp }}/one-android-filesystem-tests
+          # The uploaded ZIP preserves the one-android-filesystem-tests/ prefix.
+          # Download at RUNNER_TEMP so the expected binary path is not nested twice.
+          path: ${{ runner.temp }}
 
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
