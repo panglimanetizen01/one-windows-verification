@@ -372,9 +372,11 @@ jobs:
           setup_log="$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_SETUP.txt"
           filesystem_log="$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
           metadata_log="$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_METADATA_TEST.txt"
+          hardlink_log="$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_HARDLINK_TEST.txt"
           : > "$setup_log"
           : > "$filesystem_log"
           : > "$metadata_log"
+          : > "$hardlink_log"
           set +e
           "$adb" -s emulator-5554 push "$test_binary" "$remote" 2>&1 | tee "$setup_log"
           push_status=${PIPESTATUS[0]}
@@ -383,23 +385,52 @@ jobs:
           "$adb" -s emulator-5554 shell chmod 700 "$remote"
 
           set +e
-          "$adb" -s emulator-5554 shell "$remote" android_filesystem_tests:: --test-threads=1 --nocapture 2>&1 | tee "$filesystem_log"
+          "$adb" -s emulator-5554 shell "$remote" android_filesystem_tests:: --skip android_hard_link_targets_are_rejected_without_modifying_either_name --test-threads=1 --nocapture 2>&1 | tee "$filesystem_log"
           android_status=${PIPESTATUS[0]}
           set -e
-          printf 'Android filesystem test exit code: %s\n' "$android_status" | tee -a "$filesystem_log"
+          printf 'Android filesystem shell-test exit code: %s\\n' "$android_status" | tee -a "$filesystem_log"
           test "$android_status" -eq 0
-          grep -Fq 'android_statx_mount_id_matches_same_mount_and_rejects_devfs ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
-          if grep -Fq 'SKIP devfs negative assertion' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"; then
+          grep -Fq 'android_statx_mount_id_matches_same_mount_and_rejects_devfs ... ok' "$filesystem_log"
+          if grep -Fq 'SKIP devfs negative assertion' "$filesystem_log"; then
             echo "Android guest could not exercise the devfs mount-boundary negative assertion" >&2
             exit 1
           fi
-          grep -Fq 'android_direct_child_read_and_atomic_write_work_with_root_handle ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
-          grep -Fq 'android_leaf_symlinks_and_nested_paths_fail_closed ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
-          grep -Fq 'android_nested_reads_fail_closed_without_openat2 ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
-          grep -Fq 'android_nested_writes_fail_closed_without_modifying_existing_or_new_targets ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
-          grep -Fq 'android_root_final_symlink_is_rejected ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
-          grep -Fq 'android_hard_link_targets_are_rejected_without_modifying_either_name ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
-          grep -Eq 'test result: ok\. 7 passed; 0 failed' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
+          grep -Fq 'android_direct_child_read_and_atomic_write_work_with_root_handle ... ok' "$filesystem_log"
+          grep -Fq 'android_leaf_symlinks_and_nested_paths_fail_closed ... ok' "$filesystem_log"
+          grep -Fq 'android_nested_reads_fail_closed_without_openat2 ... ok' "$filesystem_log"
+          grep -Fq 'android_nested_writes_fail_closed_without_modifying_existing_or_new_targets ... ok' "$filesystem_log"
+          grep -Fq 'android_root_final_symlink_is_rejected ... ok' "$filesystem_log"
+          grep -Eq 'test result: ok\\. 6 passed; 0 failed' "$filesystem_log"
+
+          # Android's shell SELinux domain denies creating the hard-link fixture.
+          # Use the emulator's root adbd only for this adversarial fixture test;
+          # return to uid=2000(shell) before the metadata test.
+          set +e
+          "$adb" -s emulator-5554 root 2>&1 | tee -a "$hardlink_log"
+          root_status=${PIPESTATUS[0]}
+          set -e
+          test "$root_status" -eq 0
+          "$adb" -s emulator-5554 wait-for-device
+          root_identity="$("$adb" -s emulator-5554 shell id 2>&1)"
+          printf 'Android hard-link test identity: %s\\n' "$root_identity" | tee -a "$hardlink_log"
+          printf '%s' "$root_identity" | grep -Eq 'uid=0\\(root\\)'
+          set +e
+          "$adb" -s emulator-5554 shell "$remote" filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name --exact --nocapture 2>&1 | tee -a "$hardlink_log"
+          hardlink_status=${PIPESTATUS[0]}
+          set -e
+          printf 'Android hard-link test exit code: %s\\n' "$hardlink_status" | tee -a "$hardlink_log"
+          test "$hardlink_status" -eq 0
+          grep -Fq 'filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name ... ok' "$hardlink_log"
+          grep -Eq 'test result: ok\\. 1 passed; 0 failed' "$hardlink_log"
+          set +e
+          "$adb" -s emulator-5554 unroot 2>&1 | tee -a "$hardlink_log"
+          unroot_status=${PIPESTATUS[0]}
+          set -e
+          test "$unroot_status" -eq 0
+          "$adb" -s emulator-5554 wait-for-device
+          shell_identity="$("$adb" -s emulator-5554 shell id 2>&1)"
+          printf 'Android metadata test identity: %s\\n' "$shell_identity" | tee -a "$hardlink_log"
+          printf '%s' "$shell_identity" | grep -Eq 'uid=2000\\(shell\\)'
 
           set +e
           "$adb" -s emulator-5554 shell "$remote" adapter::filesystem_platform_metadata_tests::filesystem_adapters_advertise_only_platforms_with_native_backends --exact --nocapture 2>&1 | tee "$metadata_log"
@@ -410,7 +441,12 @@ jobs:
           grep -Fq 'adapter::filesystem_platform_metadata_tests::filesystem_adapters_advertise_only_platforms_with_native_backends ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_METADATA_TEST.txt"
           grep -Eq 'test result: ok\. 1 passed; 0 failed' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_METADATA_TEST.txt"
           "$adb" -s emulator-5554 shell rm -f "$remote"
-          echo 'ONE_ANDROID_FILESYSTEM_ACCEPTANCE=PASS' | tee "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_ACCEPTANCE.txt"
+          {
+            echo 'ANDROID_FILESYSTEM_SHELL_TESTS=6/6 PASS'
+            echo 'ANDROID_FILESYSTEM_HARDLINK_TEST=1/1 PASS (uid=0 root fixture)'
+            echo 'ANDROID_FILESYSTEM_METADATA_TEST=1/1 PASS (uid=2000 shell)'
+            echo 'ONE_ANDROID_FILESYSTEM_ACCEPTANCE=PASS'
+          } | tee "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_ACCEPTANCE.txt"
 
 
       - name: Upload Android API 35 runtime evidence
