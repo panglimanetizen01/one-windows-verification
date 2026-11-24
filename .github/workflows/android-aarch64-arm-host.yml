@@ -80,7 +80,7 @@ jobs:
           test -n "$llvm_ar"
           export AR_aarch64_linux_android="$llvm_ar"
           cargo test --locked --target aarch64-linux-android -p one-core --lib --no-run
-          test_binary="$(find target/aarch64-linux-android/debug/deps -maxdepth 1 -type f -perm -u+x -name 'one_core-*' -print -quit)"
+          test_binary="$(find target/aarch64-linux-android/debug -type f -perm -u+x -name 'one_core-*' -print -quit)"
           test -n "$test_binary"
           file "$test_binary" | tee "$RUNNER_TEMP/one-android-filesystem-test-binary.txt"
           readelf -h "$test_binary" | grep -Eq 'Class:[[:space:]]+ELF64'
