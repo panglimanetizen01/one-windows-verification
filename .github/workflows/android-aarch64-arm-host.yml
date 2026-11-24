@@ -402,7 +402,7 @@ jobs:
           grep -Fq 'android_root_final_symlink_is_rejected ... ok' "$filesystem_log"
           grep -Eq 'test result: ok\\. 6 passed; 0 failed' "$filesystem_log"
 
-          # Android's shell SELinux domain denies creating the hard-link fixture.
+          # The Android shell context receives EACCES when creating the hard-link fixture on its temp filesystem.
           # Use the emulator's root adbd only for this adversarial fixture test;
           # return to uid=2000(shell) before the metadata test.
           set +e
