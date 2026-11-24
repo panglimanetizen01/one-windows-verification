@@ -400,7 +400,7 @@ jobs:
           grep -Fq 'android_nested_reads_fail_closed_without_openat2 ... ok' "$filesystem_log"
           grep -Fq 'android_nested_writes_fail_closed_without_modifying_existing_or_new_targets ... ok' "$filesystem_log"
           grep -Fq 'android_root_final_symlink_is_rejected ... ok' "$filesystem_log"
-          grep -Eq 'test result: ok\\. 6 passed; 0 failed' "$filesystem_log"
+          grep -Eq 'test result: ok\. 6 passed; 0 failed' "$filesystem_log"
 
           # The Android shell context receives EACCES when creating the hard-link fixture on its temp filesystem.
           # Use the emulator's root adbd only for this adversarial fixture test;
