@@ -76,11 +76,9 @@ jobs:
           rustup target add aarch64-linux-android
           export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$ONE_ANDROID_CLANG"
           export CC_aarch64_linux_android="$ONE_ANDROID_CLANG"
-          export CC_aarch64-linux-android="$ONE_ANDROID_CLANG"
           llvm_ar="$(find "$ANDROID_HOME/ndk/27.2.12479018/toolchains/llvm/prebuilt" -type f -name llvm-ar -print -quit)"
           test -n "$llvm_ar"
           export AR_aarch64_linux_android="$llvm_ar"
-          export AR_aarch64-linux-android="$llvm_ar"
           cargo test --locked --target aarch64-linux-android -p one-core --lib --no-run
           test_binary="$(find target/aarch64-linux-android/debug/deps -maxdepth 1 -type f -perm -u+x -name 'one_core-*' -print -quit)"
           test -n "$test_binary"
@@ -90,7 +88,7 @@ jobs:
           readelf -l "$test_binary" | grep -F 'Requesting program interpreter: /system/bin/linker64'
           mkdir -p "$RUNNER_TEMP/one-android-filesystem-tests"
           cp "$test_binary" "$RUNNER_TEMP/one-android-filesystem-tests/one-core-android-tests"
-          sha256sum "$RUNNER_TEMP/one-android-filesystem-tests/one-core-android-tests" | tee "$RUNNER_TEMP/one-android-filesystem-tests/one-core-android-tests.sha256"
+          (cd "$RUNNER_TEMP/one-android-filesystem-tests" && sha256sum one-core-android-tests > one-core-android-tests.sha256)
 
       - name: Generate C from the pinned ONE native backend
         working-directory: source
@@ -367,7 +365,7 @@ jobs:
           adb="$ANDROID_HOME/platform-tools/adb"
           test_binary="$RUNNER_TEMP/one-android-filesystem-tests/one-core-android-tests"
           test -f "$test_binary"
-          sha256sum -c "$RUNNER_TEMP/one-android-filesystem-tests/one-core-android-tests.sha256"
+          (cd "$RUNNER_TEMP/one-android-filesystem-tests" && sha256sum -c one-core-android-tests.sha256)
           file "$test_binary" | tee "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_TEST_BINARY.txt"
           remote="/data/local/tmp/one-filesystem-tests-${GITHUB_RUN_ID}"
           "$adb" -s emulator-5554 push "$test_binary" "$remote"
@@ -380,6 +378,10 @@ jobs:
           printf 'Android filesystem test exit code: %s\nAndroid filesystem test output:\n%s\n' "$android_status" "$android_output" | tee "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
           test "$android_status" -eq 0
           grep -Fq 'android_statx_mount_id_matches_same_mount_and_rejects_devfs ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
+          if grep -Fq 'SKIP devfs negative assertion' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"; then
+            echo "Android guest could not exercise the devfs mount-boundary negative assertion" >&2
+            exit 1
+          fi
           grep -Fq 'android_direct_child_read_and_atomic_write_work_with_root_handle ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
           grep -Fq 'android_leaf_symlinks_and_nested_paths_fail_closed ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
           grep -Fq 'android_nested_reads_fail_closed_without_openat2 ... ok' "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_TESTS.txt"
