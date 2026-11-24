@@ -412,16 +412,16 @@ jobs:
           test "$root_status" -eq 0
           "$adb" -s emulator-5554 wait-for-device
           root_identity="$("$adb" -s emulator-5554 shell id 2>&1)"
-          printf 'Android hard-link test identity: %s\\n' "$root_identity" | tee -a "$hardlink_log"
-          printf '%s' "$root_identity" | grep -Eq 'uid=0\\(root\\)'
+          printf 'Android hard-link test identity: %s\n' "$root_identity" | tee -a "$hardlink_log"
+          printf '%s' "$root_identity" | grep -Fq 'uid=0(root)'
           set +e
           "$adb" -s emulator-5554 shell "$remote" filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name --exact --nocapture 2>&1 | tee -a "$hardlink_log"
           hardlink_status=${PIPESTATUS[0]}
           set -e
-          printf 'Android hard-link test exit code: %s\\n' "$hardlink_status" | tee -a "$hardlink_log"
+          printf 'Android hard-link test exit code: %s\n' "$hardlink_status" | tee -a "$hardlink_log"
           test "$hardlink_status" -eq 0
           grep -Fq 'filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name ... ok' "$hardlink_log"
-          grep -Eq 'test result: ok\\. 1 passed; 0 failed' "$hardlink_log"
+          grep -Fq 'test result: ok. 1 passed; 0 failed' "$hardlink_log"
           set +e
           "$adb" -s emulator-5554 unroot 2>&1 | tee -a "$hardlink_log"
           unroot_status=${PIPESTATUS[0]}
@@ -429,8 +429,8 @@ jobs:
           test "$unroot_status" -eq 0
           "$adb" -s emulator-5554 wait-for-device
           shell_identity="$("$adb" -s emulator-5554 shell id 2>&1)"
-          printf 'Android metadata test identity: %s\\n' "$shell_identity" | tee -a "$hardlink_log"
-          printf '%s' "$shell_identity" | grep -Eq 'uid=2000\\(shell\\)'
+          printf 'Android metadata test identity: %s\n' "$shell_identity" | tee -a "$hardlink_log"
+          printf '%s' "$shell_identity" | grep -Fq 'uid=2000(shell)'
 
           set +e
           "$adb" -s emulator-5554 shell "$remote" adapter::filesystem_platform_metadata_tests::filesystem_adapters_advertise_only_platforms_with_native_backends --exact --nocapture 2>&1 | tee "$metadata_log"
