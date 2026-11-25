@@ -405,9 +405,8 @@ jobs:
           # The Android shell context receives EACCES when creating the hard-link fixture on its temp filesystem.
           # Use the emulator's root adbd only for this adversarial fixture test;
           # return to uid=2000(shell) before the metadata test.
-          # adb root restarts adbd. Some platform-tools versions return a
-          # transient non-zero status during the transport restart, so validate
-          # the guest identity after reconnecting rather than trusting that status.
+          # adb root restarts adbd. Validate the actual guest identity after
+          # reconnecting rather than trusting the transient adb client exit status.
           set +e
           root_output="$("$adb" -s emulator-5554 root 2>&1)"
           root_status=$?
@@ -424,16 +423,19 @@ jobs:
             fi
             sleep 2
           done
-          printf 'Android hard-link test identity: %s\\n' "$root_identity" | tee -a "$hardlink_log"
+          printf 'Android fixture preparation identity: %s\\n' "$root_identity" | tee -a "$hardlink_log"
           printf '%s' "$root_identity" | grep -Fq 'uid=0(root)'
+
+          # Prepare the hard-link fixture as root, then transfer ownership to
+          # Android shell so the actual authority assertions execute as uid=2000.
+          fixture_root="/data/local/tmp/one-android-hardlink-${GITHUB_RUN_ID}"
+          outside="${fixture_root}.outside.txt"
           set +e
-          "$adb" -s emulator-5554 shell "$remote" filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name --exact --nocapture 2>&1 | tee -a "$hardlink_log"
-          hardlink_status=${PIPESTATUS[0]}
+          "$adb" -s emulator-5554 shell "rm -rf '$fixture_root' '$outside' && mkdir -p '$fixture_root' && printf KEEP_BOTH > '$fixture_root/inside.txt' && ln '$fixture_root/inside.txt' '$outside' && chown 2000:2000 '$fixture_root' '$fixture_root/inside.txt' '$outside' && chmod 700 '$fixture_root' && chmod 600 '$fixture_root/inside.txt' '$outside'" 2>&1 | tee -a "$hardlink_log"
+          fixture_status=${PIPESTATUS[0]}
           set -e
-          printf 'Android hard-link test exit code: %s\n' "$hardlink_status" | tee -a "$hardlink_log"
-          test "$hardlink_status" -eq 0
-          grep -Fq 'filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name ... ok' "$hardlink_log"
-          grep -Fq 'test result: ok. 1 passed; 0 failed' "$hardlink_log"
+          test "$fixture_status" -eq 0
+
           set +e
           unroot_output="$("$adb" -s emulator-5554 unroot 2>&1)"
           unroot_status=$?
@@ -450,8 +452,18 @@ jobs:
             fi
             sleep 2
           done
-          printf 'Android metadata test identity: %s\\n' "$shell_identity" | tee -a "$hardlink_log"
+          printf 'Android hard-link test identity: %s\\n' "$shell_identity" | tee -a "$hardlink_log"
           printf '%s' "$shell_identity" | grep -Fq 'uid=2000(shell)'
+
+          set +e
+          "$adb" -s emulator-5554 shell "ONE_ANDROID_HARDLINK_FIXTURE_ROOT='$fixture_root' '$remote' filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name --exact --nocapture" 2>&1 | tee -a "$hardlink_log"
+          hardlink_status=${PIPESTATUS[0]}
+          set -e
+          printf 'Android hard-link test exit code: %s\\n' "$hardlink_status" | tee -a "$hardlink_log"
+          test "$hardlink_status" -eq 0
+          grep -Fq 'filesystem::android_filesystem_tests::android_hard_link_targets_are_rejected_without_modifying_either_name ... ok' "$hardlink_log"
+          grep -Fq 'test result: ok. 1 passed; 0 failed' "$hardlink_log"
+
           set +e
           "$adb" -s emulator-5554 shell "$remote" adapter::filesystem_platform_metadata_tests::filesystem_adapters_advertise_only_platforms_with_native_backends --exact --nocapture 2>&1 | tee "$metadata_log"
           metadata_status=${PIPESTATUS[0]}
