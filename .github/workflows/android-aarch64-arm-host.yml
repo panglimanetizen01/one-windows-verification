@@ -402,9 +402,9 @@ jobs:
           grep -Fq 'android_root_final_symlink_is_rejected ... ok' "$filesystem_log"
           grep -Eq 'test result: ok\. 6 passed; 0 failed' "$filesystem_log"
 
-          # The Android shell context receives EACCES when creating the hard-link fixture on its temp filesystem.
-          # Use the emulator's root adbd only for this adversarial fixture test;
-          # return to uid=2000(shell) before the metadata test.
+          # The Android shell context receives EACCES when creating the hard-link fixture.
+          # Use root adbd only to create the fixture and chown it to uid=2000(shell);
+          # return to shell before executing the hard-link authority assertions.
           # adb root restarts adbd. Validate the actual guest identity after
           # reconnecting rather than trusting the transient adb client exit status.
           set +e
@@ -475,7 +475,7 @@ jobs:
           "$adb" -s emulator-5554 shell rm -f "$remote"
           {
             echo 'ANDROID_FILESYSTEM_SHELL_TESTS=6/6 PASS'
-            echo 'ANDROID_FILESYSTEM_HARDLINK_TEST=1/1 PASS (uid=0 root fixture)'
+            echo 'ANDROID_FILESYSTEM_HARDLINK_TEST=1/1 PASS (uid=2000 shell; fixture prepared as uid=0 root)'
             echo 'ANDROID_FILESYSTEM_METADATA_TEST=1/1 PASS (uid=2000 shell)'
             echo 'ONE_ANDROID_FILESYSTEM_ACCEPTANCE=PASS'
           } | tee "$RUNNER_TEMP/one-android-filesystem-tests/ANDROID_FILESYSTEM_ACCEPTANCE.txt"
