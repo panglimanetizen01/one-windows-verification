@@ -82,11 +82,13 @@ jobs:
           run_test 1 descriptor_relative_walk_rejects_
           run_test 1 adapter::filesystem_nofollow_tests::descriptor_relative_read_race_never_follows_swapped_parent_symlink --exact --test-threads=1
           run_test 1 adapter::filesystem_nofollow_tests::final_component_mount_boundary_denial_does_not_truncate_file --exact --test-threads=1
-          # Exact source inventory at the candidate SHA: database=1, governance=11, network_runtime=5.
-          run_test 1 database::tests
+          run_test 1 filesystem::hardlink_tests::authority_rejects_hard_linked_targets_without_side_effects --exact --test-threads=1
+          # Exact source inventory observed on the pinned ONE candidate: database=3, governance=11, network_runtime=15.
+          run_test 3 database::tests
           run_test 11 governance::tests
-          run_test 5 network_runtime::tests -- --test-threads=1
+          run_test 15 network_runtime::tests -- --test-threads=1
           run_test 1 orchestrator::tests::denied_request_never_reaches_adapter_invocation --exact --test-threads=1
+          run_test 1 filesystem_platform_metadata_tests::filesystem_adapters_advertise_only_platforms_with_native_backends
 
   windows-reparse-regression:
     name: Windows reparse-point and handle checks
@@ -141,9 +143,12 @@ jobs:
           Invoke-ExpectedTest "filesystem_adapter_reads_absolute_target_inside_project_root"
           Invoke-ExpectedTest "filesystem_adapters_confine_absolute_targets_to_project_root_without_side_effects"
           Invoke-ExpectedTest "filesystem_write_adapter_writes_text_target"
-          Invoke-ExpectedTest "filesystem_write_adapter_rejects_oversized_content"
+          Invoke-ExpectedTest "adapter::filesystem_windows_tests::filesystem_write_adapter_rejects_oversized_content"
           Invoke-ExpectedTest "filesystem_write_adapter_preserves_target_when_atomic_replace_is_denied"
           Invoke-ExpectedTest "filesystem_adapters_reject_parent_directory_traversal"
+          Invoke-ExpectedTest "filesystem::windows_native::tests::retained_parent_handle_blocks_directory_rename"
+          Invoke-ExpectedTest "filesystem::hardlink_tests::authority_rejects_hard_linked_targets_without_side_effects"
+          Invoke-ExpectedTest "filesystem_platform_metadata_tests::filesystem_adapters_advertise_only_platforms_with_native_backends"
 
   windows-obj-dont-reparse-contract-probe:
     name: Windows user-mode NtCreateFile OBJ_DONT_REPARSE contract probe

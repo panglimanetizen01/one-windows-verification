@@ -67,7 +67,7 @@ jobs:
           deadline = time.monotonic() + 45 * 60
           selected = None
           while time.monotonic() < deadline:
-              runs = api(f"https://api.github.com/repos/{owner_repo}/actions/runs?branch=verification&per_page=100")["workflow_runs"]
+              runs = api(f"https://api.github.com/repos/{owner_repo}/actions/runs?per_page=100")["workflow_runs"]
               matching = []
               for run in runs:
                   if run.get("name") != "One Cross-Platform Verification":
