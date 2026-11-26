@@ -70,3 +70,7 @@ Issue #104 remains OPEN / NOT ACCEPTED. Linux nested writes and unsupported Andr
 - GitHub branch metadata reports `protected=false` for branch `verification`; the repository rulesets endpoint returned an empty list. The classic branch-protection endpoint returned 403 to this integration, so actual protection configuration is NOT VERIFIED. Do not assume GitHub-side protection is enabled or change branch settings without explicit authorization.
 
 The PR #92 Local CI migration notes above are historical and separate from this current product-verification candidate. The branch-local source pin remains the authoritative checkout target for the workflows in this PR.
+
+## Independent verifier source-pin refresh — 2026-11-26
+
+The branch-local source pin has been refreshed from the stale ONE PR #123 candidate `ffc6f417...` to current-main test-only candidate PR #133 exact SHA `cd4651d947d309a5087f9b9eae42580a669f543f`. The Windows/local-CI parity pin remains separate and unchanged. Historical evidence for prior source pins is retained and must not be attributed to the new SHA. New verifier runs must reach terminal SUCCESS and their exact source/artifact identities must be checked before the PR can be considered. Issue #104 remains OPEN / NOT ACCEPTED.
